@@ -115,9 +115,9 @@ tests/
 
 ## ⚙️ Requirements
 
-- PHP 8.4 or higher
+- PHP 8.3 or higher
 - Composer
-- Node.js 22 or higher
+- Node.js 20 or higher
 - NPM
 - MySQL / SQLite (or compatible database)
 

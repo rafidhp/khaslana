@@ -11,20 +11,18 @@ This project uses Pest as the testing framework and Vite for frontend asset bund
 - **Database:** Mysql
 - **Testing:** Pest
 
----
-
-# 🛠 Installation Guide
+## 🛠 Installation Guide
 
 Follow the steps below to set up the project locally.
 
-## 1️⃣ Clone this Repository
+### 1️⃣ Clone this Repository
 
 ```bash
 git clone https://github.com/rafidhp/khaslana.git
 cd khaslana
 ```
 
-## 2️⃣ Copy Environment File
+### 2️⃣ Copy Environment File
 
 Create your `.env` file from the example file:
 
@@ -34,25 +32,25 @@ cp .env.example .env
 
 Then configure your database and other environment variables inside the `.env` file.
 
-## 3️⃣ Install Backend Dependencies
+### 3️⃣ Install Backend Dependencies
 
 ```bash
 composer install
 ```
 
-## 4️⃣ Install Frontend Dependencies
+### 4️⃣ Install Frontend Dependencies
 
 ```bash
 npm install
 ```
 
-## 5️⃣ Generate Application Key
+### 5️⃣ Generate Application Key
 
 ```bash
 php artisan key:generate
 ```
 
-## 6️⃣ Run Database Migration & Seeder
+### 6️⃣ Run Database Migration & Seeder
 
 ```bash
 php artisan migrate --seed
@@ -60,13 +58,11 @@ php artisan migrate --seed
 
 Make sure your database has been created before running this command.
 
----
-
-# ▶️ Running the Project
+## ▶️ Running the Project
 
 You need to run both the backend and frontend development servers.
 
-## Start Laravel Development Server
+### Start Laravel Development Server
 
 ```bash
 php artisan serve
@@ -78,13 +74,13 @@ The application will be available at:
 http://127.0.0.1:8000
 ```
 
-## Start Vite Development Server
+### Start Vite Development Server
 
 ```bash
 npm run dev
 ```
 
-# 🧪 Running Tests (Pest)
+## 🧪 Running Tests (Pest)
 
 To run the test suite:
 
@@ -98,7 +94,7 @@ or
 ./vendor/bin/pest
 ```
 
-# 📁 Project Structure Overview
+## 📁 Project Structure Overview
 
 ```
 app/
@@ -117,9 +113,7 @@ tests/
 ...
 ```
 
----
-
-# ⚙️ Requirements
+## ⚙️ Requirements
 
 - PHP 8.4 or higher
 - Composer
@@ -127,9 +121,7 @@ tests/
 - NPM
 - MySQL / SQLite (or compatible database)
 
----
-
-# 📌 Development Notes
+## 📌 Development Notes
 
 - Ensure your `.env` configuration matches your local environment.
 - Both `php artisan serve` and `npm run dev` must run simultaneously in development mode.
@@ -139,8 +131,6 @@ tests/
 php artisan optimize:clear
 ```
 
----
-
-# 📄 License
+## 📄 License
 
 This project is open-sourced software licensed under the [MIT license](LICENSE).

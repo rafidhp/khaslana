@@ -47,4 +47,17 @@ trait ProfileValidationRules
                 : Rule::unique(User::class)->ignore($userId),
         ];
     }
+
+    protected function usernameRules(?int $userId = null): array
+    {
+        return [
+            'required',
+            'string',
+            'max:255',
+            'min:3',
+            'regex:/^[a-zA-Z0-9_]+$/',
+            'not_regex:/^_+$/',
+            'unique:users,username' . ($userId ? ',' . $userId : ''),
+        ];
+    }
 }

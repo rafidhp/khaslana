@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('type', ['TETAP', 'KELILING']);
             $table->text('address');
-            $table->char('phone_number', 11, 15);
+            $table->char('phone_number', 15);
             $table->string('open_days')->nullable(); //note: dropdown hardcode value
             $table->string('open_time')->nullable();
             $table->string('close_time')->nullable();
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->char('npwp', 16)->nullable();
             $table->char('nib', 13)->nullable();
             $table->char('nik', 16)->nullable()->unique();
-            $table->text('image_hash')->nullable()->unique(); // ktp verification needs
+            $table->string('image_hash')->nullable()->unique(); // ktp verification needs
             $table->text('file_path')->nullable();
             $table->timestamps();
         });

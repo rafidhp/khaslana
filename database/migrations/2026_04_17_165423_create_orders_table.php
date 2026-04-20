@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('umkm_id')->constrained('umkms')->onDelete('restrict');
-            $table->text('invoice_number')->unique();
+            $table->string('invoice_number')->unique();
             $table->enum('type', ['DIAMBIL', 'DIANTAR']);
             $table->decimal('total_price', 12);
             $table->enum('status', [

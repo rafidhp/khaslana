@@ -95,6 +95,9 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.87 0 0);
+
+    --primary-khaslana: #99FF33;
+    --secondary-khaslana: #1E1B26;
 }
 
 .dark {
@@ -138,6 +141,48 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-[#1E1B26] text-foreground;
+    }
+}
+
+@layer components {
+    .btn-primary-khaslana {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary-khaslana);
+        background-color: var(--primary-khaslana);
+        border: 1px var(--primary-khaslana) solid;
+        border-radius: 100px;
+        padding: 14px 25px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all;
+        transition-duration: 300ms;
+    }
+    
+    .btn-primary-khaslana:hover {
+        color: var(--primary-khaslana);
+        background-color: transparent;
+        transition: all;
+        transition-duration: 200ms;
+    }
+    
+    .btn-secondary-khaslana {
+        color: var(--primary-khaslana);
+        border: 1px var(--primary-khaslana) solid;
+        text-decoration: none;
+        border-radius: 100px;
+        padding: 14px 25px;
+        font-weight: 500;
+        transition: all;
+        transition-duration: 300ms;
+    }
+    
+    .btn-secondary-khaslana:hover {
+        color: var(--secondary-khaslana);
+        background-color: var(--primary-khaslana);
+        transition: all;
+        transition-duration: 200ms;
     }
 }

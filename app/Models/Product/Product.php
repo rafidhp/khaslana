@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\UMKM\Umkm;
 use App\Models\Category;
 use App\Models\Promo;
+use App\Models\Review\Review;
 
 class Product extends Model
 {
@@ -40,5 +41,10 @@ class Product extends Model
 
     public function productVariants() {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    // from other table
+    public function reviews() {
+        return $this->hasMany(Review::class);
     }
 }

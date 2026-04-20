@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Review\Review;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 use App\Models\UMKM\Umkm;
+use App\Models\Review\ReviewLike;
 
 class User extends Authenticatable
 {
@@ -57,5 +60,15 @@ class User extends Authenticatable
 
     public function umkm() {
         return $this->hasOne(Umkm::class);
+    }
+
+    public function reviewLikes() {
+        return $this->hasMany(ReviewLike::class);
+    }
+
+    public function likedReviews() {
+        return $this->belongsToMany(Review::class, 'review_likes', 'review_id', 'user_id')
+                    ->using(ReviewLike::class)
+                    ->withTimestamps();
     }
 }

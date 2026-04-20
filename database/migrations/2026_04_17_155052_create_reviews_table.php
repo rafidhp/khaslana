@@ -18,6 +18,8 @@ return new class extends Migration
             $table->char('rating', 1);
             $table->text('comment');
             $table->timestamps();
+
+            $table->unique(['umkm_id', 'product_id'], 'umkm_product_unique');
         });
 
         Schema::create('review_likes', function (Blueprint $table) {

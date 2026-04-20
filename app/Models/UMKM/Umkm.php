@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\Promo;
 use App\Models\Product\Product;
+use App\Models\Review\Review;
 
 class Umkm extends Model
 {
@@ -55,5 +56,9 @@ class Umkm extends Model
 
     public function products() {
         return $this->hasMany(Product::class);
+    }
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
     }
 }

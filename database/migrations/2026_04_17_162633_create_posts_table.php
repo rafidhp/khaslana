@@ -42,12 +42,12 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
             // nanti bisa diliat komen sebagai umkm atau bukannya dari relasi user->umkm jadi ga perlu umkm_id
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->text('comment');
             $table->timestamps();
 
-            $table->unique(['user_id', 'post_id', 'user_post_unique']);
+            $table->unique(['user_id', 'post_id'], 'user_post_unique');
         });
 
         Schema::create('comment_likes', function (Blueprint $table) {

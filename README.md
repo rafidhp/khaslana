@@ -1,5 +1,9 @@
 # 🚀 Khaslana
 
+Khaslana is a collaborative digital platform dedicated to empowering local Micro, Small, and Medium Enterprises (MSMEs) across Indonesia. It serves as a bridge between the nation’s creative products, ranging from culinary goods and handcrafted items to fashion and a broader, more diverse market through a modern and inclusive ecosystem.
+
+Beyond simply acting as a marketplace, Khaslana is designed to support the growth and sustainability of local businesses by providing them with greater visibility, access to digital tools, and opportunities for collaboration. The platform encourages innovation and creativity while preserving the unique cultural identity embedded in each product. By connecting local entrepreneurs with consumers and partners, Khaslana aims to foster a thriving community that uplifts homegrown brands and contributes to the development of Indonesia’s digital economy.
+
 A modern full-stack web application built using Laravel, Inertia.js, and React.  
 This project uses Pest as the testing framework and Vite for frontend asset bundling.
 

@@ -11,7 +11,7 @@ class CatalogController extends Controller
     public function index() {
         $products = Product::all();
 
-        return Inertia::render('catalog', [
+        return Inertia::render('user/catalog', [
             'products' => $products,
         ]);
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,17 +13,19 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/product', function() {
-//     return Inertia::render('product');
-// })->name('product');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // dashboard route
+    Route::controller(DashboardController::class)->group(function() {
+        Route::get('/dashboard', 'index')->name('dashboard');
+    });
 
-Route::controller(ProductController::class)->group(function() {
-    Route::get('/product', 'index')->name('product');
+    // product routes
+    Route::controller(ProductController::class)->group(function() {
+        Route::get('/product', 'index')->name('product');
+    });
 });
+
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');

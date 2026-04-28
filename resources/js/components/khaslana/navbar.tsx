@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "@/components/khaslana/css/navbar.css";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";
-import { register, home, catalog } from "@/routes";
+import { register, home, catalog, community } from "@/routes";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -14,7 +14,7 @@ export default function Navbar() {
     const menus = [
         { name: "UMKM", href: "/umkm" },
         { name: "Katalog", href: catalog().url },
-        { name: "Komunitas", href: "/komunitas" },
+        { name: "Komunitas", href: community().url },
         { name: "Tentang Kami", href: "/tentang-kami" },
     ];
 
@@ -38,7 +38,7 @@ export default function Navbar() {
         <nav
             className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
                 menuOpen ? "menu-open" : ""
-            }`}
+            } `}
         >
             <div className="navbar-left">
                 <Link

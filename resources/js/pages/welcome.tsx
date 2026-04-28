@@ -1,4 +1,14 @@
 import { Head } from '@inertiajs/react';
+import AntingPerak from '@/assets/images/landing-page/anting-perak.png';
+import ArrowKananAtas from '@/assets/images/landing-page/arrow-kanan-atas.png';
+import BilungNaruto from '@/assets/images/landing-page/bilung-naruto.png';
+import CommunityImg from '@/assets/images/landing-page/community-img.png';
+import HeroImage from '@/assets/images/landing-page/hero-images.png';
+import KopiGayo from '@/assets/images/landing-page/kopi-gayo.png';
+import Map from '@/assets/images/landing-page/map.png';
+import RightArrowDark from '@/assets/images/landing-page/right-arrow-dark.png';
+import SendalGarut from '@/assets/images/landing-page/sendal-garut.png';
+import VaseKeramik from '@/assets/images/landing-page/vase-keramik.png';
 import UserLayout from '@/layouts/user-layout';
 // import { dashboard, login, register } from '@/routes';
 
@@ -16,7 +26,7 @@ export default function Welcome() {
                     />
                 </Head>
 
-                <div className="flex min-h-screen flex-col items-center p-6 lg:justify-center lg:p-8">
+                <div className="flex flex-col items-center p-6 lg:justify-center lg:p-8">
                     <section className="hero-section flex min-h-screen h-auto justify-between items-center px-13.75 gap-7.5">
                         <div className="hero-left flex flex-col gap-6.5 flex-1">
                             <div className="tag text-white font-extralight text-2.5 border-2 border-[#99ff33] rounded-[100px] py-2.5 px-5 w-fit transition-all duration-200 tracking-[2px] hover:tracking-[3px]">
@@ -41,7 +51,7 @@ export default function Welcome() {
 
                         <div className="hero-right">
                             <img
-                                src="./assets/hero-images.png"
+                                src={HeroImage}
                                 alt="Gambar Hero Section"
                                 className="hero-img w-full max-w-100"
                             />
@@ -80,7 +90,7 @@ export default function Welcome() {
                             [&>.umkm-card>.umkm-data>.umkm-cart>p]:w-full
                             [&>.umkm-card>.umkm-data>.umkm-cart>p]:text-[12px]">
                             <div className="umkm-card">
-                                <img src="./assets/vase-keramik.png" alt="Vase Keramik Kasongan" />
+                                <img src={VaseKeramik} alt="Vase Keramik Kasongan" />
                                 <div className="umkm-data">
                                     <h4 className="umkm-name">Vase Keramik Kasongan</h4>
                                     <h4 className="umkm-price">Rp 185.000</h4>
@@ -91,7 +101,7 @@ export default function Welcome() {
                             </div>
 
                             <div className="umkm-card">
-                                <img src="./assets/sendal-garut.png" alt="Sandalias Kulit Garut" />
+                                <img src={SendalGarut} alt="Sandalias Kulit Garut" />
                                 <div className="umkm-data">
                                     <h4 className="umkm-name">Sandalias Kulit Garut</h4>
                                     <h4 className="umkm-price">Rp 320.000</h4>
@@ -102,7 +112,7 @@ export default function Welcome() {
                             </div>
 
                             <div className="umkm-card">
-                                <img src="./assets/kopi-gayo.png" alt="Kopi Arabica Gayo" />
+                                <img src={KopiGayo} alt="Kopi Arabica Gayo" />
                                 <div className="umkm-data">
                                     <h4 className="umkm-name">Kopi Arabica Gayo</h4>
                                     <h4 className="umkm-price">Rp 85.000</h4>
@@ -113,7 +123,7 @@ export default function Welcome() {
                             </div>
 
                             <div className="umkm-card">
-                                <img src="./assets/anting-perak.png" alt="Anting Perak Kotagede" />
+                                <img src={AntingPerak} alt="Anting Perak Kotagede" />
                                 <div className="umkm-data">
                                     <h4 className="umkm-name">Anting Perak Kotagede</h4>
                                     <h4 className="umkm-price">Rp 450.000</h4>
@@ -144,14 +154,14 @@ export default function Welcome() {
                             <div className="hero-btn">
                                 <a href="#" className="btn-primary community-link flex items-center gap-2.5">
                                     Eksplor Disini
-                                    <img src="./assets/right-arrow-dark.png" alt="arrow right" width="30px" />
+                                    <img src={RightArrowDark} alt="arrow right" width="30px" />
                                 </a>
                             </div>
                         </div>
 
                         <div className="community-right flex flex-1 relative z-10">
                             <div className="community-img relative w-full h-full">
-                                <img src="./assets/community-img.png" alt="Community Image" className='absolute w-250 top-1/2 -left-50 z-1 -translate-y-1/2'/>
+                                <img src={CommunityImg} alt="Community Image" className='absolute w-250 top-1/2 -left-50 z-1 -translate-y-1/2'/>
                             </div>
                         </div>
                     </section>
@@ -160,10 +170,10 @@ export default function Welcome() {
                         <div className="tracking-container max-w-300 w-full flex items-center gap-17.5">
                             <div className="tracking-left flex-3">
                                 <div className="tracking-map relative rounded-[22px] overflow-hidden border border-[#99ff33] shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
-                                    <img src="./assets/map.png" alt="Live Tracking Merchant"
+                                    <img src={Map} alt="Live Tracking Merchant"
                                         className='w-full h-full object-cover block'/>
 
-                                    <div className="map-panel-left absolute top-2.5 left-2.5 w-47.5 p-4.5 rounded-3.5 bg-[rgba(30,30,30,0.75)] backdrop-blur-md text-white">
+                                    <div className="map-panel-left absolute top-2.5 left-2.5 w-47.5 p-4.5 rounded-md bg-[rgba(30,30,30,0.75)] backdrop-blur-md text-white">
                                         <h4 className='mb-3.75 text-[16px]'>Toko Terdekat</h4>
 
                                         <div className="store-item flex justify-between items-center p-2.5 rounded-[10px] mb-2.5 bg-[rgba(255,255,255,0.05)]">
@@ -183,12 +193,12 @@ export default function Welcome() {
                                         </div>
                                     </div>
 
-                                    <div className="map-panel-right absolute top-2.5 right-2.5 w-45 p-4.5 rounded-3.5 bg-[rgba(30,30,30,0.8)] backdrop-blur-md text-white">
+                                    <div className="map-panel-right absolute top-2.5 right-2.5 w-45 p-4.5 rounded-md bg-[rgba(30,30,30,0.8)] backdrop-blur-md text-white">
                                         <div className="merchant-header flex gap-2.5 items-center mb-3.75">
-                                            <img src="./assets/bilung-naruto.png" alt="bilung naruto"
-                                                className='w-9.5 h-9.5 rounded-[8px]'/>
+                                            <img src={BilungNaruto} alt="bilung naruto"
+                                                className='w-9.5 h-9.5 rounded-sm'/>
                                             <div>
-                                                <strong>Toko Dinilih</strong>
+                                                <strong>Toko Dipilih</strong>
                                                 <p>Bilung Naruto</p>
                                             </div>
                                         </div>
@@ -227,7 +237,7 @@ export default function Welcome() {
 
                                 <a href="#" className="btn-secondary tracking-btn flex items-center justify-center gap-2 w-fit py-4 px-9.5 text-[16px]">
                                     Selengkapnya
-                                    <img src="./assets/arrow-kanan-atas.png" alt="arrow" className='w-4'/>
+                                    <img src={ArrowKananAtas} alt="arrow" className='w-4'/>
                                 </a>
                             </div>
                         </div>

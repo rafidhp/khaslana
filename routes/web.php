@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,6 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
+});
+
+Route::controller(CommunityController::class)->group(function() {
+    Route::get('/community', 'index')->name('community');
 });
 
 require __DIR__.'/settings.php';

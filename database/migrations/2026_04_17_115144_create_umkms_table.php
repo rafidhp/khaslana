@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('store_name');
             $table->text('description');
             $table->enum('type', ['TETAP', 'KELILING']);
+            $table->enum('status', ['BUKA', 'TUTUP']);
             $table->text('address');
             $table->char('phone_number', 15);
             $table->string('open_days')->nullable(); //note: dropdown hardcode value

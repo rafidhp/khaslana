@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('promos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ummkm_id')->constrained('umkms')->onDelete('cascade');
+            $table->foreignId('umkm_id')->constrained('umkms')->onDelete('cascade');
             $table->string('name');
             $table->enum('type', ['DISKON', 'PROMO']);
             $table->text('description');

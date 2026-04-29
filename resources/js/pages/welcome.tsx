@@ -27,7 +27,7 @@ export default function Welcome() {
                 </Head>
 
                 <div className="flex flex-col items-center p-6 lg:justify-center lg:p-8">
-                    <section className="hero-section flex min-h-screen h-auto justify-between items-center px-13.75 gap-7.5">
+                    <section className="hero-section flex min-h-screen h-auto w-full justify-between items-center px-9 gap-7.5">
                         <div className="hero-left flex flex-col gap-6.5 flex-1">
                             <div className="tag text-white font-extralight text-2.5 border-2 border-[#99ff33] rounded-[100px] py-2.5 px-5 w-fit transition-all duration-200 tracking-[2px] hover:tracking-[3px]">
                                 <h3>Marketplace UMKM Indonesia</h3>
@@ -41,10 +41,10 @@ export default function Welcome() {
                                 Temukan ribuan produk karya anak bangsa dari seluruh penjuru negeri. Khaslana hadir untuk menghubungkan kamu dengan keunikan Nusantara, sekaligus mendukung pertumbuhan UMKM Indonesia.
                             </p>
 
-                            <div className="separator bg-[#99FF33] h-0.5 w-full min-w-10"></div>
+                            <div className="separator bg-[#99FF33] h-0.5 w-full max-w-100"></div>
 
                             <div className="hero-btn flex gap-3 mt-5">
-                                <a href="#" className="btn-primary py-3.5 px-7.25 font-medium rounded-[100px] flex items-center justify-center text-[#1e1b26] bg-[#99ff33] border border-[#99ff33] transition-all duration-300 hover:text-[#99ff33] hover:bg-transparent">Gabung Sekarang</a>
+                                <a href="#" className="btn-primary py-3.5 px-6.25 font-medium rounded-[100px] flex items-center justify-center text-[#1e1b26] bg-[#99ff33] border border-[#99ff33] transition-all duration-300 hover:text-[#99ff33] hover:bg-transparent">Gabung Sekarang</a>
                                 <a href="#" className="btn-secondary py-3.5 px-7.25 font-medium rounded-[100px] text-[#99ff33] border border-[#99ff33] transition-all duration-200 hover:text-[#1e1b26] hover:bg-[#99ff33]">Tentang Kami</a>
                             </div>
                         </div>

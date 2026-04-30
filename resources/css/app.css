@@ -172,6 +172,9 @@
     }
     
     .btn-secondary-khaslana {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: var(--primary-khaslana);
         border: 1px var(--primary-khaslana) solid;
         text-decoration: none;

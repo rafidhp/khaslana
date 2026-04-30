@@ -27,7 +27,7 @@ export default function Welcome() {
                 </Head>
 
                 <div className="flex flex-col items-center p-6 lg:justify-center lg:p-8">
-                    <section className="hero-section flex min-h-screen h-auto w-full justify-between items-center px-9 gap-7.5">
+                    <section className="hero-section flex max-md:flex-col min-h-screen h-auto w-full justify-between items-center px-9 gap-7.5 py-20">
                         <div className="hero-left flex flex-col gap-6.5 flex-1">
                             <div className="tag text-white font-extralight text-2.5 border-2 border-[#99ff33] rounded-[100px] py-2.5 px-5 w-fit transition-all duration-200 tracking-[2px] hover:tracking-[3px]">
                                 <h3>Marketplace UMKM Indonesia</h3>
@@ -61,7 +61,7 @@ export default function Welcome() {
                     <section className="umkm-section flex flex-col items-center justify-center min-h-screen h-auto py-5 px-13.75 gap-7.5">
                         <h2 className='font-medium text-[40px] text-center text-white'>Bersama Kami Menjadi Gerbang Digital <span className='text-[#99ff33]'>UMKM Indonesia</span></h2>
 
-                        <div className="umkm-cards grid grid-cols-4 gap-6.25
+                        <div className="umkm-cards grid grid-cols-4 max-md:grid-cols-2 max-sm:grid-cols-1 gap-6.25
                             [&>.umkm-card]:flex
                             [&>.umkm-card]:flex-col
                             [&>.umkm-card]:bg-[#3d3c3b]
@@ -154,20 +154,20 @@ export default function Welcome() {
                             <div className="hero-btn">
                                 <a href="#" className="btn-primary community-link flex items-center gap-2.5">
                                     Eksplor Disini
-                                    <img src={RightArrowDark} alt="arrow right" width="30px" />
+                                    <img src={RightArrowDark} alt="arrow right" width="30px" className=''/>
                                 </a>
                             </div>
                         </div>
 
                         <div className="community-right flex flex-1 relative z-10">
                             <div className="community-img relative w-full h-full">
-                                <img src={CommunityImg} alt="Community Image" className='absolute w-250 top-1/2 -left-50 z-1 -translate-y-1/2'/>
+                                <img src={CommunityImg} alt="Community Image" className='absolute top-1/2 -left-50 z-1 -translate-y-1/2'/>
                             </div>
                         </div>
                     </section>
 
-                    <section className="tracking-section px-13.75 pb-30 flex justify-center items-center">
-                        <div className="tracking-container max-w-300 w-full flex items-center gap-17.5">
+                    <section className="tracking-section px-13.75 pb-30 flex max-lg:flex-col justify-center items-center">
+                        <div className="tracking-container max-w-300 w-full flex max-lg:flex-col items-center gap-17.5">
                             <div className="tracking-left flex-3">
                                 <div className="tracking-map relative rounded-[22px] overflow-hidden border border-[#99ff33] shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
                                     <img src={Map} alt="Live Tracking Merchant"
@@ -243,7 +243,7 @@ export default function Welcome() {
                         </div>
                     </section>
 
-                    <section className="cta-section relative px-13.75 pt-30 pb-13.75 flex justify-center items-center
+                    <section className="cta-section relative px-13.75 max-sm:6 pt-30 pb-13.75 flex justify-center items-center
                         before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2
                         before:w-[82%] before:h-1 before:rounded-full before:pointer-events-none
                         before:bg-[linear-gradient(90deg,transparent_0%,transparent_6%,rgba(153,255,51,0.9)_30%,#99FF33_50%,rgba(153,255,51,0.9)_82%,transparent_94%,transparent_100%)]">

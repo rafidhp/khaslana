@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
-import CatalogIndex from '@/components/khaslana/catalog/catalog-index';
+import UmkmIndex from '@/components/khaslana/umkm-user/umkm-index';
 import UserLayout from '@/layouts/user-layout';
 
-export default function Community() {
+export default function Umkm() {
     return (
         <UserLayout>
             <Head>
@@ -12,7 +12,7 @@ export default function Community() {
                     rel="stylesheet"
                 />
             </Head>
-            <CatalogIndex />
+            <UmkmIndex />
         </UserLayout>
     );
 }

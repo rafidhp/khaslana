@@ -4,7 +4,7 @@ import "@/components/khaslana/css/navbar.css";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";
 import {
-    register,
+    login,
     home,
     catalog,
     community,
@@ -89,7 +89,7 @@ export default function Navbar() {
                     ))}
                     <li>
                         <Link
-                            href={register()}
+                            href={login()}
                             className="btn-primary-khaslana"
                             onClick={handleCloseMenu}
                         >

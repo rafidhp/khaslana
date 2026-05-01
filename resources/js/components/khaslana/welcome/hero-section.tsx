@@ -1,4 +1,5 @@
 import HeroImage from '@/assets/images/landing-page/hero-section/hero-image.png';
+import { register, about } from '@/routes';
 
 export default function HeroSection() {
     return (
@@ -21,13 +22,13 @@ export default function HeroSection() {
                 <div className="h-[2px] bg-[#99FF33] w-full max-w-[450px]" />
                 <div className="flex flex-col sm:flex-row gap-4 mt-2">
                     <a
-                        href="#"
+                        href={register().url}
                         className="btn-primary-khaslana"
                     >
                         Gabung Sekarang
                     </a>
                     <a
-                        href="#"
+                        href={about().url}
                         className="btn-secondary-khaslana"
                     >
                         Tentang Kami

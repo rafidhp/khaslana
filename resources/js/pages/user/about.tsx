@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
-import CommunityIndex from '@/components/khaslana/community/community-index';
+import AboutIndex from '@/components/khaslana/about/about-index';
 import UserLayout from '@/layouts/user-layout';
 
-export default function Community() {
+export default function About() {
     return (
         <UserLayout>
             <Head>
@@ -12,7 +12,7 @@ export default function Community() {
                     rel="stylesheet"
                 />
             </Head>
-            <CommunityIndex />
+            <AboutIndex />
         </UserLayout>
     );
 }

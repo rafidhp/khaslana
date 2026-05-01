@@ -6,6 +6,24 @@ import Youtube from '@/assets/icons/footer/yt.png';
 import Khaslana from '@/assets/images/landing-page/Khaslana.svg';
 import Mail from '@/assets/images/landing-page/Vector.svg';
 
+const socials = [
+    {
+        name: "Instagram",
+        icon: Instagram,
+        link: "#"
+    },
+    {
+        name: "Youtube",
+        icon: Youtube,
+        link: "#"
+    },
+    {
+        name: "LinkedIn",
+        icon: Linkedin,
+        link: "#"
+    },
+];
+
 export default function Footer() {
     return (
         <footer className="bg-[#262626] border-t pt-15 max-md:flex-col md:gap-7.5">
@@ -23,40 +41,21 @@ export default function Footer() {
                             Platform ini hadir untuk menjembatani produk-produk kreatif hasil karya anak bangsa, mulai dari kuliner, kerajinan tangan, 
                             hingga fashion, dengan pasar yang lebih luas melalui ekosistem yang modern dan inklusif. 
                         </p>
-                        <div className="flex gap-2.5 mt-1">
-                            <a
-                                href="#"
-                                className="flex items-center justify-center w-9 h-9 rounded-[50%] decoration-0 border-[#99FF33]"
-                                aria-label="Instagram"
-                            >
-                                <img
-                                    src={Instagram}
-                                    alt="Instagram"
-                                    className="w-4 h-4 object-contain"
-                                />
-                            </a>
-                            <a
-                                href="#"
-                                className="flex items-center justify-center w-9 h-9 rounded-[50%] decoration-0 border-[#99FF33]"
-                                aria-label="Youtube"
-                            >
-                                <img
-                                    src={Youtube}
-                                    alt="Youtube"
-                                    className="w-4 h-4 object-contain"
-                                />
-                            </a>
-                            <a
-                                href="#"
-                                className="flex items-center justify-center w-9 h-9 rounded-[50%] decoration-0 border-[#99FF33]"
-                                aria-label="linkedIn"
-                            >
-                                <img
-                                    src={Linkedin}
-                                    alt="linkedIn"
-                                    className="w-4 h-4 object-contain"
-                                />
-                            </a>
+                        <div className="flex gap-4 mt-1">
+                            {socials.map((item, index) => (
+                                <a
+                                    key={index}
+                                    href={item.link}
+                                    aria-label={item.name}
+                                    className="flex items-center justify-center w-9 h-9 rounded-full border border-[#99FF33] hover:bg-[#99FF33] transition group"
+                                >
+                                    <img
+                                        src={item.icon}
+                                        alt={item.name}
+                                        className="w-4 h-4 object-contain transition group-hover:invert"
+                                    />
+                                </a>
+                            ))}
                         </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">

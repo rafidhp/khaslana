@@ -5,95 +5,26 @@ import Map from '@/assets/images/landing-page/tracking-section/map.png';
 
 export default function TrackkingSection() {
     return (
-        <section className="tracking-section px-13.75 pb-30 flex max-lg:flex-col justify-center items-center">
-            <div className="tracking-container max-w-300 w-full flex max-lg:flex-col items-center gap-17.5">
-                <div className="tracking-left flex-3">
-                    <div className="tracking-map relative rounded-[22px] overflow-hidden border border-[#99ff33] shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
-                        <img
-                            src={Map}
-                            alt="Live Tracking Merchant"
-                            className='w-full h-full object-cover block'
-                        />
-                        <div className="map-panel-left absolute top-2.5 left-2.5 w-47.5 p-4.5 rounded-md bg-[rgba(30,30,30,0.75)] backdrop-blur-md text-white">
-                            <h4 className='mb-3.75 text-[16px]'>
-                                Toko Terdekat
-                            </h4>
-                            <div className="store-item flex justify-between items-center p-2.5 rounded-[10px] mb-2.5 bg-[rgba(255,255,255,0.05)]">
-                                <div>
-                                    <strong>
-                                        Bilung Naruto
-                                    </strong>
-                                    <p className='text-[12px] opacity-70'>
-                                        Jajanan Lokal
-                                    </p>
-                                </div>
-                                <span className="status open bg-[#99ff33] text-black text-[11px] py-1 px-2.5 rounded-full">
-                                    Stay
-                                </span>
-                            </div>
-                            <div className="store-item flex justify-between items-center p-2.5 rounded-[10px] mb-2.5 bg-[rgba(255,255,255,0.05)]">
-                                <div>
-                                    <strong>
-                                        Kopi Keliling
-                                    </strong>
-                                    <p className='text-[12px] opacity-70'>
-                                        Kopi dan Teh
-                                    </p>
-                                </div>
-                                <span className="status closed border border-[#777] text-[#aaa] text-[11px] py-1 px-2.5 rounded-full">
-                                    Closed
-                                </span>
-                            </div>
-                        </div>
-                        <div className="map-panel-right absolute top-2.5 right-2.5 w-45 p-4.5 rounded-md bg-[rgba(30,30,30,0.8)] backdrop-blur-md text-white">
-                            <div className="merchant-header flex gap-2.5 items-center mb-3.75">
-                                <img
-                                    src={BilungNaruto}
-                                    alt="bilung naruto"
-                                    className='w-9.5 h-9.5 rounded-sm'
-                                />
-                                <div>
-                                    <strong>
-                                        Toko Dipilih
-                                    </strong>
-                                    <p>
-                                        Bilung Naruto
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="merchant-stats flex gap-2.5 mb-4.75
-                                [&>div]:flex-1
-                                [&>div]:bg-[#111]
-                                [&>div]:p-2.5
-                                [&>div]:rounded-[8px]
-                                [&>div>span]:text-[11px]
-                                [&>div>span]:opacity-60
-                                [&>div>span]:block">
-                                <div>
-                                    <span>Revenue</span>
-                                    <strong>Rp 2.4M</strong>
-                                </div>
-                                <div>
-                                    <span>Orders</span>
-                                    <strong>48</strong>
-                                </div>
-                            </div>
-                            <button className='w-full p-2.5 rounded-[8px] border-0 bg-[#222] text-white cursor-pointer'>
-                                Lihat Toko
-                            </button>
-                        </div>
-                        <div className="map-marker absolute bottom-[31%] left-[47%] -translate-x-1/2 translate-y-1/2 w-4.5 h-4.5 bg-[#99ff33] rounded-full shadow-[0_0_20px_#99ff33]" />
-                    </div>
-                </div>
-                <div className="tracking-right flex-1 flex flex-col gap-7.5">
-                    <h2 className='text-white text-[64px] font-medium leading-[1.2]'>
-                        Nikmati<br />
-                        Fitur<br />
-                        <span className='text-[#99ff33]'>
-                            Live Tracking Merchant.
+        <section className="px-6 lg:px-[55px] pb-20 flex justify-center items-center">
+            <div className="max-w-[1400px] w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                <div className="flex flex-col gap-6 lg:gap-8 order-1 lg:order-2 flex-1 text-left lg:text-left">
+                    <h2 className="text-white text-4xl sm:text-4xl lg:text-5xl xl:text-[64px] font-medium leading-tight">
+                        Nikmati Fitur <br className="block" />
+                        <span className="text-[#99ff33]">
+                            Live Tracking{" "}
+                            <br className="hidden lg:block" />
+                            Merchant.
                         </span>
                     </h2>
-                    <a href="#" className="btn-secondary-khaslana tracking-btn flex items-center justify-center gap-2 w-fit py-4 px-9.5 text-[16px] group">
+                    <p className="text-white text-sm sm:text-base leading-7 max-w-lg">
+                        Pernahkah Anda mencari penjual langganan, namun tidak tahu keberadaannya hari ini? 
+                        Dengan fitur Live Tracking, lokasi penjual dapat dipantau secara langsung melalui 
+                        aplikasi — kapan saja, di mana saja.
+                    </p>
+                    <a
+                        href="#"
+                        className="btn-secondary-khaslana flex items-center gap-2 w-full md:w-fit py-4 px-24 text-sm group"
+                    >
                         Selengkapnya
                         <div className="relative w-5 h-5">
                             <img
@@ -109,7 +40,74 @@ export default function TrackkingSection() {
                         </div>
                     </a>
                 </div>
+                <div className="flex-1 order-2 lg:order-1 w-full">
+                    <div className="relative rounded-[18px] overflow-hidden border border-[#99ff33] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+                        <img
+                            src={Map}
+                            alt="Live Tracking Merchant"
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-2 left-2 w-40 sm:w-48 p-3 rounded-md bg-[rgba(30,30,30,0.75)] backdrop-blur-md text-white text-xs sm:text-sm">
+                            <h4 className="mb-2 text-sm">Toko Terdekat</h4>
+                            <div className="flex justify-between items-center p-2 rounded-md mb-2 bg-white/5">
+                                <div>
+                                    <strong>Bilung Naruto</strong>
+                                    <p className="opacity-70 text-[10px] sm:text-xs">
+                                        Jajanan Lokal
+                                    </p>
+                                </div>
+                                <span className="bg-[#99ff33] text-black text-[10px] px-2 py-1 rounded-full">
+                                    Stay
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 rounded-md bg-white/5">
+                                <div>
+                                    <strong>Kopi Keliling</strong>
+                                    <p className="opacity-70 text-[10px] sm:text-xs">
+                                        Kopi dan Teh
+                                    </p>
+                                </div>
+                                <span className="border border-[#777] text-[#aaa] text-[10px] px-2 py-1 rounded-full">
+                                    Closed
+                                </span>
+                            </div>
+                        </div>
+                        <div className="absolute top-2 right-2 w-36 sm:w-44 p-3 rounded-md bg-[rgba(30,30,30,0.8)] backdrop-blur-md text-white text-xs sm:text-sm">
+                            <div className="flex gap-2 items-center mb-2">
+                                <img
+                                    src={BilungNaruto}
+                                    alt="merchant"
+                                    className="w-8 h-8 rounded-sm"
+                                />
+                                <div>
+                                    <strong>Toko Dipilih</strong>
+                                    <p className="text-[10px] sm:text-xs">
+                                        Bilung Naruto
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex gap-2 mb-3">
+                                <div className="flex-1 bg-[#111] p-2 rounded-md">
+                                    <span className="text-[10px] opacity-60 block">
+                                        Revenue
+                                    </span>
+                                    <strong>Rp 2.4M</strong>
+                                </div>
+                                <div className="flex-1 bg-[#111] p-2 rounded-md">
+                                    <span className="text-[10px] opacity-60 block">
+                                        Orders
+                                    </span>
+                                    <strong>48</strong>
+                                </div>
+                            </div>
+                            <button className="w-full p-2 rounded-md bg-[#222] text-white text-xs">
+                                Lihat Toko
+                            </button>
+                        </div>
+                        <div className="absolute bottom-[31%] left-[47%] -translate-x-1/2 translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-[#99ff33] rounded-full shadow-[0_0_15px_#99ff33]" />
+                    </div>
+                </div>
             </div>
         </section>
-    )
+    );
 }

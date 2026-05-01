@@ -46,8 +46,8 @@ export default function CommunitySection() {
                             absolute 
                             top-1/2 
                             -translate-y-1/2 
-                            left-[-280px] sm:left-[-320px] lg:left-[-380px] 
-                            w-[800px] sm:w-[1000px] md:w-[1100px] lg:w-[1400px]
+                            left-[-280px] sm:left-[-320px] md:left-[0] lg:left-[-380px] 
+                            w-[800px] lg:w-[1400px]
                             max-w-none
                         "
                     />

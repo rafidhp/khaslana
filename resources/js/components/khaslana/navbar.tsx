@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import "@/components/khaslana/css/navbar.css";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";
-import { register, home, catalog, community } from "@/routes";
+import {
+    register,
+    home,
+    catalog,
+    community,
+    about,
+    umkm,
+} from "@/routes";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -12,10 +19,10 @@ export default function Navbar() {
     const { url } = usePage();
 
     const menus = [
-        { name: "UMKM", href: "/umkm" },
+        { name: "UMKM", href: umkm().url },
         { name: "Katalog", href: catalog().url },
         { name: "Komunitas", href: community().url },
-        { name: "Tentang Kami", href: "/tentang-kami" },
+        { name: "Tentang Kami", href: about().url },
     ];
 
     useEffect(() => {

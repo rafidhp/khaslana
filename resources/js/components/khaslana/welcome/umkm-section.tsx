@@ -62,7 +62,7 @@ export default function UmkmSection() {
                     </div>
                 ))}
             </div>
-            <div className="flex justify-between items-center w-screen rounded-[50%] px-20 gap-7.5">
+            <div className="flex justify-between items-center w-screen rounded-[50%] px-0 md:px-20 gap-7.5">
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
                 <a href="#" className="btn-secondary-khaslana">Lihat Semua</a>
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>

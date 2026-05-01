@@ -10,7 +10,6 @@ export default function WelcomeIndex() {
             <HeroSection />
             <UmkmSection />
             <CommunitySection />
-            // TODO: bagusin lagi 2 section terakhir
             <TrackkingSection />
             <CtaSection />
         </div>

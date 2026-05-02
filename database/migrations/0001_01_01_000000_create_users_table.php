@@ -39,7 +39,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        Schema::create('user_profile', function (Blueprint $table) {
+        Schema::create('user_profiles', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('profile_photo')->default('default-profile.png');
         });
@@ -53,5 +53,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('user_profiles');
     }
 };

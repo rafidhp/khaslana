@@ -5,6 +5,7 @@ import Phone from '@/assets/icons/footer/phone_icon.png';
 import Youtube from '@/assets/icons/footer/yt.png';
 import Khaslana from '@/assets/images/landing-page/Khaslana.svg';
 import Mail from '@/assets/images/landing-page/Vector.svg';
+import { catalog, umkm, community } from '@/routes';
 
 const socials = [
     {
@@ -31,7 +32,11 @@ export default function Footer() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 pb-12 items-start">
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2.5">
-                            <img src={Khaslana} alt="Khaslana logo" className="w-16 h-17.5" />
+                            <img
+                                src={Khaslana}
+                                alt="Khaslana logo"
+                                className="w-16 h-17.5"
+                            />
                             <span className="font-semibold text-white text-3xl">
                                 Khaslana
                             </span>
@@ -64,9 +69,30 @@ export default function Footer() {
                                 Layanan
                             </h5>
                             <ul className="flex flex-col gap-3">
-                                <li><a className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]" href="./src/pages/katalog/index.html">Katalog</a></li>
-                                <li><a className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]" href="./src/pages/umkm/index.html">List UMKM</a></li>
-                                <li><a className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]" href="./src/pages/komunitas/index.html">Komunitas</a></li>
+                                <li>
+                                    <a
+                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        href={catalog().url}
+                                    >
+                                        Katalog
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        href={umkm().url}
+                                    >
+                                        List UMKM
+                                    </a>
+                                </li>
+                                <li>
+                                    <a 
+                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        href={community().url}
+                                    >
+                                        Komunitas
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -74,8 +100,21 @@ export default function Footer() {
                                 Sumber Daya
                             </h5>
                             <ul className="flex flex-col gap-3">
-                                <li><a className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]" href="#">Kebijakan Privasi</a></li>
-                                <li><a className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]" href="#">Syarat dan Ketentuan</a></li>
+                                <li>
+                                    <a
+                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        href="#">
+                                        Kebijakan Privasi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        href="#"
+                                    >
+                                        Syarat dan Ketentuan
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -85,19 +124,31 @@ export default function Footer() {
                             <ul className="flex flex-col gap-3">
                                 <li className="flex items-start gap-2.25 text-white text-[15px]">
                                     <span className="flex items-center justify-center w-4 h-4 shrink-0 mt-px">
-                                        <img className="w-3.5 h-3.5 object-contain" src={Location} alt="location icon" />
+                                        <img
+                                            src={Location}
+                                            alt="location icon"
+                                            className="w-3.5 h-3.5 object-contain"
+                                        />
                                     </span>
                                     <span>Cibiru, Jawa Barat, Indonesia</span>
                                 </li>
                                 <li className="flex items-start gap-2.25 text-white text-[15px]">
                                     <span className="flex items-center justify-center w-4 h-4 shrink-0 mt-px">
-                                        <img className="w-3.5 h-3.5 object-contain" src={Phone} alt="phone icon" />
+                                        <img
+                                            src={Phone}
+                                            alt="phone icon"
+                                            className="w-3.5 h-3.5 object-contain"
+                                        />
                                     </span>
                                     <span>+62 858 6028 2313</span>
                                 </li>
                                 <li className="flex items-start gap-2.25 text-white text-[15px]">
                                     <span className="flex items-center justify-center w-4 h-4 shrink-0 mt-px">
-                                        <img className="w-3.5 h-3.5 object-contain" src={Mail} alt="mail_icon" />
+                                        <img
+                                            src={Mail}
+                                            alt="mail_icon"
+                                            className="w-3.5 h-3.5 object-contain"
+                                        />
                                     </span>
                                     <span>hello@khaslana.id</span>
                                 </li>

@@ -120,13 +120,13 @@ export default function Register() {
                                     <InputError message={errors.password_confirmation} />
                                 </div>
                                 <div className="flex items-center gap-2 px-1 text-[14px] text-[#989898]">
-                                    <input type="checkbox" name="terms" className="accent-[#99FF33] w-[18px] h-[18px]" />
-                                    <span>
+                                    <input type="checkbox" name="terms" id='terms' className="accent-[#99FF33] w-[18px] h-[18px]" />
+                                    <label htmlFor="terms" className='hover:cursor-pointer'>
                                         Saya setuju terhadap{" "}
                                         <span className="text-[#99FF33] underline underline-offset-2">
                                             syarat dan ketentuan
                                         </span>
-                                    </span>
+                                    </label>
                                 </div>
                                 <button
                                     type="submit"

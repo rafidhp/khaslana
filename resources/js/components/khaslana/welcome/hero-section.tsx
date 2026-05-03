@@ -3,7 +3,7 @@ import { register, about } from '@/routes';
 
 export default function HeroSection() {
     return (
-        <section className="flex flex-col lg:flex-row min-h-screen items-center justify-between px-6 lg:px-[55px] pt-28 lg:pt-14 pb-16 md:pb-0 gap-12 lg:gap-64">
+        <section className="flex flex-col lg:flex-row min-h-[110vh] items-center justify-between px-6 lg:px-[55px] pt-28 lg:pt-14 pb-16 md:pb-0 gap-12 lg:gap-64">
             <div className="flex flex-col gap-6 lg:gap-8 flex-1">
                 <div className="text-white font-light text-[12px] sm:text-[12px] md:text-[15px] border-2 border-[#99FF33] rounded-full px-6 py-2.5 w-fit tracking-[2px] transition-all duration-200 hover:tracking-[3px] hover:cursor-default">
                     <h3 className="font-light">

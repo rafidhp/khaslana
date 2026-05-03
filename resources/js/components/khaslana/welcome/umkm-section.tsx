@@ -2,6 +2,7 @@ import AntingPerak from '@/assets/images/landing-page/umkm-section/anting-perak.
 import KopiGayo from '@/assets/images/landing-page/umkm-section/kopi-gayo.png';
 import SendalGarut from '@/assets/images/landing-page/umkm-section/sendal-garut.png';
 import VasKeramik from '@/assets/images/landing-page/umkm-section/vas-keramik.png';
+import { umkm } from '@/routes';
 
 const products = [
     {
@@ -64,7 +65,7 @@ export default function UmkmSection() {
             </div>
             <div className="flex justify-between items-center w-screen rounded-[50%] px-0 md:px-20 gap-7.5">
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
-                <a href="#" className="btn-secondary-khaslana">Lihat Semua</a>
+                <a href={umkm().url} className="btn-secondary-khaslana">Lihat Semua</a>
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
             </div>
         </section>

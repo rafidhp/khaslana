@@ -1,6 +1,7 @@
 import CommunityImg from '@/assets/images/landing-page/community-section/community-img.png';
 import RightArrowDark from '@/assets/images/landing-page/right-arrow-dark.png';
 import RightArrowGreen from '@/assets/images/landing-page/right-arrow-green.png';
+import { community } from '@/routes';
 
 export default function CommunitySection() {
     return (
@@ -18,7 +19,7 @@ export default function CommunitySection() {
                 </h2>
                 <div className="flex mt-2">
                     <a
-                        href="#"
+                        href={community().url}
                         className="btn-primary-khaslana flex items-center gap-2 group"
                     >
                         Eksplor Disini

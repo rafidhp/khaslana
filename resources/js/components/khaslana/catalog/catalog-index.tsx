@@ -2,9 +2,9 @@ import antingImg from "@/assets/images/catalog/anting-perak.png";
 import kopiImg from "@/assets/images/catalog/kopi-gayo.png";
 import sendalImg from "@/assets/images/catalog/sendal-garut.png";
 import vaseImg from "@/assets/images/catalog/vase-keramik.png";
-import { HeroSection } from './hero-section';
-import { PaginationSection } from './pagination-section';
-import { ProductCard } from './product-card';
+import { HeroSection } from '@/components/khaslana/catalog/hero-section';
+import { PaginationSection } from '@/components/khaslana/catalog/pagination-section';
+import { ProductCard } from '@/components/khaslana/catalog/product-card';
 
 export default function CatalogIndex() {
     const productsData = [
@@ -20,11 +20,11 @@ export default function CatalogIndex() {
     }));
 
     return (
-        <div className="flex flex-col w-full px-6 lg:px-[55px] mx-auto max-w-[1600px] flex-grow">
+        <div className="flex flex-col w-full px-6 lg:px-[70px] mx-auto">
             <HeroSection />
 
             <section className="flex flex-col gap-6 pt-5 pb-[60px]">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {displayProducts.map((product) => (
                         <ProductCard key={product.id} {...product} />
                     ))}

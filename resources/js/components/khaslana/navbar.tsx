@@ -41,15 +41,23 @@ export default function Navbar() {
             { name: "Komunitas", href: community().url },
             { name: "Tentang Kami", href: about().url },
         ];
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
+    const navRef = useRef<HTMLDivElement>(null);
+    const profileRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
+            // Close profile dropdown if click is outside profile section
             if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
+                profileRef.current &&
+                !profileRef.current.contains(event.target as Node)
             ) {
                 setProfileOpen(false);
+            }
+            
+            // Close mobile menu if click is outside the entire navbar
+            if (
+                navRef.current &&
+                !navRef.current.contains(event.target as Node)
+            ) {
                 setMenuOpen(false);
             }
         }
@@ -87,6 +95,7 @@ export default function Navbar() {
 
     return (
         <nav
+            ref={navRef}
             className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
                 menuOpen ? "menu-open" : ""
             } `}
@@ -107,7 +116,6 @@ export default function Navbar() {
             </div>
             <div 
                 className="navbar-toggle relative" 
-                ref={dropdownRef}
             >
                 <img 
                     src={hamburger}
@@ -142,7 +150,7 @@ export default function Navbar() {
                     <li className={user ? "navbar-profile-item" : ""}>
                         {
                             user ? (
-                                <div className="navbar-mobile-profile-actions relative" ref={dropdownRef}>
+                                <div className="navbar-mobile-profile-actions relative" ref={profileRef}>
                                     <motion.button
                                         whileHover={{
                                             scale: 1.05,

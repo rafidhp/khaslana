@@ -8,7 +8,7 @@ export default function CommunityIndex() {
             
             <div className="community-container flex flex-wrap justify-between gap-5 h-auto min-h-screen py-5 border-box">
                 <div className="posts w-full flex flex-col gap-5">
-                    <div className="create-post bg-[#222] p-5 rounded-[15px]">
+                    <div className="create-post flex flex-col bg-[#222] p-5 gap-10 rounded-[15px]">
                         <div className="post-top flex items-center gap-3.75">
                             <img src="./../../../assets/komunitas/user-avatar.png" alt="Profile" className="avatar" />
                             <input type="text" placeholder="Bagikan strategi pertumbuhan Anda hari ini..." className="main-input flex flex-1 bg-transparent border-0 outline-0 text-white" />

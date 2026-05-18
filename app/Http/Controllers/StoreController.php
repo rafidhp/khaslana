@@ -8,6 +8,6 @@ use Inertia\Inertia;
 class StoreController extends Controller
 {
     public function index() {
-        return Inertia::render("umkm/store");
+        return Inertia::render("settings/store");
     }
 }

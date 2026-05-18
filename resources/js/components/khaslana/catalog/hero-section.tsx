@@ -30,7 +30,7 @@ export function HeroSection() {
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex items-center justify-center gap-2.5 mt-2 overflow-x-auto pb-2 scrollbar-hide w-full">
+            <div className="flex items-center md:justify-center gap-2.5 mt-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
                 <button className="bg-[#99FF33] text-[#1E1B26] font-semibold px-6 py-2.5 rounded-full text-[13px] whitespace-nowrap">Semua</button>
                 <button className="bg-[#262626] text-[#989898] font-medium px-6 py-2.5 rounded-full text-[13px] whitespace-nowrap hover:text-white transition-colors">Kerajinan</button>
                 <button className="bg-[#262626] text-[#989898] font-medium px-6 py-2.5 rounded-full text-[13px] whitespace-nowrap hover:text-white transition-colors">Fashion</button>

@@ -20,7 +20,7 @@ export default function CatalogIndex() {
     }));
 
     return (
-        <div className="flex flex-col w-full px-6 lg:px-[55px] mx-auto max-w-[1600px] flex-grow">
+        <div className="flex flex-col w-full px-6 lg:px-[55px] mx-auto max-w-[1600px] grow">
             <HeroSection />
 
             <section className="flex flex-col gap-6 pt-5 pb-[60px]">

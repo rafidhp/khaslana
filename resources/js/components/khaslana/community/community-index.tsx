@@ -1,8 +1,10 @@
+import ProfileIcon from "@/assets/icons/default-profile.png";
+
 export default function CommunityIndex() {
     return (
-        <div className="flex flex-col items-center pt-28 max-md:pt-18 px-4 sm:px-8 lg:px-[55px] w-full">
+        <div className="flex flex-col items-center pt-28 px-6 lg:px-[70px] w-full">
             <section className="community-header flex flex-col w-full pt-8 pb-[40px] max-md:pb-5 gap-2">
-                <h2 className="text-[#99ff33] font-medium text-4xl max-md:text-2xl">Terhubung, Berkolaborasi, dan Berdaya Bersama.</h2>
+                <h2 className="text-[#99ff33] font-medium text-xl md:text-5xl">Terhubung, Berkolaborasi, dan Berdaya Bersama.</h2>
                 <p className="text-[#adaaaa] font-light text-[16.5px] max-md:text-md">Bagikan perjalanan bisnismu, temukan solusi bersama, dan tumbuh lebih kuat dalam ekosistem komunitas Khaslana</p>
             </section>
             
@@ -10,7 +12,7 @@ export default function CommunityIndex() {
                 <div className="posts w-full flex flex-col gap-5">
                     <div className="create-post flex flex-col bg-[#222] p-5 gap-10 rounded-[15px]">
                         <div className="post-top flex items-center gap-3.75">
-                            <img src="./../../../assets/komunitas/user-avatar.png" alt="Profile" className="avatar" />
+                            <img src={ProfileIcon} alt="Profile" className="h-12 w-12" />
                             <input type="text" placeholder="Bagikan strategi pertumbuhan Anda hari ini..." className="main-input flex flex-1 bg-transparent border-0 outline-0 text-white" />
                         </div>
 

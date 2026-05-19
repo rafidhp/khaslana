@@ -4,6 +4,7 @@ import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
 
 interface ProductCardProps {
+    id: number;
     name: string;
     price: string;
     image: string;
@@ -11,10 +12,10 @@ interface ProductCardProps {
     rating?: string;
     sold?: string;
     discount?: string;
-    slug?: string;
 }
 
 export function ProductCard({ 
+    id,
     name, 
     price, 
     image, 
@@ -22,9 +23,8 @@ export function ProductCard({
     rating = "4.5", 
     sold = "0",
     discount,
-    slug = '#' 
 }: ProductCardProps) {
-    const productUrl = slug !== '#' ? `/product/${slug}` : '#';
+    const productUrl = id !== null ? `/catalog/${id}` : '#';
 
     return (
         <div className="flex flex-col bg-[#252231] rounded-[14px] border border-white/5 overflow-hidden h-[360px]">

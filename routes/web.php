@@ -43,6 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
+
+    Route::get('/catalog/{id}', 'show')->name('catalog.show');
 });
 
 Route::controller(CommunityController::class)->group(function() {

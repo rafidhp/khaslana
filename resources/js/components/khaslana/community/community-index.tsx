@@ -35,42 +35,6 @@ export default function CommunityIndex() {
                             <button type="submit" className="btn-publish bg-[#99FF33] border border-[#99FF33] py-2.5 px-6.25 font-medium cursor-pointer rounded-[20px] text-black hover:bg-transparent hover:text-[#99ff33] transition-all duration-200">Terbitkan</button>
                         </div>
                     </div>
-
-
-                    {/* {[1, 2, 3].map((_, i) => (
-                        <div className="post-card flex flex-col gap-2.5 bg-[#222] p-5 rounded-[15px]" key={i}>
-                            <div className="post-profile flex items-center gap-2.5">
-                                <div className="post-avatar">
-                                    <img src="./../../../assets/komunitas/user-avatar.png" alt="Profile" className="avatar" />
-                                </div>
-                                <div className="post-user flex flex-col gap-0.5">
-                                    <h6 className="text-white font-light text-[13px]">Dewi Lestari</h6>
-                                    <p className="text-[#888] text-[9px]">3 JAM YANG LALU</p>
-                                </div>
-                            </div>
-
-                            <div className="post-content flex flex-col gap-5 text-[#adaaaa] font-normal">
-                                <p className="text-[14px]">Baru saja menerapkan sistem manajemen inventaris baru di gudang kami di Bandung. Efisiensi meningkat 30% dalam minggu pertama! Kuncinya adalah integrasi data real-time. Ada yang butuh rekomendasi software logistik lokal? 🚀</p>
-                                <img src="./../../../assets/komunitas/post-img.png" alt="" className="post-imgw-full max-w-full h-auto rounded-4 object-cover" />
-                            </div>
-
-                            <div className="post-btn mt-2.75">
-                                <div className="post-options flex gap-2.25 items-center bg-transparent text-[#adaaaa] cursor-pointer">
-                                    <button className="post-opt-btn">
-                                        <img src="./../../../assets/komunitas/like.svg" alt="" /> 124
-                                    </button>
-
-                                    <button className="post-opt-btn">
-                                        <img src="./../../../assets/komunitas/comment.svg" alt="" /> 42
-                                    </button>
-
-                                    <button className="post-opt-btn">
-                                        <img src="./../../../assets/komunitas/share.svg" alt="" /> Share
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))} */}
                 </div>
             </div>
         </div>

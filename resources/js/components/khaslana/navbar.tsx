@@ -1,6 +1,6 @@
 import { Link, usePage, router } from "@inertiajs/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, LogOut, ChevronDown } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import "@/components/khaslana/css/navbar.css";
 import DefaultProfile from "@/assets/icons/default-profile.png";
@@ -16,8 +16,8 @@ import {
     about,
     umkm,
     dashboard,
+    logout
 } from "@/routes";
-import { logout } from '@/routes';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -127,7 +127,8 @@ export default function Navbar() {
                 <ul className={`
                     ${user ? "navbar-authenticated" : ""}
                     ${user ? "navbar-mobile-auth" : ""}
-                    `}>
+                    max-lg:mb-7 
+                    lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:flex lg:flex-row lg:items-center lg:gap-8`}>
                     {menus.map((menu) => (
                         <li key={menu.name}>
                             <Link
@@ -208,6 +209,15 @@ export default function Navbar() {
                                             Profile
                                             <User className="w-5 h-5" />
                                         </Link>
+                                        {!user.is_umkm && (
+                                            <Link
+                                                href="/dashboard"
+                                                className="nav-link"
+                                            >
+                                                Dashboard
+                                                <LayoutDashboard className="w-5 h-5" />
+                                            </Link>
+                                        )}
                                         <Link
                                             href={logout()}
                                             method="post"
@@ -269,6 +279,24 @@ export default function Navbar() {
                                                         Profile
                                                     </span>
                                                 </Link>
+                                                {!user.is_umkm && (
+                                                    <Link
+                                                        href="/dashboard"
+                                                        className="
+                                                            flex items-center gap-3
+                                                            px-5 py-4
+                                                            text-white
+                                                            transition
+                                                            hover:bg-white/5
+                                                            border-b border-white/5
+                                                        "
+                                                    >
+                                                        <LayoutDashboard className="w-5 h-5" />
+                                                        <span>
+                                                            Dashboard
+                                                        </span>
+                                                    </Link>
+                                                )}
                                                 <Link
                                                     href={logout()}
                                                     method="post"

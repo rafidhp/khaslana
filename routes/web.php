@@ -48,7 +48,7 @@ Route::controller(CatalogController::class)->group(function() {
 });
 
 Route::controller(CommunityController::class)->group(function() {
-    Route::get('/community', 'index')->name('community');
+    Route::get('/community', [CommunityController::class, 'index'])->name('community');
 });
 
 Route::controller(UmkmController::class)->group(function() {

@@ -126,7 +126,7 @@ export default function Navbar() {
                     ${user ? "navbar-authenticated" : ""}
                     ${user ? "navbar-mobile-auth" : ""}
                     max-lg:mb-7 
-                    lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:flex lg:flex-row lg:items-center lg:gap-8`}>
+                    lg:absolute lg:flex lg:flex-row lg:items-center lg:gap-8`}>
                     {menus.map((menu) => (
                         <li key={menu.name}>
                             <Link

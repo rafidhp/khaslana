@@ -9,7 +9,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from "@/hooks/use-auth";
 import { store } from "@/routes/storeManagement";
 
-export default function StoreIndex() {
+interface Props {
+    provinces: {
+        code: string;
+        name: string;
+    }[];
+}
+
+export default function StoreIndex({
+    provinces,
+}: Props) {
     const { user } = useAuth();
     const form = useForm({
         store_name: '',
@@ -63,6 +72,7 @@ export default function StoreIndex() {
                                 <Address
                                     data={form.data}
                                     setData={form.setData}
+                                    provinces={provinces}
                                 />
                                 <OperationalHour
                                     data={form.data}

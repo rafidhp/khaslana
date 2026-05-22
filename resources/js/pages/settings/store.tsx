@@ -6,7 +6,16 @@ import SettingsLayout from "@/layouts/settings/layout";
 import { storeManagement } from "@/routes";
 import type { BreadcrumbItem } from "@/types"
 
-export default function Store() {
+interface Props {
+    provinces: {
+        code: string;
+        name: string;
+    }[];
+}
+
+export default function Store({
+    provinces,
+}: Props) {
     const { user } =  useAuth();
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -20,7 +29,7 @@ export default function Store() {
             <Head title="Kelola Toko" />
 
             <SettingsLayout>
-                <StoreIndex />
+                <StoreIndex provinces={provinces} />
             </SettingsLayout>
         </AppLayout>
     )

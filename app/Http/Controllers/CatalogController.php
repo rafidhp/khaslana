@@ -15,4 +15,12 @@ class CatalogController extends Controller
             'products' => $products,
         ]);
     }
+
+    public function show($id) {
+        $product = Product::where('id', $id)->firstOrFail();
+
+        return Inertia::render('user/catalog/index', [
+            'product' => $product,
+        ]);
+    }
 }

@@ -236,6 +236,7 @@
 
     .navbar-toggle {
         display: block;
+        z-index: 1001;
     }
 
     .navbar-right {

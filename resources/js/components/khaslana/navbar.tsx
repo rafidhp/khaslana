@@ -1,6 +1,6 @@
 import { Link, usePage, router } from "@inertiajs/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, LogOut, ChevronDown } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import "@/components/khaslana/css/navbar.css";
 import DefaultProfile from "@/assets/icons/default-profile.png";
@@ -15,8 +15,9 @@ import {
     community,
     about,
     umkm,
+    dashboard,
+    logout
 } from "@/routes";
-import { logout } from '@/routes';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -30,6 +31,9 @@ export default function Navbar() {
             { name: "UMKM", href: umkm().url },
             { name: "Katalog", href: catalog().url },
             { name: "Komunitas", href: community().url },
+            ...(user.is_umkm
+                ? [{ name: "Kelola Toko", href: dashboard().url }]
+                : []),
         ]
         : [
             { name: "UMKM", href: umkm().url },
@@ -37,15 +41,21 @@ export default function Navbar() {
             { name: "Komunitas", href: community().url },
             { name: "Tentang Kami", href: about().url },
         ];
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
+    const navRef = useRef<HTMLDivElement>(null);
+    const profileRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
+                profileRef.current &&
+                !profileRef.current.contains(event.target as Node)
             ) {
                 setProfileOpen(false);
+            }
+            
+            if (
+                navRef.current &&
+                !navRef.current.contains(event.target as Node)
+            ) {
                 setMenuOpen(false);
             }
         }
@@ -83,6 +93,7 @@ export default function Navbar() {
 
     return (
         <nav
+            ref={navRef}
             className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
                 menuOpen ? "menu-open" : ""
             } `}
@@ -103,7 +114,6 @@ export default function Navbar() {
             </div>
             <div 
                 className="navbar-toggle relative" 
-                ref={dropdownRef}
             >
                 <img 
                     src={hamburger}
@@ -115,7 +125,8 @@ export default function Navbar() {
                 <ul className={`
                     ${user ? "navbar-authenticated" : ""}
                     ${user ? "navbar-mobile-auth" : ""}
-                    `}>
+                    max-lg:mb-7 
+                    lg:absolute lg:flex lg:flex-row lg:items-center lg:gap-8`}>
                     {menus.map((menu) => (
                         <li key={menu.name}>
                             <Link
@@ -138,7 +149,7 @@ export default function Navbar() {
                     <li className={user ? "navbar-profile-item" : ""}>
                         {
                             user ? (
-                                <div className="navbar-mobile-profile-actions relative" ref={dropdownRef}>
+                                <div className="navbar-mobile-profile-actions relative" ref={profileRef}>
                                     <motion.button
                                         whileHover={{
                                             scale: 1.05,
@@ -196,6 +207,15 @@ export default function Navbar() {
                                             Profile
                                             <User className="w-5 h-5" />
                                         </Link>
+                                        {!user.is_umkm && (
+                                            <Link
+                                                href="/dashboard"
+                                                className="nav-link"
+                                            >
+                                                Dashboard
+                                                <LayoutDashboard className="w-5 h-5" />
+                                            </Link>
+                                        )}
                                         <Link
                                             href={logout()}
                                             method="post"
@@ -257,6 +277,24 @@ export default function Navbar() {
                                                         Profile
                                                     </span>
                                                 </Link>
+                                                {!user.is_umkm && (
+                                                    <Link
+                                                        href="/dashboard"
+                                                        className="
+                                                            flex items-center gap-3
+                                                            px-5 py-4
+                                                            text-white
+                                                            transition
+                                                            hover:bg-white/5
+                                                            border-b border-white/5
+                                                        "
+                                                    >
+                                                        <LayoutDashboard className="w-5 h-5" />
+                                                        <span>
+                                                            Dashboard
+                                                        </span>
+                                                    </Link>
+                                                )}
                                                 <Link
                                                     href={logout()}
                                                     method="post"

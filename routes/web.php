@@ -7,6 +7,7 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UmkmController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,15 +45,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('umkm.live-tracking');
 
 
+
+    // store management
+    Route::controller(StoreController::class)->group(function() {
+        Route::get('/store-management', 'index')->name('storeManagement');
+        Route::post('/store-management/store', 'store')->name('storeManagement.store');
+    });
 });
 
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
+
+    Route::get('/catalog/{id}', 'show')->name('catalog.show');
 });
 
 Route::controller(CommunityController::class)->group(function() {
-    Route::get('/community', 'index')->name('community');
+    Route::get('/community', [CommunityController::class, 'index'])->name('community');
 });
 
 Route::controller(UmkmController::class)->group(function() {

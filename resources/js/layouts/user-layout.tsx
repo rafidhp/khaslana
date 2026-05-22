@@ -4,7 +4,7 @@ import Navbar from "@/components/khaslana/navbar"
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="w-full overflow-x-hidden">
+        <div className="w-full overflow-x-hidden z-0">
             <Head>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link

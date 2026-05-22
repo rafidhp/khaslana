@@ -54,6 +54,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <BackToHomepage />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

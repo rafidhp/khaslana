@@ -6,7 +6,7 @@ import { umkm } from '@/routes';
 
 const products = [
     {
-        name: "Vase Keramik Kasongan",
+        name: "Vas Keramik Kasongan",
         price: "Rp 185.000",
         image: VasKeramik,
     },
@@ -30,7 +30,7 @@ const products = [
 export default function UmkmSection() {
     return (
         <section className="flex flex-col items-center justify-center min-h-screen h-auto py-5 mb-10 px-13.75 gap-7.5">
-            <h2 className='font-medium text-[40px] text-center mb-12 px-4 text-white'>
+            <h2 className='font-medium text-3xl sm:text-4xl md:text-5xl text-center mt-8 mb-12 px-4 text-white'>
                 Bersama Kami Menjadi Gerbang Digital{" "}
                 <span className='text-[#99ff33]'>
                     UMKM Indonesia
@@ -45,17 +45,17 @@ export default function UmkmSection() {
                         <img
                             src={item.image}
                             alt={item.name}
-                            className="w-full h-64 object-cover"
+                            className="w-full h-52 sm:h-56 md:h-64 object-cover"
                         />
                         <div className="flex flex-col gap-2 p-5">
-                            <h4 className="font-semibold text-white">
+                            <h4 className="font-semibold text-[15px] md:text-base text-white">
                                 {item.name}
                             </h4>
-                            <h4 className="text-[#99ff33]">
+                            <h4 className="text-[#99ff33] text-sm md:text-base">
                                 {item.price}
                             </h4>
                             <div className="flex items-center justify-center text-center border border-[#494847] py-2.5 w-full rounded-lg mt-2 text-white hover:border-[#99ff33] hover:cursor-pointer transition">
-                                <p className="w-full text-[13px]">
+                                <p className="w-full text-[13px] md:text-sm">
                                     + Add to Cart
                                 </p>
                             </div>
@@ -65,7 +65,7 @@ export default function UmkmSection() {
             </div>
             <div className="flex justify-between items-center w-screen rounded-[50%] px-0 md:px-20 gap-7.5">
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
-                <a href={umkm().url} className="btn-secondary-khaslana">Lihat Semua</a>
+                <a href={umkm().url} className="btn-secondary-khaslana text-sm md:text-base">Lihat Semua</a>
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
             </div>
         </section>

@@ -84,13 +84,18 @@ export default function UmkmSection() {
         router.visit(detail(umkm.id));
     }
 
+    const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>, umkm: Umkm) => {
+        e.stopPropagation();
+        console.log('Favorite', umkm.id);
+    }
+
     return (
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap:8 mb-12 w-full">
             {umkms.map((umkm) => (
                 <div
                     key={umkm.id}
                     className="
-                        group
+                        group z-0
                         flex flex-col
                         overflow-hidden
                         rounded-[32px]
@@ -136,10 +141,10 @@ export default function UmkmSection() {
                             </span>
                         </div>
 
-                        {/* Favorite */}
+                        {/* favorite */}
                         <button
                             className="
-                                absolute top-4 right-4
+                                absolute top-4 right-4 z-10
                                 flex items-center justify-center
                                 w-8 h-8 lg:w-10 lg:h-10
                                 rounded-full
@@ -150,6 +155,7 @@ export default function UmkmSection() {
                                 hover:bg-white/20
                                 hover:cursor-pointer
                             "
+                            onClick={(e) => handleFavorite(e, umkm)}
                         >
                             <Heart className="w-4 h-4 lg:w-5 lg:h-5" />
                         </button>

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('umkm_id')->nullable()->constrained('umkms')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade'); // relevant product
-            $table->string('title');
             $table->text('content');
             $table->date('post_date');
             $table->timestamps();

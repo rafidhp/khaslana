@@ -1,3 +1,4 @@
+
 import { HeroSection } from '@/components/khaslana/catalog/hero-section';
 import { PaginationSection } from '@/components/khaslana/catalog/pagination-section';
 import { ProductCard } from '@/components/khaslana/catalog/product-card';
@@ -5,7 +6,6 @@ import { ProductCard } from '@/components/khaslana/catalog/product-card';
 import { displayProducts } from '@/components/khaslana/catalog/product-data';
 
 export default function CatalogIndex() {
-
     return (
         <div className="flex flex-col w-full px-6 lg:px-[70px] mx-auto">
             <HeroSection />

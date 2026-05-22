@@ -5,7 +5,7 @@ import Map from '@/assets/images/landing-page/tracking-section/map.png';
 
 export default function TrackkingSection() {
     return (
-        <section className="px-6 lg:px-[55px] pb-20 flex justify-center items-center">
+        <section className="px-6 lg:px-[55px] pb-20 flex justify-center items-center z-10">
             <div className="max-w-[1400px] w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
                 <div className="flex flex-col gap-6 lg:gap-8 order-1 lg:order-2 flex-1 text-left lg:text-left">
                     <h2 className="text-white text-4xl sm:text-4xl lg:text-5xl xl:text-[64px] font-medium leading-tight">

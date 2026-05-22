@@ -6,6 +6,7 @@ import starIcon from "@/assets/images/catalog/star.svg";
 //inerrface damain kayak di db
 //db di database/migrations/product ()table
 interface ProductCardProps {
+    id: number;
     name: string;
     price: string;
     image: string;
@@ -13,10 +14,10 @@ interface ProductCardProps {
     rating?: string;
     sold?: string;
     discount?: string;
-    slug?: string;
 }
 
 export function ProductCard({ 
+    id,
     name, 
     price, 
     image, 
@@ -24,7 +25,6 @@ export function ProductCard({
     rating = "4.5", 
     sold = "0",
     discount,
-    slug = '#' 
 }: ProductCardProps) {
     const productUrl = slug !== '#' ? `/product/${slug}` : '#';
     //buiat url gak usah pusing2, tinggal liat reff di pages/user/umkm-user

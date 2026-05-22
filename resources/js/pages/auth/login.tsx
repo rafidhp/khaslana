@@ -106,7 +106,7 @@ export default function Login({
                                             className="accent-[#99FF33] w-[18px] h-[18px]"
                                         />
                                         <Label htmlFor='remember' className='hover:cursor-pointer'>
-                                            ingat saya
+                                            Ingat saya
                                         </Label>
                                     </div>
                                     {canResetPassword && (

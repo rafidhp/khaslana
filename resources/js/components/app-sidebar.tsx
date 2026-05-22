@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { LayoutGrid, Package, MapPin } from 'lucide-react';
+import BackToHomepage from '@/components/back-to-homepage';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {

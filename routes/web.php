@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
@@ -32,6 +33,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ProductController::class)->group(function() {
         Route::get('/product', 'index')->name('product');
     });
+
+    // tracking routes
+    Route::controller(TrackingController::class)->group(function () {
+        Route::post('/umkm/update-location', 'updateLocation')->name('umkm.update-location');
+    });
+
+    Route::get('/umkm/live-tracking', function () {
+        return inertia('umkm/live-tracking'); // Sesuaikan sama path file lu
+    })->name('umkm.live-tracking');
+
+
 });
 
 

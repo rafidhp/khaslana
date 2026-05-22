@@ -3,6 +3,8 @@ import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
 
+//inerrface damain kayak di db
+//db di database/migrations/product ()table
 interface ProductCardProps {
     name: string;
     price: string;
@@ -25,6 +27,10 @@ export function ProductCard({
     slug = '#' 
 }: ProductCardProps) {
     const productUrl = slug !== '#' ? `/product/${slug}` : '#';
+    //buiat url gak usah pusing2, tinggal liat reff di pages/user/umkm-user
+    // const handleCardClicked = (umkm: Umkm) => {
+    //         router.visit(detail(umkm.id));
+    //     }
 
     return (
         <div className="group flex flex-col bg-[#252231] rounded-[14px] border border-white/5 overflow-hidden h-[360px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(153,255,51,0.08)]">

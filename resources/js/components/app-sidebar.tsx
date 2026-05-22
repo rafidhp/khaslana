@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Package } from 'lucide-react';
+import { LayoutGrid, Package, MapPin } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -12,6 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard, product } from '@/routes';
+import { liveTracking } from '@/routes/umkm';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
@@ -26,6 +27,11 @@ const mainNavItems: NavItem[] = [
         href: product(),
         icon: Package,
     },
+    {
+        title: 'Livetrack',
+        href: liveTracking(),
+        icon:  MapPin,
+    }
 ];
 
 export function AppSidebar() {

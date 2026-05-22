@@ -54,6 +54,18 @@ return new class extends Migration
         });
 
         // umkm routes on going schema
+
+        //Tabel umkm-locations buat live tracking
+        Schema::create('umkm_locations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('umkm_id')->constrained('umkms')->onDelete('cascade');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
+            $table->boolean('is_active')->default(false);
+            $table->timestamps();
+            //status mangkal, lagi ngider, gak jualan
+        });
+        
     }
 
     /**

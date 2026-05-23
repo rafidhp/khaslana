@@ -49,7 +49,7 @@ export default function TwoFactor({
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
-                        variant="small"
+                        variant="default"
                         title="Two-Factor Authentication"
                         description="Manage your two-factor authentication settings"
                     />

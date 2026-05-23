@@ -20,7 +20,7 @@ export default function AdditionalFeatures({
         <div className="space-y-4 mt-8">
             <div>
                 <h3 className="text-lg font-semibold">
-                    Fitur Tambahan (opsional)
+                    Aktifkan Fitur Tambahan (opsional)
                 </h3>
             </div>
             <div className="space-y-4">
@@ -41,7 +41,7 @@ export default function AdditionalFeatures({
                         className="data-[state=checked]:bg-[#99FF33] data-[state=checked]:border-[#99FF33] hover:cursor-pointer"
                     />
                     <Label htmlFor="pemesanan" className="font-normal hover:cursor-pointer">
-                        Aktifkan fitur pemesanan
+                        Fitur pemesanan
                     </Label>
                 </div>
                 <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export default function AdditionalFeatures({
                         className="data-[state=checked]:bg-[#99FF33] data-[state=checked]:border-[#99FF33] hover:cursor-pointer"
                     />
                     <Label htmlFor="pengiriman" className="font-normal hover:cursor-pointer">
-                        Aktifkan fitur pengiriman
+                        Fitur pengiriman
                     </Label>
                 </div>
                 <div

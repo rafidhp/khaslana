@@ -46,9 +46,9 @@ class LocationController extends Controller
         );
 
         $districtName = strtoupper(
-            $address['city_district'] ??
             $address['suburb'] ??
-            $address['municipality'] ??
+            $address['city_district'] ??
+            $address['borough'] ??
             ''
         );
 
@@ -68,13 +68,14 @@ class LocationController extends Controller
 
         $district = District::query()
             ->where('city_code', $city?->code)
-            ->where('name', 'LIKE', "%{$districtName}%")
+            ->whereRaw('UPPER(name) LIKE ?', ["%{$districtName}%"])
             ->first();
 
         $village = Village::query()
             ->where('district_code', $district?->code)
             ->where('name', 'LIKE', "%{$villageName}%")
             ->first();
+
         return response()->json([
             'address' => $data['display_name'] ?? null,
 
@@ -82,6 +83,24 @@ class LocationController extends Controller
             'city_id' => $city?->code,
             'district_id' => $district?->code,
             'village_id' => $village?->code,
-        ]);
+
+            'warnings' => [
+                'province' => !$province
+                    ? 'Provinsi tidak ditemukan'
+                    : null,
+
+                'city' => !$city
+                    ? 'Kota/Kabupaten tidak ditemukan'
+                    : null,
+
+                'district' => !$district
+                    ? 'Kecamatan tidak ditemukan'
+                    : null,
+
+                'village' => !$village
+                    ? 'Kelurahan tidak ditemukan'
+                    : null,
+            ],
+]);
     }
 }

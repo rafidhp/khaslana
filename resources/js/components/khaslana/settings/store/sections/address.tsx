@@ -23,18 +23,26 @@ interface LocationItem {
 interface Props {
     data: StoreFormData;
     setData: InertiaFormProps<StoreFormData>['setData'];
+    errors: Record<string, string>;
     provinces: LocationItem[];
 }
 
 export default function Address({
     data,
     setData,
+    errors,
     provinces,
 }: Props) {
     const [cities, setCities] = useState<LocationItem[]>([]);
     const [districts, setDistricts] = useState<LocationItem[]>([]);
     const [villages, setVillages] = useState<LocationItem[]>([]);
     const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+    const [locationWarnings, setLocationWarnings] = useState<{
+        province?: string;
+        city?: string;
+        district?: string;
+        village?: string;
+    }>({});
 
     const fetchCities = async (provinceCode: string) => {
         try {
@@ -106,6 +114,13 @@ export default function Address({
                     }
 
                     const result = await response.json();
+
+                    setLocationWarnings({
+                        province: result.warnings?.province,
+                        city: result.warnings?.city,
+                        district: result.warnings?.district,
+                        village: result.warnings?.village,
+                    });
 
                     console.log(result);
 
@@ -222,7 +237,10 @@ export default function Address({
             </Button>
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                    <Label>Provinsi</Label>
+                    <Label>
+                        Provinsi
+                        <span className="text-red-400"> *</span>
+                    </Label>
                     <Select
                         value={data.province_id}
                         onValueChange={handleProvinceChange}
@@ -241,9 +259,22 @@ export default function Address({
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.province_id && (
+                        <p className="text-xs text-red-500">
+                            {errors.province_id}
+                        </p>
+                    )}
+                    {locationWarnings.province && (
+                        <p className="text-xs text-red-500/80">
+                            {locationWarnings.province}
+                        </p>
+                    )}
                 </div>
                 <div className="space-y-2">
-                    <Label>Kota/Kabupaten</Label>
+                    <Label>
+                        Kota/Kabupaten
+                        <span className="text-red-400"> *</span>
+                    </Label>
                     <Select
                         value={data.city_id}
                         onValueChange={handleCityChange}
@@ -263,9 +294,22 @@ export default function Address({
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.city_id && (
+                        <p className="text-xs text-red-500">
+                            {errors.city_id}
+                        </p>
+                    )}
+                    {locationWarnings.city && (
+                        <p className="text-xs text-red-500/80">
+                            {locationWarnings.city}
+                        </p>
+                    )}
                 </div>
                 <div className="space-y-2">
-                    <Label>Kecamatan</Label>
+                    <Label>
+                        Kecamatan
+                        <span className="text-red-400"> *</span>
+                    </Label>
                     <Select
                         value={data.district_id}
                         onValueChange={handleDistrictChange}
@@ -285,9 +329,22 @@ export default function Address({
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.district_id && (
+                        <p className="text-xs text-red-500">
+                            {errors.district_id}
+                        </p>
+                    )}
+                    {locationWarnings.district && (
+                        <p className="text-xs text-red-500/80">
+                            {locationWarnings.district}
+                        </p>
+                    )}
                 </div>
                 <div className="space-y-2">
-                    <Label>Kelurahan</Label>
+                    <Label>
+                        Kelurahan
+                        <span className="text-red-400"> *</span>
+                    </Label>
                     <Select
                         value={data.village_id}
                         onValueChange={(value) =>
@@ -309,10 +366,23 @@ export default function Address({
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.village_id && (
+                        <p className="text-xs text-red-500">
+                            {errors.village_id}
+                        </p>
+                    )}
+                    {locationWarnings.village && (
+                        <p className="text-xs text-red-500/80">
+                            {locationWarnings.village}
+                        </p>
+                    )}
                 </div>
             </div>
             <div className="space-y-2">
-                <Label>Alamat Lengkap</Label>
+                <Label>
+                    Alamat Lengkap
+                    <span className="text-red-400"> *</span>
+                </Label>
                 <Textarea
                     placeholder="Masukkan alamat lengkap"
                     value={data.address}
@@ -321,6 +391,11 @@ export default function Address({
                     }
                     className="mt-2 border-gray-500/30 focus-visible:border-[#99FF33] focus-visible:ring-0 transition-all duration-200 dark:bg-transparent"
                 />
+                {errors.address && (
+                    <p className="text-xs text-red-500">
+                        {errors.address}
+                    </p>
+                )}
             </div>
         </div>
     )

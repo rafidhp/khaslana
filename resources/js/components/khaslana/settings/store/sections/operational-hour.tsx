@@ -24,7 +24,10 @@ export default function OperationalHour({
             </div>
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
-                    <Label>Hari Buka</Label>
+                    <Label>
+                        Hari Buka
+                        <span className="text-red-400"> *</span>
+                    </Label>
                     <Input
                         placeholder="Senin - Minggu"
                         value={data.open_days}

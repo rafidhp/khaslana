@@ -35,11 +35,9 @@ class StoreController extends Controller
                 ->get();
 
         } catch (\Throwable $e) {
-
             return response()->json([
                 'message' => $e->getMessage(),
             ], 500);
-
         }
     }
 

@@ -44,7 +44,7 @@ export default function Profile({
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
-                        variant="small"
+                        variant="default"
                         title="Profile information"
                         description="Update your name and email address"
                     />

@@ -32,7 +32,7 @@ export default function Password() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
-                        variant="small"
+                        variant="default"
                         title="Update password"
                         description="Ensure your account is using a long, random password to stay secure"
                     />

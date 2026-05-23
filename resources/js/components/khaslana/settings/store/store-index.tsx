@@ -78,6 +78,7 @@ export default function StoreIndex({
                                 <OperationalHour
                                     data={form.data}
                                     setData={form.setData}
+                                    errors={form.errors}
                                 />
                                 <AdditionalFeatures
                                     data={form.data}

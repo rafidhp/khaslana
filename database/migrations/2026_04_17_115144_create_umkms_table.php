@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('umkms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
-            $table->foreignId('province_id')->constrained('indonesia_provinces')->onDelete('restrict');
-            $table->foreignId('city_id')->constrained('indonesia_cities')->onDelete('restrict');
-            $table->foreignId('district_id')->constrained('indonesia_districts')->onDelete('restrict');
-            $table->foreignId('village_id')->constrained('indonesia_villages')->onDelete('restrict');
+            $table->char('province_id', 2); // ini tuh sebenernya code yhh, cuma gua males ganti namanya, apalagi di fe owakoakw
+            $table->char('city_id', 4);
+            $table->char('district_id', 6);
+            $table->char('village_id', 10);
             $table->string('store_name');
             $table->text('description');
             $table->enum('type', ['TETAP', 'KELILING']);
@@ -33,6 +33,26 @@ return new class extends Migration
             $table->decimal('shipping_cost', 12)->default(0);
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('province_id')
+                ->references('code')
+                ->on('indonesia_provinces')
+                ->onDelete('restrict');
+
+            $table->foreign('city_id')
+                ->references('code')
+                ->on('indonesia_cities')
+                ->onDelete('restrict');
+
+            $table->foreign('district_id')
+                ->references('code')
+                ->on('indonesia_districts')
+                ->onDelete('restrict');
+
+            $table->foreign('village_id')
+                ->references('code')
+                ->on('indonesia_villages')
+                ->onDelete('restrict');
         });
 
         Schema::create('umkm_datas', function (Blueprint $table) {

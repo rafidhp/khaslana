@@ -101,6 +101,37 @@ class LocationController extends Controller
                     ? 'Kelurahan tidak ditemukan'
                     : null,
             ],
-]);
+        ]);
+    }
+
+    public function cities($provinceCode) {
+        try {
+            return City::query()
+                ->where('province_code', $provinceCode)
+                ->select('code', 'name')
+                ->orderBy('name')
+                ->get();
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function districts($cityCode) {
+        return District::query()
+            ->where('city_code', $cityCode)
+            ->select('code', 'name')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function villages($districtCode) {
+        return Village::query()
+            ->where('district_code', $districtCode)
+            ->select('code', 'name')
+            ->orderBy('name')
+            ->get();
     }
 }

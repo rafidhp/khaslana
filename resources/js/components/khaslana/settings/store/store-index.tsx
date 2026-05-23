@@ -1,4 +1,5 @@
-import { useForm } from "@inertiajs/react"
+import { useForm, usePage } from "@inertiajs/react"
+import { useEffect } from "react";
 import Heading from '@/components/heading';
 import AdditionalFeatures from "@/components/khaslana/settings/store/sections/additional-features";
 import Address from "@/components/khaslana/settings/store/sections/address";
@@ -7,6 +8,7 @@ import StoreInfo from "@/components/khaslana/settings/store/sections/store-info"
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from "@/hooks/use-auth";
+import { showErrorToast, showSuccessToast } from "@/lib/toast";
 import { store } from "@/routes/storeManagement";
 
 interface Props {
@@ -20,6 +22,8 @@ export default function StoreIndex({
     provinces,
 }: Props) {
     const { user } = useAuth();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { props } = usePage() as any;
     const form = useForm({
         store_name: '',
         description: '',
@@ -43,11 +47,31 @@ export default function StoreIndex({
         nib: '',
         nik: '',
         file_path: null as File | null,
+
+        // umkm_locations
+        latitude: '',
+        longitude: '',
     });
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         form.post(store().url);
     };
+
+    useEffect(() => {
+        if (props.flash?.success) {
+            showSuccessToast(
+                'Berhasil',
+                props.flash.success,
+            );
+        }
+
+        if (props.flash?.error) {
+            showErrorToast(
+                'Gagal menyimpan data UMKM',
+                props.flash.error,
+            );
+        }
+    }, [props.flash]);
 
     return (
         <div className="space-y-6">
@@ -88,7 +112,7 @@ export default function StoreIndex({
                                 <Button
                                     type="submit"
                                     disabled={form.processing}
-                                    className="w-full mt-2 bg-[#99FF33] border-1 border-[#99FF33] hover:bg-[#1E1B26] hover:text-[#99FF33] transition-colors duration-200 hover:cursor-pointer"
+                                    className="w-full mt-2 bg-[#99FF33] border border-[#99FF33] hover:bg-[#1E1B26] hover:text-[#99FF33] transition-colors duration-200 hover:cursor-pointer"
                                 >
                                     {form.processing
                                         ? 'Menyimpan...'

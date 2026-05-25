@@ -18,7 +18,7 @@ const LucidePinIcon = L.divIcon({
       <MapPin 
         size={42} 
         color="white" 
-        fill="#EA4335"   // merah Google
+        fill="#EA4335"
         strokeWidth={2}
       />
     ),

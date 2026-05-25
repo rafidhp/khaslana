@@ -12,30 +12,38 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/use-auth';
 import { dashboard, product } from '@/routes';
 import { stayPoint } from '@/routes/umkm';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Product',
-        href: product(),
-        icon: Package,
-    },
-    {
-        title: 'Stay Point',
-        href: stayPoint(),
-        icon:  MapPin,
-    }
-];
-
 export function AppSidebar() {
+    const { user } = useAuth();
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Product',
+            href: product(),
+            icon: Package,
+        },
+        ...(user?.is_umkm && user?.umkm?.type === 'KELILING'
+            ? [
+                {
+                    title: 'Stay Point',
+                    href: stayPoint(),
+                    icon: MapPin,
+                }
+            ]
+            : []
+        ),
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

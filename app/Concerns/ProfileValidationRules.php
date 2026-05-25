@@ -16,9 +16,10 @@ trait ProfileValidationRules
     {
         return [
             'name' => $this->nameRules(),
-            'username' => $this->usernameRules(),
+            'username' => $this->usernameRules($userId),
             'email' => $this->emailRules($userId),
-            'terms' => $this->termRules(),
+            // 'terms' => $this->termRules(),
+            'profile_photo' => $this->profilePhotoRules(),
         ];
     }
 
@@ -59,7 +60,7 @@ trait ProfileValidationRules
             'min:3',
             'regex:/^[a-zA-Z0-9_]+$/',
             'not_regex:/^_+$/',
-            'unique:users,username' . ($userId ? ',' . $userId : ''),
+            Rule::unique('users', 'username')->ignore($userId),
         ];
     }
 
@@ -68,6 +69,16 @@ trait ProfileValidationRules
         return [
             'required',
             'accepted',
+        ];
+    }
+
+    protected function profilePhotoRules() : array
+    {
+        return [
+            'nullable',
+            'image',
+            'mimes:jpg,jpeg,png',
+            'max:2048',
         ];
     }
 }

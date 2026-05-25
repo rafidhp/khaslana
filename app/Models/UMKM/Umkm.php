@@ -13,6 +13,11 @@ use App\Models\Wishlist;
 use App\Models\Post\Post;
 use App\Models\Order\Order;
 
+use Laravolt\Indonesia\Models\Province;
+use Laravolt\Indonesia\Models\City;
+use Laravolt\Indonesia\Models\District;
+use Laravolt\Indonesia\Models\Village;
+
 class Umkm extends Model
 {
     use SoftDeletes;
@@ -38,6 +43,39 @@ class Umkm extends Model
         'shipping_cost',
     ];
 
+    // laravolt relations
+    public function province() {
+        return $this->belongsTo(
+            Province::class,
+            'province_id',
+            'code'
+        );
+    }
+
+    public function city() {
+        return $this->belongsTo(
+            City::class,
+            'city_id',
+            'code'
+        );
+    }
+
+    public function district() {
+        return $this->belongsTo(
+            District::class,
+            'district_id',
+            'code'
+        );
+    }
+
+    public function village() {
+        return $this->belongsTo(
+            Village::class,
+            'village_id',
+            'code'
+        );
+    }
+
     // from this table
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
@@ -49,7 +87,7 @@ class Umkm extends Model
     }
 
     public function umkmImages() {
-        return $this->hasMany(UmkmImmage::class);
+        return $this->hasMany(UmkmImage::class);
     }
 
     public function umkmLocations() {

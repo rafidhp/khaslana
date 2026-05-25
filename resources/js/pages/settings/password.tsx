@@ -32,7 +32,7 @@ export default function Password() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
-                        variant="small"
+                        variant="default"
                         title="Update password"
                         description="Ensure your account is using a long, random password to stay secure"
                     />
@@ -122,6 +122,7 @@ export default function Password() {
                                     <Button
                                         disabled={processing}
                                         data-test="update-password-button"
+                                        className='bg-[#99FF33] border-1 border-[#99FF33] hover:bg-[#1E1B26] hover:text-[#99FF33] transition-colors duration-200 hover:cursor-pointer'
                                     >
                                         Save password
                                     </Button>

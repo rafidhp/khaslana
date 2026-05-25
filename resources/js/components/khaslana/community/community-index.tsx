@@ -64,7 +64,8 @@ export default function CommunityIndex() {
                     <div className="create-post flex flex-col w-full bg-[#222] p-8 gap-10 rounded-[15px]">
                         <div className="post-top flex items-center gap-3.75">
                             <img src={ProfileIcon} alt="Profile" className="w-12 max-md:w-8" />
-                            <input type="text" placeholder="Bagikan strategi pertumbuhan Anda hari ini..." className="main-input flex flex-1 bg-transparent border-0 outline-0 text-white" />
+                            <input type="text" placeholder="Bagikan strategi pertumbuhan Anda hari ini..." className="main-input flex flex-1 bg-transparent border-0 outline-0 text-white"
+                            value={content} onChange={(e) => setContent(e.target.value)} />
                         </div>
 
                         {previewUrl && (

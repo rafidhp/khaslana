@@ -18,7 +18,6 @@ class Post extends Model
         'user_id',
         'umkm_id',
         'product_id',
-        'title',
         'content',
         'post_date',
     ];

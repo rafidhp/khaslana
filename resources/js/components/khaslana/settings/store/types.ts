@@ -21,4 +21,16 @@ export interface StoreFormData {
     nib: string;
     nik: string;
     file_path: File | null;
+
+    // umkm_images
+    existing_images: {
+        id: number;
+        image: string;
+    }[];
+    deleted_existing_images: number[];
+    images: File[];
+
+    // umkm_locations
+    latitude: number | null,
+    longitude: number | null,
 }

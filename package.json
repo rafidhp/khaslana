@@ -60,9 +60,14 @@
         "leaflet": "^1.9.4",
         "leaflet-defaulticon-compatibility": "^0.1.2",
         "lucide-react": "^0.475.0",
+        "next-themes": "^0.4.6",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+<<<<<<< HEAD
         "react-leaflet": "^5.0.0",
+=======
+        "sonner": "^2.0.7",
+>>>>>>> 0170ee9965ee4ace7b8077232512d68f805a27a5
         "tailwind-merge": "^3.0.1",
         "tailwindcss": "^4.0.0",
         "three": "^0.184.0",

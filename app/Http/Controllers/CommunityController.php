@@ -30,4 +30,14 @@ class CommunityController extends Controller
             'post' => $post,
         ]);
     }
+
+    public function create() {
+        return inertia('user/community/create');
+    }
+
+    public function store(Request $request) {
+        $request->validate([
+
+        ]);
+    }
 }

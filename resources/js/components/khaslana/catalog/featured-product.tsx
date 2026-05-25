@@ -7,7 +7,7 @@ export function FeaturedProduct() {
     return (
         <section className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 w-full h-auto lg:h-[533px] mb-6">
             {/* Main Featured (Batik Solo) */}
-            <div className="relative rounded-2xl overflow-hidden cursor-pointer group h-[400px] lg:h-full">
+            <div className="relative rounded-2xl border-2 border-[#99FF33]/10 overflow-hidden cursor-pointer group h-[400px] lg:h-full">
                 <img 
                     src={batikImg} 
                     alt="Batik Tulis Premium Solo" 
@@ -30,9 +30,10 @@ export function FeaturedProduct() {
             </div>
 
             {/* Side Featured (Sambal) */}
-            <div className="flex flex-col bg-[#252231] rounded-2xl border border-white/5 overflow-hidden cursor-pointer group h-[280px] lg:h-full">
+            <div className="flex flex-col bg-[#242424] border-2 border-[#99FF33]/10 rounded-2xl overflow-hidden cursor-pointer group h-[280px] lg:h-full">
                 <div className="relative flex-1 overflow-hidden">
-                    <span className="absolute top-4 right-4 bg-[#252231] text-white border border-white/15 text-[11px] font-semibold px-3 py-1 rounded-full z-10">
+                    {/* Revisi: Badge New bg hitam opacity 50%, text putih (#ffffff), hapus border */}
+                    <span className="absolute top-4 right-4 bg-black/50 text-white text-[14px] font-semibold px-3 py-1 rounded-full z-10 backdrop-blur-sm">
                         New
                     </span>
                     <img 
@@ -46,8 +47,9 @@ export function FeaturedProduct() {
                     <p className="text-[#6a6a7e] text-xs">Resep tradisional autentik 250gr</p>
                     <div className="flex items-center justify-between mt-2">
                         <span className="text-[#99FF33] text-[15px] font-semibold">Rp 45.000</span>
-                        <button className="flex items-center justify-center w-9 h-9 bg-transparent border border-white/10 rounded-lg hover:bg-white/10 transition-colors">
-                            <img src={cartSideIcon} alt="add to cart" className="w-4 h-4" />
+                        {/* Revisi: Button diperbesar (w-11 h-11) dan efek border dihilangkan */}
+                        <button className="flex items-center justify-center w-11 h-11 bg-transparent rounded-lg hover:bg-black/10 transition-colors">
+                            <img src={cartSideIcon} alt="add to cart" className="w-5 h-5 object-contain" />
                         </button>
                     </div>
                 </div>

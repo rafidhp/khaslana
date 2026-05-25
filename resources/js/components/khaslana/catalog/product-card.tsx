@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
@@ -24,59 +24,112 @@ export function ProductCard({
     sold = "0",
     discount,
 }: ProductCardProps) {
-    const productUrl = id !== null ? `/catalog/${id}` : '#';
+    
+    // 1. Fungsi klik untuk pindah ke detail katalog (seluruh card)
+    const handleCardClicked = () => {
+        router.visit(`/catalog/${id}`);
+    }
+
+    // 2. Fungsi klik pada bagian keranjang pada card
+    const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation(); // Jurus rahasia biar event kliknya gak bocor ke Card
+        console.log('Tambah ke keranjang ID:', id);
+    }
 
     return (
-        <div className="flex flex-col bg-[#252231] rounded-[14px] border border-white/5 overflow-hidden h-[360px]">
-            {/* Bagian Gambar & Overlay Cart */}
-            <div className="relative w-full min-h-[220px] flex-grow overflow-hidden">
-                <Link href={productUrl} className="block w-full h-full">
-                    <img 
-                        src={image} 
-                        alt={name} 
-                        className="w-full h-full object-cover block"
-                    />
-                </Link>
+        <div 
+            onClick={handleCardClicked}
+            className="
+                group z-0
+                flex flex-col
+                overflow-hidden
+                rounded-[32px]
+                bg-[#242424]
+                transition-all duration-300
+                border-2 border-[#99FF33]/10
+                hover:-translate-y-1
+                hover:shadow-[0_10px_40px_rgba(153,255,51,0.08)]
+                hover:cursor-pointer
+            "
+        >
+            {/* Bagian Gambar */}
+            <div className="relative h-[220px] overflow-hidden">
+                <img 
+                    src={image} 
+                    alt={name} 
+                    className="
+                        w-full h-full object-cover
+                        transition-transform duration-500
+                        group-hover:scale-105
+                    "
+                />
                 
-                {/* Button Cart Melayang di atas gambar */}
-                <button className="absolute top-3 right-3 bg-[#1E1B26]/70 border border-white/15 backdrop-blur-md rounded-[10px] w-[42px] h-[42px] flex items-center justify-center cursor-pointer z-[2] transition-all hover:bg-[#1E1B26]/90">
-                    <img src={addToCartIcon} alt="add to cart" className="w-5 h-5 object-contain" />
+                {/* Overlay Hitam Transparan */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+
+                {/* Diskon Badge */}
+                {discount && (
+                    <div className="absolute top-4 left-4">
+                        <span className="
+                            rounded-full
+                            bg-black/70
+                            px-4 py-1.5
+                            text-[10px] lg:text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-wider
+                            text-[#99FF33]
+                            backdrop-blur-md
+                        ">
+                            {discount}
+                        </span>
+                    </div>
+                )}
+
+                {/* Button Cart */}
+                <button 
+                    onClick={handleAddToCart}
+                    className="
+                        absolute top-4 right-4 z-10
+                        flex items-center justify-center
+                        w-8 h-8 lg:w-10 lg:h-10
+                        rounded-[8px]
+                        bg-white/20
+                        backdrop-blur-md
+                        transition
+                        hover:bg-white/30
+                        hover:cursor-pointer
+                    "
+                >
+                    <img src={addToCartIcon} alt="add to cart" className="w-4 h-4 lg:w-5 lg:h-5 object-contain" />
                 </button>
             </div>
 
             {/* Bagian Informasi Produk */}
-            <div className="p-3.5 pb-3.5 flex flex-col gap-1.5">
+            <div className="flex flex-col flex-1 p-5">
                 
-                {/* Baris 1: Nama & Diskon Badge */}
-                <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-white text-sm font-semibold truncate">
-                        {name}
-                    </h4>
-                    {discount && (
-                        <span className="bg-[#99FF33]/20 text-[#99FF33] text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">
-                            {discount}
-                        </span>
-                    )}
-                </div>
+                
+                <h4 className="text-white text-[16px] lg:text-[18px] font-bold leading-tight line-clamp-1 mb-2">
+                    {name}
+                </h4>
 
-                {/* Baris 2: Harga & Rating */}
-                <div className="flex items-center justify-between">
-                    <span className="text-[#99FF33] text-[13px] font-semibold">
+               
+                <div className="flex items-center justify-between mt-1">
+                    <span className="text-[#99FF33] text-[15px] lg:text-[18px] font-bold">
                         {price}
                     </span>
-                    <div className="flex items-center gap-1 text-white text-xs font-medium">
-                        <img src={starIcon} alt="star" className="w-3 h-3 object-contain" />
+                    <div className="flex items-center gap-1.5 text-white text-[13px] font-medium">
+                        <img src={starIcon} alt="star" className="w-3.5 h-3.5 object-contain" />
                         {rating}
                     </div>
                 </div>
 
-                {/* Baris 3: Lokasi & Terjual */}
-                <div className="flex items-center justify-between mt-0.5">
-                    <span className="flex items-center gap-1 text-[#6a6a7e] text-[11px]">
-                        <img src={locationIcon} alt="location" className="w-3 h-3 opacity-60 object-contain" />
+                <div className="flex items-center justify-between mt-5">
+                    <span className="flex items-center gap-1.5 text-[#B7B7B7] text-[12px]">
+                        <img src={locationIcon} alt="location" className="w-3.5 h-3.5 opacity-60 object-contain pb-0.5" />
                         {location}
                     </span>
-                    <span className="text-[#6a6a7e] text-[11px]">
+                    <span className="text-[#B7B7B7] text-[12px] font-medium">
                         {sold} Terjual
                     </span>
                 </div>

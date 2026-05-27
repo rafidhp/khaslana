@@ -67,7 +67,7 @@ export default function CommunityIndex() {
     const [isUploaded, setIsUploaded] = useState(false);
 
     const PostOptions = [
-        { id: 1, label: "Gambar", src: <Image />, accept: "image/*"},
+        { id: 1, label: "Gambar", src: <Image className="w-5"/>, accept: "image/*"},
     ]
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +151,7 @@ export default function CommunityIndex() {
             <div className="community-container flex flex-col gap-5 w-full py-5 mb-10 box-border">
                 <div className="posts w-full flex flex-col gap-5">
                     
-                    <div className="create-post flex flex-col w-full bg-[#222] p-8 gap-10 rounded-[15px]">
+                    <div className="create-post flex flex-col w-full bg-[#222] md:p-8 p-5 gap-10 rounded-[15px]">
                         <div className="post-top flex items-center gap-3.75">
                             <img src={ProfileIcon} alt="Profile" className="w-12 max-md:w-8" />
                             <input type="text" placeholder="Bagikan strategi pertumbuhan Anda hari ini..." className="main-input flex flex-1 bg-transparent border-0 outline-0 text-white"

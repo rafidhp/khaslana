@@ -56,23 +56,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/store-management/update', 'update')->name('storeManagement.update');
         Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
     });
+
+    // Community page
+    Route::controller(CommunityController::class)->group(function() {
+        Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
+
+        Route::delete('/community/{post}', [CommunityController::class, 'destroy'])->name('community.destroy');
+
+        Route::post('/community/{post}/like', [CommunityController::class, 'toggleLike'])->name('community.like');
+    });
 });
 
+Route::get('/community', [CommunityController::class, 'index'])->name('community');
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
 
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
-});
-
-Route::controller(CommunityController::class)->group(function() {
-    Route::get('/community', [CommunityController::class, 'index'])->name('community');
-
-    Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
-
-    Route::delete('/community/{post}', [CommunityController::class, 'destroy'])->name('community.destroy');
-
-    Route::post('/community/{post}/like', [CommunityController::class, 'toggleLike'])->name('community.like');
 });
 
 Route::controller(UmkmController::class)->group(function() {

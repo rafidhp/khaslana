@@ -38,9 +38,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // tracking routes
     Route::controller(TrackingController::class)->group(function () {
         Route::post('/umkm/update-location', 'updateLocation')->name('umkm.update-location');
+        Route::get('/umkm/current-location-status', 'getCurrentStatus');
     });
     
-    Route::get('/umkm/current-location-status', [App\Http\Controllers\TrackingController::class, 'getCurrentStatus']);
+    // TODO: ini contoh sebelum yg di bawah comment ini, route atas comment ini contoh setelahnya, nanti di fe pake route dari wayfinder, import { stayPoint } from '@/routes'; atau kalau mau ambil sub route bisa kaya gini, import { updateLocation } from '@/routes/stayPoint'; kalo si sub route nya namanya updateLocation
+    // Route::get('/umkm/current-location-status', [App\Http\Controllers\TrackingController::class, 'getCurrentStatus']);
 
     Route::get('/umkm/stay-point', function () {
         return inertia('umkm/stay-point');

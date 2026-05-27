@@ -14,7 +14,7 @@ export default function AboutLocation({
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold">Tentang Kami</h2>
                 </div>
-                <div className="flex flex-col mt-2 w-full bg-amber-200">
+                <div className="flex flex-col mt-2 w-full">
                     <span className="font-normal text-wrap">
                         {umkmData.description}
                     </span>

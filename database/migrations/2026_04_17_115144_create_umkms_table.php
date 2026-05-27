@@ -28,7 +28,6 @@ return new class extends Migration
             $table->string('open_time')->nullable();
             $table->string('close_time')->nullable();
             $table->float('average_rating')->default(0);
-            $table->boolean('is_open')->default(false);
             $table->boolean('is_order_feature')->default(false);
             $table->boolean('is_shipping_feature')->default(false);
             $table->decimal('shipping_cost', 12)->default(0);

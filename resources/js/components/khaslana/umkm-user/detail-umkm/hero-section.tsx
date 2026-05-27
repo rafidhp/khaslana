@@ -15,6 +15,8 @@ interface HeroSectionProps {
 export default function HeroSection({
     umkmData,
 }: HeroSectionProps) {
+    let status = umkmData.status === 'BUKA';
+
     return (
         <section className="flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between gap-10 lg:gap-16 w-full">
             <div className="flex flex-col flex-1 w-full">
@@ -86,7 +88,7 @@ export default function HeroSection({
                     <div
                         className="
                             flex items-center gap-2
-                            w-fit
+                            w-fit items-center
                             rounded-full
                             bg-[#2F3E1F]/90
                             px-3 py-1.5
@@ -94,21 +96,21 @@ export default function HeroSection({
                         "
                     >
                         <span
-                            className={`text-[10px] lg:text-[10.5px] font-bold uppercase tracking-wider ${umkmData.is_open
+                            className={`text-[10px] lg:text-[10.5px] font-bold uppercase tracking-wider ${status
                                     ? 'text-[#99FF33]'
                                     : 'text-gray-400'
                                 }`}
                         >
-                            {umkmData.is_open
+                            {status
                                 ? 'Sedang Buka'
                                 : 'Sedang Tutup'}
                         </span>
-                        <span className="relative flex h-2.5 w-2.5">
+                        <span className="relative flex mb-0.5 h-2.5 w-2.5">
                             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                                umkmData.is_open ? 'bg-green-400' : ''
+                                status ? 'bg-green-400' : ''
                             }`}></span>
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                                umkmData.is_open ? 'bg-green-500' : 'bg-gray-400'
+                                status ? 'bg-green-500' : 'bg-gray-400'
                             }`}></span>
                         </span>
                     </div>

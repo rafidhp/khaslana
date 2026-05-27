@@ -38,7 +38,6 @@ class Umkm extends Model
         'open_time',
         'close_time',
         'average_rating',
-        'is_open',
         'is_order_feature',
         'is_shipping_feature',
         'shipping_cost',

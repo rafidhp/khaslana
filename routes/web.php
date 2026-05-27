@@ -59,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Community page
     Route::controller(CommunityController::class)->group(function() {
+        Route::get('/community/create-post', [CommunityController::class, 'create'])->name('community.create');
+        
         Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
 
         Route::delete('/community/{post}', [CommunityController::class, 'destroy'])->name('community.destroy');

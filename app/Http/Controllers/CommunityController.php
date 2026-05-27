@@ -42,7 +42,7 @@ class CommunityController extends Controller
     }
 
     public function create() {
-        return Inertia::render('user/community/create');
+        return Inertia::render('user/community/create-post/index');
     }
 
     public function store(Request $request) {

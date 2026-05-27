@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
@@ -34,11 +35,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/product', 'index')->name('product');
     });
 
+    // tracking routes
+    Route::controller(TrackingController::class)->group(function () {
+        Route::post('/umkm/update-location', 'updateLocation')->name('umkm.update-location');
+        Route::get('/umkm/current-location-status', 'getCurrentStatus');
+    });
+    
+    // TODO: ini contoh sebelum yg di bawah comment ini, route atas comment ini contoh setelahnya, nanti di fe pake route dari wayfinder, import { stayPoint } from '@/routes'; atau kalau mau ambil sub route bisa kaya gini, import { updateLocation } from '@/routes/stayPoint'; kalo si sub route nya namanya updateLocation
+    // Route::get('/umkm/current-location-status', [App\Http\Controllers\TrackingController::class, 'getCurrentStatus']);
+
+    Route::get('/umkm/stay-point', function () {
+        return inertia('umkm/stay-point');
+    })->name('umkm.stay-point');
+
+
     // store management
     Route::controller(StoreController::class)->group(function() {
         Route::get('/store-management', 'index')->name('storeManagement');
         Route::post('/store-management/store', 'store')->name('storeManagement.store');
         Route::put('/store-management/update', 'update')->name('storeManagement.update');
+        Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
     });
 });
 

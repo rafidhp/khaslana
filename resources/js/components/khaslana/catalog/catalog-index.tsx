@@ -1,34 +1,25 @@
-import antingImg from "@/assets/images/catalog/anting-perak.png";
-import kopiImg from "@/assets/images/catalog/kopi-gayo.png";
-import sendalImg from "@/assets/images/catalog/sendal-garut.png";
-import vaseImg from "@/assets/images/catalog/vase-keramik.png";
-import { HeroSection } from './hero-section';
-import { PaginationSection } from './pagination-section';
-import { ProductCard } from './product-card';
+import { FeaturedProduct } from '@/components/khaslana/catalog/featured-product';
+import { HeroSection } from '@/components/khaslana/catalog/hero-section';
+import { PaginationSection } from '@/components/khaslana/catalog/pagination-section';
+import { ProductCard } from '@/components/khaslana/catalog/product-card';
+import { displayProducts } from '@/components/khaslana/catalog/product-data';
 
 export default function CatalogIndex() {
-    const productsData = [
-        { id: 1, name: "Vase Keramik Kasongan", price: "Rp 185.000", image: vaseImg, discount: "67%", rating: "4.9", location: "Kab. Bandung", sold: "205"},
-        { id: 2, name: "Sandalias Kulit Garut", price: "Rp 320.000", image: sendalImg, rating: "4.5", location: "Kab. Bandung", sold: "102" },
-        { id: 3, name: "Kopi Arabica Gayo", price: "Rp 145.000", image: kopiImg, discount: "19%", rating: "4.5", location: "Kab. Bandung", sold: "103"},
-        { id: 4, name: "Anting Perak Kotagede", price: "Rp 450.000", image: antingImg, rating: "4.5", location: "Kab. Bandung", sold: "108"}
-    ];
-
-    const displayProducts = Array.from({ length: 24 }, (_, i) => ({
-        ...productsData[i % productsData.length],
-        id: i + 1
-    }));
-
     return (
-        <div className="flex flex-col w-full px-6 lg:px-[55px] mx-auto max-w-[1600px] grow">
+        <div className="flex flex-col w-full px-6 lg:px-[70px] mx-auto">
             <HeroSection />
 
             <section className="flex flex-col gap-6 pt-5 pb-[60px]">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* Menampilkan Card Batik & Sambal di atas Grid */}
+                <FeaturedProduct />
+
+                {/* Grid Produk Utama dengan spacing yang disesuaikan */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mt-4">
                     {displayProducts.map((product) => (
                         <ProductCard key={product.id} {...product} />
                     ))}
                 </div>
+                
                 <PaginationSection />
             </section>
         </div>

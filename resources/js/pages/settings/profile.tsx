@@ -45,8 +45,8 @@ export default function Profile({
                 <div className="space-y-6">
                     <Heading
                         variant="default"
-                        title="Profile information"
-                        description="Update your name and email address"
+                        title="Informasi Profil"
+                        description="Perbarui data diri Anda"
                     />
 
                     <Form
@@ -60,7 +60,7 @@ export default function Profile({
                             <>
                                 <div className="grid gap-4">
                                     <Label htmlFor="profile_photo">
-                                        Profile photo
+                                        Foto Profil
                                     </Label>
 
                                     <div className="flex items-center gap-5">
@@ -71,7 +71,7 @@ export default function Profile({
                                                 w-24 h-24
                                                 rounded-full
                                                 object-cover
-                                                border border-border
+                                                border-2 border-[#99FF33]/80
                                                 shadow-sm
                                             "
                                         />
@@ -83,20 +83,16 @@ export default function Profile({
                                                 name="profile_photo"
                                                 accept="image/*"
                                                 onChange={(e) => {
-                                                    const file =
-                                                        e.target.files?.[0];
-
+                                                    const file = e.target.files?.[0];
                                                     if (file) {
-                                                        setPreview(
-                                                            URL.createObjectURL(file)
-                                                        );
+                                                        setPreview(URL.createObjectURL(file));
                                                     }
                                                 }}
                                                 className="cursor-pointer"
                                             />
 
                                             <p className="text-sm text-muted-foreground">
-                                                JPG, PNG up to 2MB
+                                                JPG, PNG sampai dengan 2MB
                                             </p>
                                         </div>
                                     </div>
@@ -107,7 +103,7 @@ export default function Profile({
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">Nama</Label>
 
                                     <Input
                                         id="name"
@@ -140,12 +136,12 @@ export default function Profile({
 
                                     <InputError
                                         className="mt-2"
-                                        message={errors.name}
+                                        message={errors.username}
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email">Alamat Email</Label>
 
                                     <Input
                                         id="email"
@@ -195,9 +191,9 @@ export default function Profile({
                                     <Button
                                         disabled={processing}
                                         data-test="update-profile-button"
-                                        className='bg-[#99FF33] border-1 border-[#99FF33] hover:bg-[#1E1B26] hover:text-[#99FF33] transition-colors duration-200 hover:cursor-pointer'
+                                        className='bg-[#99FF33] border border-[#99FF33] hover:bg-[#1E1B26] hover:text-[#99FF33] transition-colors duration-200 hover:cursor-pointer'
                                     >
-                                        Save
+                                        Simpan
                                     </Button>
 
                                     <Transition
@@ -208,7 +204,7 @@ export default function Profile({
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            Tersimpan
                                         </p>
                                     </Transition>
                                 </div>

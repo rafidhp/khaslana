@@ -9,7 +9,7 @@ import { cn, toUrl } from '@/lib/utils';
 // import { edit as editAppearance } from '@/routes/appearance';
 import { storeManagement } from '@/routes';
 import { edit } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
+// import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
 
@@ -25,7 +25,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     const sidebarNavItems: NavItem[] = [
         {
-            title: 'Profile',
+            title: 'Profil',
             href: edit(),
             icon: null,
         },
@@ -39,11 +39,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             href: editPassword(),
             icon: null,
         },
-        {
-            title: 'Two-Factor Auth',
-            href: show(),
-            icon: null,
-        },
+        // {
+        //     title: 'Two-Factor Auth',
+        //     href: show(),
+        //     icon: null,
+        // },
     ];
 
     return (
@@ -56,7 +56,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
-                        className="flex flex-col space-y-1 space-x-0"
+                        className="flex flex-col space-y-2 space-x-0"
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => (
@@ -66,7 +66,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentUrl(item.href),
+                                    'bg-[#99FF33] hover:bg-[#99FF33] text-black hover:text-black': isCurrentUrl(item.href),
                                 })}
                             >
                                 <Link href={item.href}>

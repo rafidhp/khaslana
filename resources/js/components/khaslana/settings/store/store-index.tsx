@@ -4,14 +4,15 @@ import Heading from '@/components/heading';
 import AdditionalFeatures from "@/components/khaslana/settings/store/sections/additional-features";
 import Address from "@/components/khaslana/settings/store/sections/address";
 import OperationalHour from "@/components/khaslana/settings/store/sections/operational-hour";
+import StoreImages from "@/components/khaslana/settings/store/sections/store-images";
 import StoreInfo from "@/components/khaslana/settings/store/sections/store-info";
+import StoreLogo from "@/components/khaslana/settings/store/sections/store-logo";
 import type { StoreFormData } from "@/components/khaslana/settings/store/types";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from "@/hooks/use-auth";
 import { showErrorToast, showSuccessToast } from "@/lib/toast";
 import { store, update } from "@/routes/storeManagement";
-import StoreImages from "./sections/store-images";
 
 interface Props {
     provinces: {
@@ -143,6 +144,7 @@ export default function StoreIndex({
             />
             <Card className="bg-transparent border-2 border-[#99FF33]/50">
                 <CardContent>
+                    <StoreLogo />
                     <form
                         onSubmit={handleSubmit}
                         className="space-y-4"

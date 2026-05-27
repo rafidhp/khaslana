@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use App\Models\UMKM\UmkmData;
 use App\Models\UMKM\UmkmImage;
 use App\Models\UMKM\UmkmLocation;
 use App\Models\User;
+use App\Models\UserProfile;
 
 class StoreController extends Controller
 {
@@ -202,6 +204,67 @@ class StoreController extends Controller
                     'message' => $th->getMessage(),
                 ]);
         }
+    }
+
+    public function storeLogo(Request $request) {
+        $request->validate([
+            'logo' => [
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png',
+                'max:2048',
+            ],
+        ], [
+            'logo' => 'Logo gagal di upload',
+            'logo.required' => 'Logo wajib diisi.',
+            'logo.image' => 'Logo harus berupa gambar.',
+            'logo.mimes' => 'Logo harus JPG, JPEG, atau PNG.',
+            'logo.max' => 'Ukuran logo maksimal 2MB.',
+        ]);
+
+        $user = $request->user();
+        $profile = UserProfile::firstOrCreate([
+            'user_id' => $user->id,
+        ]);
+
+        if (
+            $profile->logo &&
+            Storage::disk('public')->exists(
+                $profile->logo
+            )
+        ) {
+            Storage::disk('public')->delete(
+                $profile->logo
+            );
+        }
+
+        $image = $request->file('logo');
+
+        $originalName = pathinfo(
+            $image->getClientOriginalName(),
+            PATHINFO_FILENAME
+        );
+
+        $extension = $image->getClientOriginalExtension();
+
+        $fileName = substr(
+            Str::slug($originalName),
+            0,
+            70
+        ) . '-' . time() . '.' . $extension;
+
+        $path = $image->storeAs(
+            "store_logos/{$user->id}",
+            $fileName,
+            'public'
+        );
+
+        $profile->logo = $path;
+        $profile->save();
+
+        return back()->with([
+            'success' => 'Logo toko berhasil diperbarui.',
+        ]);
     }
 
     public function update(StoreRequest $request): RedirectResponse {

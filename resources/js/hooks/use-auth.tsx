@@ -10,6 +10,12 @@ interface AuthProps extends PageProps {
             email: string,
             is_umkm: boolean,
             profile_photo?: string | null,
+            logo?: string | null;
+
+            umkm?: {
+                id: number;
+                type: string;
+            } | null;
         } | null;
     }
 }

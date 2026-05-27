@@ -47,11 +47,25 @@ class HandleInertiaRequests extends Middleware
                     'is_umkm' => $request->user()->is_umkm,
 
                     // relation table
-                    'profile_photo' => $request->user()->profile
+                    'profile_photo' => $request->user()->profile?->profile_photo
                         ? asset(
-                            'storage/profile-photos/' .
+                            'storage/' .
                             $request->user()->profile->profile_photo
-                        ) : null,
+                        )
+                        : null,
+                    'logo' => $request->user()->profile?->logo
+                        ? asset(
+                            'storage/' .
+                            $request->user()->profile->logo
+                        )
+                        : null,
+
+                    'umkm' => $request->user()->umkm
+                        ? [
+                            'id' => $request->user()->umkm->id,
+                            'type' => $request->user()->umkm->type,
+                        ]
+                        : null,
                 ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

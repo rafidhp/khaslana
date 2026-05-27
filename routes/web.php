@@ -67,6 +67,10 @@ Route::controller(CatalogController::class)->group(function() {
 
 Route::controller(CommunityController::class)->group(function() {
     Route::get('/community', [CommunityController::class, 'index'])->name('community');
+
+    Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
+
+    Route::post('/community/{post}/like', [CommunityController::class, 'toggleLike'])->name('community.like');
 });
 
 Route::controller(UmkmController::class)->group(function() {

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Post\Post;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class CommunityController extends Controller
@@ -41,7 +42,7 @@ class CommunityController extends Controller
     }
 
     public function create() {
-        return Inertia::render('user/community/create');
+        return Inertia::render('user/community/create-post/index');
     }
 
     public function store(Request $request) {
@@ -100,5 +101,27 @@ class CommunityController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function destroy(Post $post) {
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->back()->withErrors('error', 'Tidak ada akses untuk hapus postingan ini!');
+        }
+
+        try {
+            $images = $post->postImages;
+
+            foreach ($images as $img) {
+                if (Storage::disk('public')->exists($img->image)) {
+                    Storage::disk('public')->delete($img->image);
+                }
+            }
+
+            $post->delete();
+
+            return redirect()->route('community')->with('message', 'Postingan berhasil dihapus!');
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus postingan: ' . $e->getMessage()]);
+        }
     }
 }

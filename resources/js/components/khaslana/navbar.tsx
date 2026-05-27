@@ -97,7 +97,7 @@ export default function Navbar() {
             ref={navRef}
             className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
                 menuOpen ? "menu-open" : ""
-            } `}
+            }`}
         >
             <div className="navbar-left">
                 <Link
@@ -126,8 +126,8 @@ export default function Navbar() {
                 <ul className={`
                     ${user ? "navbar-authenticated" : ""}
                     ${user ? "navbar-mobile-auth" : ""}
-                    ${user ? "max-lg:mb-7" : ""}
-                    lg:absolute lg:flex lg:flex-row lg:items-center lg:gap-8`}>
+                    ${user ? "max-[900px]:mb-8" : ""}
+                    `}>
                     {menus.map((menu) => (
                         <li key={menu.name}>
                             <Link

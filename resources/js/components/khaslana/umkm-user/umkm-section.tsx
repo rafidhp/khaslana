@@ -5,88 +5,106 @@ import {
     MapPin,
     Star,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import DefaultStore from '@/assets/images/umkm-user/default-store.png';
+import type { Umkm } from "@/pages/user/umkm";
 import { detail } from '@/routes/umkm';
 
-type Umkm = {
-    id: number;
-    name: string;
-    category: string;
-    location: string;
-    distance: string;
-    rating: number;
-    description: string;
-    image: string;
-    slug?: string;
-    isFavorite?: boolean;
-};
+interface UmkmSectionProps {
+    umkms: Umkm[];
+}
 
-export default function UmkmSection() {
-    const umkms: Umkm[] = [
-        {
-            id: 1,
-            name: 'Batik Harmoni',
-            category: 'Fashion',
-            location: 'Yogyakarta',
-            distance: '1.2km',
-            rating: 4.9,
-            description:
-                'Koleksi batik tulis eksklusif dengan pewarna alami, menjaga tradisi budaya Indonesia. lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet',
-            image: DefaultStore,
-        },
-        {
-            id: 2,
-            name: 'Warung Ibu Sri',
-            category: 'Kuliner',
-            location: 'Solo',
-            distance: '0.8km',
-            rating: 4.8,
-            description:
-                'Cita rasa masakan Jawa autentik dengan resep turun temurun sejak puluhan tahun.',
-            image: DefaultStore,
-        },
-        {
-            id: 3,
-            name: 'Kopi Nusantara',
-            category: 'Kuliner',
-            location: 'Bandung',
-            distance: '2.5km',
-            rating: 4.7,
-            description:
-                'Menyajikan biji kopi pilihan dari petani lokal seluruh Indonesia.',
-            image: DefaultStore,
-        },
-        {
-            id: 4,
-            name: 'Tanah Liat Studio',
-            category: 'Kerajinan',
-            location: 'Ubud',
-            distance: '4.1km',
-            rating: 4.9,
-            description:
-                'Kerajinan tangan keramik kontemporer yang menggabungkan estetika modern.',
-            image: DefaultStore,
-        },
-        {
-            id: 5,
-            name: 'Tembok Ratapan Solo',
-            category: 'Artefak',
-            location: 'Solo',
-            distance: '4.1km',
-            rating: 4.9,
-            description:
-                'Kerajinan tangan keramik kontemporer yang menggabungkan estetika modern.',
-            image: DefaultStore,
-        },
-    ];
-
+export default function UmkmSection({
+    umkms = [],
+}: UmkmSectionProps) {
     const handleCardClicked = (umkm: Umkm) => {
         router.visit(detail(umkm.id));
     }
-
     const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>, umkm: Umkm) => {
         e.stopPropagation();
         console.log('Favorite', umkm.id);
+    }
+    const [distances, setDistances] = useState<
+        Record<number, string>
+    >({});
+
+    const calculateDistance = (
+        lat1: number,
+        lon1: number,
+        lat2: number,
+        lon2: number
+    ) => {
+        const R = 6371;
+
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+
+        const a =
+            Math.sin(dLat / 2) *
+            Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) *
+            Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+
+        const c = 2 * Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+        return R * c;
+    };
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                const updatedDistances: Record<number, string> = {};
+
+                umkms.forEach((umkm) => {
+                    const location = umkm.umkm_locations?.[0];
+
+                    if (
+                        location?.latitude &&
+                        location?.longitude
+                    ) {
+                        const distance = calculateDistance(
+                            userLat,
+                            userLng,
+                            Number(location.latitude),
+                            Number(location.longitude)
+                        );
+                        updatedDistances[umkm.id] = `${distance.toFixed(1)} km`;
+                    }
+                });
+                setDistances(updatedDistances);
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
+    }, [umkms]);
+
+    if (umkms.length === 0) {
+        return (
+            <div
+                className="
+                    flex items-center justify-center
+                    w-full text-center
+                "
+            >
+                <div>
+                    <h2 className="text-2xl font-bold text-white">
+                        Belum ada data UMKM saat ini
+                    </h2>
+                    <p className="mt-2 text-sm text-[#B7B7B7]">
+                        Silakan kembali lagi nanti.
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -110,8 +128,12 @@ export default function UmkmSection() {
                     {/* image */}
                     <div className="relative h-[220px] overflow-hidden">
                         <img
-                            src={umkm.image}
-                            alt={umkm.name}
+                            src={
+                                umkm.umkm_images?.[0]?.image
+                                    ? `/storage/${umkm.umkm_images[0].image}`
+                                    : DefaultStore
+                            }
+                            alt={umkm.store_name}
                             className="
                                 w-full h-full object-contain
                                 transition-transform duration-500
@@ -137,7 +159,7 @@ export default function UmkmSection() {
                                     backdrop-blur-md
                                 "
                             >
-                                {umkm.category}
+                                {umkm.type}
                             </span>
                         </div>
 
@@ -165,7 +187,7 @@ export default function UmkmSection() {
                     <div className="flex flex-col flex-1 p-5">
                         <div className="flex items-center justify-between gap-3">
                             <h3 className="text-white text-[18px] lg:text-[28px] font-bold leading-tight line-clamp-1">
-                                {umkm.name}
+                                {umkm.store_name}
                             </h3>
 
                             <div
@@ -180,13 +202,16 @@ export default function UmkmSection() {
                                 "
                             >
                                 <Star className="w-3 h-3 lg:w-4 lg:w-4 fill-[#99FF33]" />
-                                {umkm.rating}
+                                {umkm.average_rating}
                             </div>
                         </div>
                         <div className="flex items-center gap-1 mt-2 text-[#B7B7B7] text-xs md:text-sm">
                             <MapPin className="w-5 h-5 pb-1" />
                             <span>
-                                {umkm.location} • {umkm.distance}
+                                {umkm.city?.name} 
+                                {distances[umkm.id] && (
+                                    <> • {distances[umkm.id]}</>
+                                )}
                             </span>
                         </div>
                         <p

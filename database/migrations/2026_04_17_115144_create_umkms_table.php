@@ -86,7 +86,6 @@ return new class extends Migration
             ])->nullable(); // khusus pedagang keliling
             $table->timestamps();
         });
-
     }
 
     /**

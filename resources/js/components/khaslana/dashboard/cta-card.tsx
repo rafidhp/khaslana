@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react"
-import { Store, ArrowRight } from "lucide-react"
+import { Store, ChevronRight } from "lucide-react"
 import { storeManagement } from "@/routes"
 
 export default function CtaCard() {
@@ -50,7 +50,7 @@ export default function CtaCard() {
                         className="btn-primary-khaslana mt-6 text-sm md:text-base"
                     >
                         Lengkapi Sekarang
-                        <ArrowRight className="ps-1 h-5 w-5" />
+                        <ChevronRight className="ps-1 h-5 w-5" />
                     </Link>
                 </div>
             </div>

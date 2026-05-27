@@ -1,3 +1,5 @@
+import { usePage } from '@inertiajs/react';
+
 import {
     MessageCircle,
     MapPin,
@@ -13,6 +15,23 @@ interface HeroSectionProps {
 export default function HeroSection({
     umkmData,
 }: HeroSectionProps) {
+    const page = usePage<{
+        storeStatus: {
+            isOpen: boolean
+        }
+    }>()
+
+    const { storeStatus } = page.props
+
+    const categories: Category[] = [
+        {
+            name: 'Minuman',
+        },
+        {
+            name: 'Makanan',
+        },
+    ];
+
     return (
         <section className="flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between gap-10 lg:gap-16 w-full">
             <div className="flex flex-col flex-1 w-full">
@@ -91,10 +110,24 @@ export default function HeroSection({
                             backdrop-blur-md
                         "
                     >
-                        <span className="text-[10px] lg:text-[10.5px] font-bold uppercase tracking-wider text-[#99FF33]">
-                            Sedang Buka
+                        <span
+                            className={`text-[10px] lg:text-[10.5px] font-bold uppercase tracking-wider ${storeStatus.isOpen
+                                    ? 'text-[#99FF33]'
+                                    : 'text-gray-400'
+                                }`}
+                        >
+                            {storeStatus.isOpen
+                                ? 'Sedang Buka'
+                                : 'Sedang Tutup'}
                         </span>
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#99FF33]" />
+                        <span className="relative flex h-2.5 w-2.5">
+                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                                storeStatus.isOpen ? 'bg-green-400' : ''
+                            }`}></span>
+                            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                                storeStatus.isOpen ? 'bg-green-500' : 'bg-gray-400'
+                            }`}></span>
+                        </span>
                     </div>
                     <span className="text-white text-2xl font-medium">
                         {umkmData.open_time === '24 Jam'

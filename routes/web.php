@@ -9,6 +9,7 @@ use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UmkmController;
+// use App\Http\Controllers\StoreStatusController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -82,6 +83,10 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm/detail/{umkm_id}', 'detail')->name('umkm.detail');
     Route::get('/umkm/products', 'umkmProducts')->name('umkm.products');
 });
+
+// Route::get('/store-status', [StoreStatusController::class, 'index']);
+
+// Route::post('/store-status', [StoreStatusController::class, 'update']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/api.php';

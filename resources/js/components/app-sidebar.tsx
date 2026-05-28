@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 import { dashboard, product } from '@/routes';
-import { stayPoint } from '@/routes/umkm';
+import { stayPoint } from '@/routes';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 

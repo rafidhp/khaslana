@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class UmkmLocation extends Model
 {
-    public $timestamps = false;
     protected $table = 'umkm_locations';
     protected $fillable = [
         'umkm_id',

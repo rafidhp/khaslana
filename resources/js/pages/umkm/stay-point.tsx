@@ -85,20 +85,13 @@ export default function StayPoint() {
         );
     };
 
-    // 2. Fungsi Ambil Alamat (Reverse Geocoding via OpenStreetMap)
+    // 2. Fungsi Ambil Alamat (Reverse Geocoding via OpenStreetMap) - Versi Full Address
     const fetchAddress = async (lat: number, lng: number, isPrev: boolean = false) => {
         try {
             const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=id`);
             
             if (res.data && res.data.display_name) {
-                const addressArray = res.data.display_name.split(',').map((s: string) => s.trim());
-                const filteredAddress = addressArray.filter((part: string) => {
-                    const isCountry = part.toLowerCase() === 'indonesia';
-                    const isRegion = part.toLowerCase() === 'jawa';
-                    return !isCountry && !isRegion;
-                });
-                
-                const finalAddress = filteredAddress.join(', ');
+                const finalAddress = res.data.display_name;
                 
                 if (isPrev) {
                     setPrevAddress(finalAddress);
@@ -127,7 +120,7 @@ export default function StayPoint() {
                 
                 setPosition([currentLat, currentLng]); 
 
-                axios.post('/umkm/update-location', {
+                axios.post('/stay-point/update-location', {
                     latitude: currentLat,
                     longitude: currentLng,
                     is_active: true,
@@ -171,7 +164,7 @@ export default function StayPoint() {
 
                 setPosition([currentLat, currentLng]); 
 
-                axios.post('/umkm/update-location', {
+                axios.post('/stay-point/update-location', {
                     latitude: currentLat,
                     longitude: currentLng,
                     is_active: true,
@@ -202,7 +195,7 @@ export default function StayPoint() {
 
     const confirmTutup = () => {
         setIsLoading(true);
-        axios.post('/umkm/update-location', {
+        axios.post('/stay-point/update-location', {
             is_active: false,
             status: 'TUTUP'
         }).then(() => {
@@ -220,7 +213,7 @@ export default function StayPoint() {
         const checkInitialStatus = async () => {
             setIsLoading(true);
             try {
-                const res = await axios.get('/umkm/current-location-status');
+                const res = await axios.get('/stay-point/current-location-status');
                 const currentStatus = res.data.status;
                 setStatus(currentStatus);
                 

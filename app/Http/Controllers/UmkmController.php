@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserProfile;
+use App\Models\Review\Review;
 use App\Models\UMKM\Umkm;
+use App\Models\Product\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -21,6 +22,7 @@ class UmkmController extends Controller
             'umkmImages',
             'umkmLocations',
         )->get();
+
         return Inertia::render('user/umkm', [
             'umkms' => $umkms,
         ]);
@@ -38,8 +40,22 @@ class UmkmController extends Controller
             'umkmImages',
             'umkmLocations',
         )->firstOrFail();
+        $reviews = Review::where('umkm_id', $umkm_id)->with(
+            'reviewLikes',
+        )->get();
+        $products = Product::where('umkm_id', $umkm_id)
+        ->where('is_archived', false)
+        ->with(
+            'productImages',
+            'productVariants',
+            'promo',
+            'category',
+        )->get();
+
         return Inertia::render('user/umkm-user/detail-umkm/index', [
             'umkmData' => $umkm,
+            'reviews' => $reviews,
+            'products' => $products,
         ]);
     }
 

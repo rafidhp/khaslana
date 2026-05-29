@@ -1,7 +1,7 @@
 import type { Umkm } from "@/types/umkm";
 
 interface AboutLocationProps {
-    umkmData: Umkm[];
+    umkmData: Umkm;
 }
 
 export default function AboutLocation({

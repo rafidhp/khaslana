@@ -1,5 +1,3 @@
-import { usePage } from '@inertiajs/react';
-
 import {
     MessageCircle,
     MapPin,
@@ -8,14 +6,24 @@ import {
 import DefaultStore from "@/assets/images/umkm-user/default-store.png";
 import type { Umkm } from "@/types/umkm";
 
+interface Review {
+    id: number;
+    product_id: number;
+    rating: number;
+    comment: string;
+}
+
 interface HeroSectionProps {
-    umkmData: Umkm[];
+    umkmData: Umkm;
+    reviews: Review[];
 }
 
 export default function HeroSection({
     umkmData,
+    reviews,
 }: HeroSectionProps) {
-    let status = umkmData.status === 'BUKA';
+    const status = umkmData.status === 'BUKA';
+    const totalReviews = reviews.length;
 
     return (
         <section className="flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between gap-10 lg:gap-16 w-full">
@@ -35,7 +43,11 @@ export default function HeroSection({
                             {umkmData.average_rating}
                         </span>
                         <span className="text-sm md:text-base text-[#989898]">
-                            (240+ Ulasan)
+                            {totalReviews > 0 && (
+                                <span className="text-sm md:text-base text-[#989898]">
+                                    ({totalReviews} Ulasan)
+                                </span>
+                            )}
                         </span>
                     </div>
                     <div className="w-px h-6 md:h-7 bg-white/20" />

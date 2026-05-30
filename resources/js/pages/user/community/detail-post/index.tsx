@@ -222,12 +222,17 @@ export default function DetailPost() {
                         post.comments
                         .slice()
                         .sort((a, b) => {
-                            const isMeA = currentUser && a.user.id === currentUser.id;
-                            const isMeB = currentUser && b.user.id === currentUser.id;
+                            const isMeA = currentUser && a.user.id === currentUser.id ? 1 : 0;
+                            const isMeB = currentUser && b.user.id === currentUser.id ? 1 : 0;
 
-                            if (isMeA && isMeB) return -1;
-                            if (!isMeA && isMeB) return 1;
-                            return 0;
+                            const sortByMe = isMeB - isMeA;
+
+                            if (sortByMe !== 0) return sortByMe;
+
+                            const likesA = a.comment_likes?.length || 0;
+                            const likesB = b.comment_likes?.length || 0;
+
+                            return likesB - likesA;
                         })
                         .map((comment) => (
                             <div key={comment.id} className='flex flex-col gap-5 mx-3'>

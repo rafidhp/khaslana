@@ -19,6 +19,7 @@ import {
     logout
 } from "@/routes";
 import { profile } from "@/routes";
+import { myPosts } from "@/routes/community";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -210,10 +211,10 @@ export default function Navbar() {
                                         </Link>
                                         {!user.is_umkm && (
                                             <Link
-                                                href="/dashboard"
+                                                href={myPosts()}
                                                 className="nav-link"
                                             >
-                                                Dashboard
+                                                Postingan
                                                 <LayoutDashboard className="w-5 h-5" />
                                             </Link>
                                         )}
@@ -280,7 +281,7 @@ export default function Navbar() {
                                                 </Link>
 
                                                 <Link
-                                                    href={community()}
+                                                    href={myPosts()}
                                                     className="
                                                         flex items-center gap-3
                                                         px-5 py-4

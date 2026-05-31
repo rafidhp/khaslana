@@ -59,7 +59,9 @@ export default function CommunityIndex() {
 
     const { posts } = usePage().props as unknown as IndexProps;
 
-    const handleLike = (postId: number) => {
+    const handleLike = (e: React.MouseEvent, postId: number) => {
+        e.stopPropagation();
+        e.preventDefault();
         router.post(`/community/${postId}/like`, {}, {
             preserveScroll: true,
             onSuccess: () => {
@@ -71,7 +73,9 @@ export default function CommunityIndex() {
         })
     }
 
-    const handleDeletePost = (postId: number) => {
+    const handleDeletePost = (e: React.MouseEvent, postId: number) => {
+        e.stopPropagation();
+        e.preventDefault();
         if (confirm('Yakin ingin menghapus postingan ini?')) {
             router.delete(`/community/${postId}`);
         }
@@ -113,7 +117,7 @@ export default function CommunityIndex() {
                                             </div>
                                         </div>
                                         {isMyPost && (
-                                            <button onClick={() => handleDeletePost(post.id)}
+                                            <button onClick={(e) => handleDeletePost(e, post.id)}
                                                 className="post-options hover:text-[#99ff33] cursor-pointer">
                                                 <Trash className="w-4"/>
                                             </button>
@@ -136,7 +140,7 @@ export default function CommunityIndex() {
 
                                 <div className="post-btn mt-2.75">
                                     <div className="post-options flex gap-4 items-center bg-transparent text-[#adaaaa] cursor-pointer">
-                                        <button type="button" onClick={() => handleLike(post.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${post.is_liked ? 'text-[#99ff33]' : ''}`}>
+                                        <button type="button" onClick={(e) => handleLike(e, post.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${post.is_liked ? 'text-[#99ff33]' : ''}`}>
                                             <ThumbsUp className={`w-4 h-4`} /> 
                                             {post.post_likes.length}
                                         </button>

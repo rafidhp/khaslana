@@ -1,15 +1,7 @@
-import { usePage, Link, router } from "@inertiajs/react";
+import { usePage, Link, router, Head } from "@inertiajs/react";
 import { Plus, Trash } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import UnusedNavLayout from "@/layouts/unused-nav-layout";
-
-interface SharedProps {
-    auth:  {
-        user: {
-            id: number;
-            name: string;
-        } | null;
-    };
-}
 
 interface User {
     id: number;
@@ -68,8 +60,7 @@ interface MyPostsProps {
 }
 
 export default function MyPosts() {
-    const { auth } = usePage().props as unknown as SharedProps;
-    const currentUser = auth.user;
+    const { user } = useAuth();
 
     const { posts } = usePage().props as unknown as MyPostsProps;
 
@@ -81,6 +72,13 @@ export default function MyPosts() {
 
     return (
         <UnusedNavLayout backHref="/community">
+            <Head title='Postingan Anda'>
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
             <section className="community-header flex justify-between w-full pb-10 max-md:pb-5 gap-2">
                 <h2 className="text-[#99ff33] font-medium text-2xl md:text-5xl">Kelola Postingan</h2>
                 <Link href="/community/create-post"
@@ -91,7 +89,7 @@ export default function MyPosts() {
             </section>
             {posts && posts.length > 0 ? (
                 posts.map((post) => {
-                    const isMyPost = currentUser && post.user_id === currentUser.id;
+                    const isMyPost = user && post.user_id === user.id;
 
                 return (
                     <Link href={`/community/${post.id}`} key={post.id} className="post-card w-full flex flex-col gap-4 bg-[#222] p-8 rounded-[15px]">

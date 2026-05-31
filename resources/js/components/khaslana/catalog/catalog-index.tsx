@@ -41,7 +41,7 @@ export default function CatalogIndex({
     }, [products, search, selectedCategory]);
 
     return (
-        <div className="flex flex-col w-full px-6 pt-32 lg:px-[70px] mx-auto">
+        <div className="flex flex-col w-full px-6 pt-32 lg:px-17.5 mx-auto">
             <HeroSection
                 categories={categories}
                 search={search}

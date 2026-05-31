@@ -27,9 +27,16 @@ class CatalogController extends Controller
     }
 
     public function show($id) {
-        $product = Product::where('id', $id)->firstOrFail();
+        $product = Product::where('id', $id)->with([
+            'category',
+            'promo',
+            'productImages',
+            'productVariants',
+            'umkm',
+            'umkm.city',
+        ])->first();
 
-        return Inertia::render('user/catalog/index', [
+        return Inertia::render('user/catalog/detail', [
             'product' => $product,
         ]);
     }

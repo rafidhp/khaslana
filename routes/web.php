@@ -78,7 +78,6 @@ Route::get('/community', [CommunityController::class, 'index'])->name('community
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
-
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
 });
 

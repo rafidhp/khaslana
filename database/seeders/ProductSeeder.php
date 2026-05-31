@@ -10,6 +10,7 @@ use App\Models\Product\Product;
 use App\Models\Product\ProductImage;
 use App\Models\Product\ProductVariant;
 use App\Models\UMKM\Umkm;
+use App\Models\Product\Attribute;
 
 class ProductSeeder extends Seeder
 {
@@ -20,6 +21,18 @@ class ProductSeeder extends Seeder
     {
         $categories = Category::all();
         $umkms = Umkm::all();
+
+         $colorValues = Attribute::where('name', 'Warna')
+            ->first()
+            ->attributeValues;
+
+        $sizeValues = Attribute::where('name', 'Ukuran')
+            ->first()
+            ->attributeValues;
+
+        $conditionValues = Attribute::where('name', 'Kondisi')
+            ->first()
+            ->attributeValues;
 
         $productNames = [
             'Ayam Geprek',
@@ -64,11 +77,29 @@ class ProductSeeder extends Seeder
                     ]);
                 }
 
-                for ($j = 0; $j < rand(1, 3); $j++) {
-                    ProductVariant::create([
+                for ($j = 0; $j < rand(2, 5); $j++) {
+                    $color = $colorValues->random();
+                    $size = $sizeValues->random();
+                    $condition = $conditionValues->random();
+
+                    $basePrice = rand(10000, 100000);
+
+                    $finalPrice =
+                        $basePrice +
+                        $color->additional_price +
+                        $size->additional_price +
+                        $condition->additional_price;
+
+                    $variant = ProductVariant::create([
                         'product_id' => $product->id,
-                        'price' => rand(10000, 500000),
+                        'price' => $finalPrice,
                         'stock' => rand(0, 100),
+                    ]);
+
+                    $variant->attributeValues()->attach([
+                        $color->id,
+                        $size->id,
+                        $condition->id,
                     ]);
                 }
             }

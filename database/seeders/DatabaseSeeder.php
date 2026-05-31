@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             IndonesiaSeeder::class,
             CategorySeeder::class,
+            AttributeSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

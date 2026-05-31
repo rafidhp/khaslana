@@ -3,6 +3,7 @@ import { PackageOpen } from 'lucide-react';
 import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
+import { show } from '@/routes/catalog';
 import type { Product } from '@/types/product';
 
 interface ProductCardProps {
@@ -13,7 +14,7 @@ export function ProductCard({
     products,
 }: ProductCardProps) {
     const handleCardClicked = (id: number) => {
-        router.visit(`/catalog/${id}`);
+        router.visit(show(id).url);
     }
 
     const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, id: number) => {

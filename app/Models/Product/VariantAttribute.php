@@ -3,10 +3,11 @@
 namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class VariantAttribute extends Model
+class VariantAttribute extends Pivot
 {
-    protected $table = 'variant_attribites';
+    protected $table = 'variant_attributes';
     protected $fillable = [
         'variant_id',
         'attribute_value_id',

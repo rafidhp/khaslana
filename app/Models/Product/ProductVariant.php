@@ -21,9 +21,8 @@ class ProductVariant extends Model
     }
 
     // from other product table
-    public function attributeValue() {
+    public function attributeValues() {
         return $this->belongsToMany(AttributeValue::class, 'variant_attributes', 'variant_id', 'attribute_value_id')
-                    ->using(VariantAttribute::class)
                     ->withTimestamps();
     }
 

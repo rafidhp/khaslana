@@ -8,11 +8,9 @@ interface IndexProps {
 export default function Index({
     product,
 }: IndexProps) {
-    console.log(product);
-
     return (
         <div className="flex flex-col">
-            <HeroSection />
+            <HeroSection product={product} />
         </div>
     )
 }

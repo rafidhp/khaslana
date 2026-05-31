@@ -1,4 +1,5 @@
 import type { ProductVariant } from "@/types/attribute";
+import type { Umkm } from "@/types/umkm";
 
 export interface Product {
     id: number;
@@ -38,16 +39,5 @@ export interface Product {
 
     product_variants?: ProductVariant[];
 
-    umkm?: {
-        id: number;
-        store_name: string;
-        type: 'TETAP' | 'KELILING';
-        status: 'BUKA' | 'TUTUP';
-        average_rating: number;
-
-        city?: {
-            code: string;
-            name: string;
-        };
-    };
+    umkm?: Umkm;
 }

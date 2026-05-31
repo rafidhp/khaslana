@@ -41,4 +41,8 @@ class CatalogController extends Controller
             'product' => $product,
         ]);
     }
+
+    public function dialogStore($product_id) {
+        
+    }
 }

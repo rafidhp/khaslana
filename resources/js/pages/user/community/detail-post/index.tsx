@@ -41,6 +41,7 @@ interface Comment {
     is_liked: boolean;
     created_at: string;
 }
+
 interface Post {
     id: number;
     user_id: number;

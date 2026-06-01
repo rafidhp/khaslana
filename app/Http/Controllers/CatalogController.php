@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product\Product;
 use App\Models\UMKM\Umkm;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Review\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Exception;
 
 class CatalogController extends Controller
 {
@@ -39,7 +42,7 @@ class CatalogController extends Controller
                 $query->latest();
             },
             'reviews.user',
-            'reviews.review_likes'
+            'reviews.reviewLikes'
         ])->firstOrFail();
 
         return Inertia::render('user/catalog/detail', [
@@ -47,7 +50,36 @@ class CatalogController extends Controller
         ]);
     }
 
-    public function dialogStore($product_id) {
-        
+    public function storeReview(Request $request, $id) {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+            'rating' => 'required|numeric|min:1|max:5'
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        Review::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+            'umkm_id' => $product->umkm_id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function deleteReview(Request $request, Product $product, Review $review) {
+        if ($review->user_id !== Auth::id()) {
+            return redirect()->back()->withErrors(['error' => 'Anda tidak memiliki akses untuk menghapus ulasan ini!']);
+        }
+
+        try {
+            $review->delete();
+
+            return redirect()->back()->with('message', 'Ulasan berhasil dihapus!');
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus ulasan: ' . $e->getMessage()]);
+        }
     }
 }

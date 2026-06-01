@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CatalogController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('umkm.stay-point');
 
 
-    // store management
+    // store management routes
     Route::controller(StoreController::class)->group(function() {
         Route::get('/store-management', 'index')->name('storeManagement');
         Route::post('/store-management/store', 'store')->name('storeManagement.store');
@@ -57,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
     });
 
-    // Community page
+    // community routes
     Route::controller(CommunityController::class)->group(function() {
         Route::get('/community/create-post', 'create')->name('community.create');
         Route::post('/community', 'store')->name('community.store');
@@ -71,6 +73,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/community/{post}/comment', 'storeComment')->name('community.comments.store');
         Route::post('/community/{post}/comment/{comment}/like', 'toggleLikeComment')->name('community.comments.like');
         Route::delete('/community/{post}/comment/{comment}', 'deleteComment')->name('community.comments.delete');
+    });
+
+    // catalog routes
+    Route::controller(OrderController::class)->group(function () {
+        Route::post('/order/store/{product_id}')->name('order.store');
+    });
+
+    Route::controller(CartController::class)->group(function () {
+        Route::get('/cart', 'index')->name('cart');
     });
 });
 

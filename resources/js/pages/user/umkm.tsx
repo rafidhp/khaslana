@@ -12,7 +12,7 @@ export default function Umkm({
 }: UmkmPageProps) {
     return (
         <UserLayout>
-            <Head>
+            <Head title='Umkm'>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"

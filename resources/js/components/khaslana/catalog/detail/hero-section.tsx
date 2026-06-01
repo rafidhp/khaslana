@@ -1,12 +1,8 @@
-import {
-    Minus,
-    Plus,
-    ShieldCheck,
-    Truck,
-} from "lucide-react";
+import { ShieldCheck, Truck } from "lucide-react";
 import { useState } from "react";
-import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
+import AddToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import DefaultProduct from "@/assets/images/product/default-product.png";
+import VariantDialog from "@/components/khaslana/catalog/detail/variant-dialog";
 import type { Product } from "@/types/product";
 
 interface HeroSectionProps {
@@ -16,17 +12,31 @@ interface HeroSectionProps {
 export default function HeroSection({
     product,
 }: HeroSectionProps) {
-    const [quantity, setQuantity] = useState(1);
     const variant = product.product_variants?.[0];
     const price = variant?.price ?? 0;
     const stock = variant?.stock ?? 0;
     const image = product.product_images?.[0]?.image;
     const rating = product.umkm?.average_rating ?? 0;
     const formatPrice = (value: number) => new Intl.NumberFormat("id-ID").format(value);
+    const [openVariant, setOpenVariant] = useState(false);
+    const [actionType, setActionType] = useState<
+        "buy-now" | "add-cart"
+    >("buy-now");
+    const isShippingFeature = product.umkm?.is_shipping_feature === true;
+
+    const handleBuyNowClicked = () => {
+        setActionType("buy-now");
+        setOpenVariant(true);
+    };
+
+    const handleAddCartClicked = () => {
+        setActionType("add-cart");
+        setOpenVariant(true);
+    };
 
     return (
         <section className="w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {/* left section */}
                 <div className="relative">
                     {product.promo && (
@@ -56,7 +66,7 @@ export default function HeroSection({
                                 image ? `/storage/${image}` : DefaultProduct
                             }
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                         />
                     </div>
                 </div>
@@ -129,7 +139,7 @@ export default function HeroSection({
                                     </p>
                                 </div>
                             </div>
-                            {product.umkm?.is_shipping_feature &&
+                            {isShippingFeature && (
                                 <div className="bg-[#22202C] rounded-2xl p-4 flex items-center gap-3">
                                     <div
                                         className="
@@ -153,55 +163,14 @@ export default function HeroSection({
                                         </p>
                                     </div>
                                 </div>
-                            }
+                            )}
                         </div>
-                        <p className="mt-4 text-gray-400 leading-8 line-clamp-6">
+                        <p className="mt-4 text-gray-400 text-base leading-8 line-clamp-6">
                             {product.description}
                         </p>
                     </div>
                     <div>
                         <div className="flex items-center gap-5 mt-10">
-                            <div
-                                className="
-                                    flex
-                                    items-center
-                                    border
-                                    border-gray-700
-                                    rounded-2xl
-                                    overflow-hidden
-                                "
-                            >
-                                <button
-                                    onClick={() =>
-                                        setQuantity((prev) =>
-                                            Math.max(1, prev - 1)
-                                        )
-                                    }
-                                    className="h-12 w-12 flex items-center justify-center text-white cursor-pointer"
-                                >
-                                    <Minus size={18} />
-                                </button>
-                                <span
-                                    className="
-                                        w-12
-                                        text-center
-                                        text-white
-                                        font-semibold
-                                    "
-                                >
-                                    {quantity}
-                                </span>
-                                <button
-                                    onClick={() =>
-                                        setQuantity((prev) =>
-                                            Math.min(stock, prev + 1)
-                                        )
-                                    }
-                                    className="h-12 w-12 flex items-center justify-center text-white cursor-pointer"
-                                >
-                                    <Plus size={18} />
-                                </button>
-                            </div>
                             <span className="text-gray-400">
                                 Stok Tersedia:
                                 <span className="text-white font-semibold ml-1">
@@ -210,10 +179,14 @@ export default function HeroSection({
                             </span>
                         </div>
                         <div className="flex gap-4 mt-8">
-                            <button className="btn-primary-khaslana w-full cursor-pointer">
+                            <button
+                                onClick={handleBuyNowClicked}
+                                className="btn-primary-khaslana w-full cursor-pointer"
+                            >
                                 Beli Sekarang
                             </button>
                             <button
+                                onClick={handleAddCartClicked}
                                 className="
                                     h-14 w-14 aspect-square
                                     rounded-full
@@ -223,15 +196,30 @@ export default function HeroSection({
                                     items-center
                                     justify-center
                                     text-white
-                                    hover:cursor-pointer
+                                    hover:cursor-pointer hover:bg-white/10
                                 "
                             >
-                                <img src={addToCartIcon} alt="add to cart" className="pb-1 h-6 w-6" />
+                                <img
+                                    src={AddToCartIcon}
+                                    alt="add to cart"
+                                    className="pb-1 h-6 w-6"
+                                />
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+            {
+                openVariant && (
+                    <VariantDialog
+                        key={`${product.id}-${actionType}`}
+                        product={product}
+                        open={openVariant}
+                        onClose={() => setOpenVariant(false)}
+                        actionType={actionType}
+                    />
+                )
+            }
         </section>
     )
 }

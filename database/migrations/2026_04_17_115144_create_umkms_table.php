@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('umkms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
-            $table->char('province_id', 2); // ini tuh sebenernya code yhh, cuma gua males ganti namanya, apalagi di fe owakoakw
-            $table->char('city_id', 4);
-            $table->char('district_id', 6);
-            $table->char('village_id', 10);
+            $table->char('province_id', 2)->unique(); // ini tuh sebenernya code yhh, cuma gua males ganti namanya, apalagi di fe owakoakw
+            $table->char('city_id', 4)->unique();
+            $table->char('district_id', 7)->unique();
+            $table->char('village_id', 10)->unique();
             $table->string('store_name');
             $table->text('description');
             $table->enum('type', ['TETAP', 'KELILING']);

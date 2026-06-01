@@ -6,6 +6,7 @@ import {
     ChevronDown,
     LayoutDashboard,
     ShoppingCart,
+    Store,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import "@/components/khaslana/css/navbar.css";
@@ -40,9 +41,10 @@ export default function Navbar() {
             { id: 2, name: "UMKM", href: umkm().url },
             { id: 3, name: "Katalog", href: catalog().url },
             { id: 4, name: "Komunitas", href: community().url },
-            ...(user.is_umkm
-                ? [{ id: 5, name: "Kelola Toko", href: dashboard().url }]
-                : []),
+            { id: 5, name: "Stay Point", href: "url nya disini jak" },
+            // ...(user.is_umkm
+            //     ? [{ id: 5, name: "Kelola Toko", href: dashboard().url }]
+            //     : []),
         ]
         : [
             { id: 1, name: "UMKM", href: umkm().url },
@@ -158,7 +160,7 @@ export default function Navbar() {
                     <li className={user ? "navbar-profile-item" : ""}>
                         {
                             user ? (
-                                <div className="flex flex-col-reverse min-[970px]:flex-row items-center justify-center gap-4 md:gap-8">
+                                <div className="flex flex-col-reverse min-[970px]:flex-row items-end min-[970px]:items-center justify-center gap-4 md:gap-8">
                                     <div className="flex cursor-pointer">
                                         <Link href={cart()}>
                                             <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200" />
@@ -222,15 +224,22 @@ export default function Navbar() {
                                                 Profile
                                                 <User className="w-5 h-5" />
                                             </Link>
-                                            {!user.is_umkm && (
+                                            {user.is_umkm && (
                                                 <Link
-                                                    href={myPosts()}
+                                                    href={dashboard()}
                                                     className="nav-link"
                                                 >
-                                                    Postingan
-                                                    <LayoutDashboard className="w-5 h-5" />
+                                                    Kelola Toko
+                                                    <Store className="w-5 h-5" />
                                                 </Link>
                                             )}
+                                            <Link
+                                                href={myPosts()}
+                                                className="nav-link"
+                                            >
+                                                Postingan
+                                                <LayoutDashboard className="w-5 h-5" />
+                                            </Link>
                                             <Link
                                                 href={logout()}
                                                 method="post"
@@ -292,6 +301,25 @@ export default function Navbar() {
                                                             Profile
                                                         </span>
                                                     </Link>
+
+                                                    {user.is_umkm && (
+                                                        <Link
+                                                            href={dashboard()}
+                                                            className="
+                                                                flex items-center gap-3
+                                                                px-5 py-4
+                                                                text-white
+                                                                transition
+                                                                hover:bg-white/5
+                                                                border-b border-white/5
+                                                            "
+                                                        >
+                                                            <Store className="w-5 h-5" />
+                                                            <span>
+                                                                Kelola Toko
+                                                            </span>
+                                                        </Link>
+                                                    )}
 
                                                     <Link
                                                         href={myPosts()}

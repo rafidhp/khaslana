@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -96,6 +97,10 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm', 'index')->name('umkm');
     Route::get('/umkm/detail/{umkm_id}', 'detail')->name('umkm.detail');
     Route::get('/umkm/products', 'umkmProducts')->name('umkm.products');
+});
+
+Route::controller(ChatbotController::class)->group(function () {
+    Route::get('/help', 'index')->name('chatbot');
 });
 
 require __DIR__.'/settings.php';

@@ -101,6 +101,7 @@ Route::controller(UmkmController::class)->group(function() {
 
 Route::controller(ChatbotController::class)->group(function () {
     Route::get('/help', 'index')->name('chatbot');
+    Route::post('/help/store', 'message')->name('chatbot.store');
 });
 
 require __DIR__.'/settings.php';

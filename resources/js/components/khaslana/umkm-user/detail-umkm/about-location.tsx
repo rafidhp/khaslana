@@ -1,3 +1,4 @@
+import LocationMapCard from "@/components/khaslana/live-tracking/location-map-card";
 import type { Umkm } from "@/types/umkm";
 
 interface AboutLocationProps {
@@ -7,8 +8,9 @@ interface AboutLocationProps {
 export default function AboutLocation({
     umkmData,
 }: AboutLocationProps) {
+    const locationData = umkmData.umkm_locations?.[0] ?? null;
     return (
-        <div className="flex justify-between items-center gap-12 mt-12">
+        <div className="flex justify-between items-start gap-12 mt-12">
             {/* left section */}
             <div className="flex flex-col w-full">
                 <div>
@@ -27,7 +29,7 @@ export default function AboutLocation({
                     <h2 className="text-xl md:text-2xl font-bold">Lokasi</h2>
                 </div>
                 <div className="flex mt-2">
-                    <span>lokasi disini yaa jakk</span>
+                    <LocationMapCard umkmData={umkmData} locationData={locationData} />
                 </div>
             </div>
         </div>

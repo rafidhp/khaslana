@@ -17,14 +17,20 @@ interface Props {
     onPinClick: (node: RouteNode) => void;
 }
 
-// Bikin Pin Pake Ikon Lucide
-const LucidePinIcon = L.divIcon({
-    className: '',
+// 1. UBAH ICON JADI FUNGSI DINAMIS
+// Menerima parameter isActive (boolean) untuk nentuin warna fill-nya
+const createPinIcon = (isActive: boolean) => L.divIcon({
+    className: 'bg-transparent', // Biar nggak ada background putih bawaan Leaflet
     html: renderToString(
-        <MapPin size={38} color="white" fill="#EA4335" strokeWidth={2} />
+        <MapPin 
+            size={isActive ? 42 : 38} // Opsional: Bikin pin yang diklik sedikit lebih besar
+            color={isActive ? "#121212" : "white"} // Outline hitam saat aktif biar kontras sama warna hijau neon
+            fill={isActive ? "#96FC30" : "#EA4335"} // Ini warna saklar lu (Hijau Neon / Merah)
+            strokeWidth={isActive ? 2.5 : 2} 
+        />
     ),
-    iconSize: [38, 38],
-    iconAnchor: [19, 38],
+    iconSize: isActive ? [42, 42] : [38, 38],
+    iconAnchor: isActive ? [21, 42] : [19, 38], // Anchor disesuaikan sama size biar ujung pin tetap presisi di jalan
 });
 
 // Komponen ajaib buat nge-zoom peta otomatis biar semua pin kelihatan
@@ -40,8 +46,10 @@ function FitBounds({ nodes }: { nodes: RouteNode[] }) {
 }
 
 export default function MapViewer({ nodes, onPinClick }: Props) {
-    // Array ini nyimpen koordinat array [lat, lng]
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
+    
+    // 2. TAMBAH STATE BUAT NGINGET PIN YANG DIKLIK
+    const [activePinIndex, setActivePinIndex] = useState<number | null>(null);
 
     // Tembak OSRM buat bikin garis belok-belok ngikutin jalan raya
     useEffect(() => {
@@ -49,28 +57,39 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
 
         const fetchRoute = async () => {
             try {
-                const coordinatesString = nodes.map(n => `${n.longitude},${n.latitude}`).join(';');
-                const url = `https://router.project-osrm.org/route/v1/driving/${coordinatesString}?overview=full&geometries=geojson`;
-                
-                const res = await axios.get(url);
-                if (res.data.routes && res.data.routes.length > 0) {
-                    // 1. Ambil koordinat aspal dari OSRM (format Lat, Lng)
-                    // FIX ESLINT: Ganti (c: any) jadi (c: [number, number])
-                    const osrmCoords = res.data.routes[0].geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
+                const finalFullPath: [number, number][] = [];
+
+                // 1. KITA PECAH REQUEST PER SEGMEN (A->B, B->C, dst)
+                const segmentPromises = [];
+                for (let i = 0; i < nodes.length - 1; i++) {
+                    const startNode = nodes[i];
+                    const endNode = nodes[i + 1];
+                    const url = `https://router.project-osrm.org/route/v1/driving/${startNode.longitude},${startNode.latitude};${endNode.longitude},${endNode.latitude}?overview=full&geometries=geojson`;
                     
-                    // 2. AMBIL KOORDINAT PIN ASLI (Awal dan Akhir)
-                    const firstNodeCoord: [number, number] = [nodes[0].latitude, nodes[0].longitude];
-                    const lastNodeCoord: [number, number] = [nodes[nodes.length - 1].latitude, nodes[nodes.length - 1].longitude];
-                    
-                    // 3. JAHIT MANUAL BIAR GARIS NEMPEL KE PIN!
-                    const finalPath = [
-                        firstNodeCoord, 
-                        ...osrmCoords, 
-                        lastNodeCoord
-                    ];
-                    
-                    setRoutePath(finalPath as [number, number][]);
+                    // Simpan promise request ke array
+                    segmentPromises.push(
+                        axios.get(url).then(res => ({ res, startNode, endNode }))
+                    );
                 }
+
+                // 2. TUNGGU SEMUA SEGMEN SELESAI DI-FETCH
+                const results = await Promise.all(segmentPromises);
+
+                // 3. JAHIT PAKSA SETIAP PIN KE DALAM GARIS ASPAL
+                results.forEach(({ res, startNode, endNode }) => {
+                    if (res.data.routes && res.data.routes.length > 0) {
+                        const osrmCoords = res.data.routes[0].geometry.coordinates.map((c: [number, number]) => [c[1], c[0]] as [number, number]);
+
+                        // Masukkan Pin Awal -> Rute Aspal -> Pin Akhir untuk segmen ini
+                        finalFullPath.push([startNode.latitude, startNode.longitude]);
+                        finalFullPath.push(...osrmCoords);
+                        finalFullPath.push([endNode.latitude, endNode.longitude]);
+                    }
+                });
+
+                // Set final array path yang udah tersambung rapi
+                setRoutePath(finalFullPath);
+
             } catch (error) {
                 console.error("Gagal memuat rute jalan dari OSRM", error);
             }
@@ -79,7 +98,6 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
         fetchRoute();
     }, [nodes]);
 
-    // Center default kalau gada data (Cibiru UPI area)
     const defaultCenter: [number, number] = [-6.9272, 107.7471];
 
     return (
@@ -96,66 +114,39 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
                     url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                     subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
                 />
-
-                {/* <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; <a href="https://carto.com/">CartoDB</a>'
-                /> */}
-
-                {/* <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; <a href="https://carto.com/">CartoDB</a>'
-                /> */}
                 
                 <FitBounds nodes={nodes} />
 
                 {/* Cetak Garis Ngikut Jalan (Google Maps Style) */}
                 {routePath.length > 0 && (
                     <>
-                        {/* GLOW (biar soft & nyala dikit) */}
                         <Polyline 
                             positions={routePath} 
-                            pathOptions={{ 
-                                color: '#4285F4',
-                                weight: 20,
-                                opacity: 0.15
-                            }} 
+                            pathOptions={{ color: '#4285F4', weight: 20, opacity: 0.15 }} 
                         />
-
-                        {/* OUTLINE (border jalan) */}
                         <Polyline 
                             positions={routePath} 
-                            pathOptions={{ 
-                                color: '#2b2b2b',
-                                weight: 16,
-                                opacity: 0.9,
-                                lineCap: 'round',
-                                lineJoin: 'round'
-                            }} 
+                            pathOptions={{ color: '#2b2b2b', weight: 16, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }} 
                         />
-
-                        {/* MAIN ROUTE (inti warna Google Maps) */}
                         <Polyline 
                             positions={routePath} 
-                            pathOptions={{ 
-                                color: '#99FF33',
-                                weight: 10,
-                                opacity: 1,
-                                lineCap: 'round',
-                                lineJoin: 'round'
-                            }} 
+                            pathOptions={{ color: '#99FF33', weight: 10, opacity: 1, lineCap: 'round', lineJoin: 'round' }} 
                         />
                     </>
                 )}
 
-                {/* Cetak Pin Lucide Merah */}
+                {/* 3. TERAPKAN WARNA KE MARKER */}
                 {nodes.map((node, index) => (
                     <Marker 
                         key={index} 
                         position={[node.latitude, node.longitude]} 
-                        icon={LucidePinIcon}
+                        // Cek apakah index ini yang lagi diklik, kalau iya lempar true
+                        icon={createPinIcon(activePinIndex === index)}
                         eventHandlers={{
-                            click: () => onPinClick(node), // Lempar data pin ke Induk saat diklik
+                            click: () => {
+                                setActivePinIndex(index); // Warnain pin ini jadi hijau
+                                onPinClick(node); // Lempar data pin ke Induk (MapDetailCard)
+                            },
                         }}
                     />
                 ))}

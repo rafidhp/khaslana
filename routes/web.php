@@ -44,11 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::controller(MappingController::class)->prefix('rute')->group(function () {
-        Route::get('/', 'index')->name('rute');
-
-        // (Opsional besok-besok) Kalau lu butuh endpoint API murni buat reload rute 
-        // tanpa reload halaman, lu bisa tambahin di sini:
-        // Route::get('/api-data', 'getRouteData')->name('rute.data');
+        Route::get('/api-data', 'getRouteData')->name('rute.data');
     });
 
 
@@ -94,6 +90,10 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm', 'index')->name('umkm');
     Route::get('/umkm/detail/{umkm_id}', 'detail')->name('umkm.detail');
     Route::get('/umkm/products', 'umkmProducts')->name('umkm.products');
+    Route::get('/umkm/navigasi/{umkm_id}', 'navigasi')->name('umkm.navigasi');
+    Route::get('/umkm/tracking/{umkm_id?}', 'tracking')->name('umkm.tracking');
+    Route::get('/umkm/rute/{umkm_id}', 'rute')->name('umkm.rute');
+    
 });
 
 require __DIR__.'/settings.php';

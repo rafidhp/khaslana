@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UMKM\Umkm;
-use App\Models\UMKM\UmkmLocation; // Pake model yang udah ada!
-use Inertia\Inertia;
+use App\Models\UMKM\UmkmLocation;
 use Illuminate\Support\Facades\Auth;
 
 class MappingController extends Controller
 {
-    public function index()
+    public function getRouteData()
     {
         $userId = Auth::id();
         $umkm = Umkm::query()->where('user_id', $userId)->first();
 
         if (!$umkm) {
-            return redirect()->back()->with('error', 'Data UMKM tidak ditemukan.');
+            return response()->json(['error' => 'Data UMKM tidak ditemukan.'], 404);
         }
 
         // THE GOLDEN QUERY: Ambil titik unik & jumlah mangkal
@@ -27,10 +26,7 @@ class MappingController extends Controller
             ->orderBy('first_visit', 'asc')
             ->get();
 
-        // Lempar data ke halaman React/Inertia
-        // Sesuaikan path 'UMKM/MapPoint' dengan struktur folder Pages lu
-        return Inertia::render('umkm/map-point', [
-            'routeNodes' => $routeNodes
-        ]);
+        // Lempar data ke Frontend dalam format JSON murni
+        return response()->json($routeNodes);
     }
 }

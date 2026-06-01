@@ -24,10 +24,11 @@ import {
     umkm,
     dashboard,
     cart,
-    logout
+    logout,
 } from "@/routes";
 import { profile } from "@/routes";
 import { myPosts } from "@/routes/community";
+
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -41,7 +42,7 @@ export default function Navbar() {
             { id: 2, name: "UMKM", href: umkm().url },
             { id: 3, name: "Katalog", href: catalog().url },
             { id: 4, name: "Komunitas", href: community().url },
-            { id: 5, name: "Stay Point", href: "url nya disini jak" },
+            { id: 5, name: "Stay Point", href: "/umkm/tracking" },
             // ...(user.is_umkm
             //     ? [{ id: 5, name: "Kelola Toko", href: dashboard().url }]
             //     : []),

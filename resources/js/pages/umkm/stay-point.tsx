@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ChevronLeft, Power, Map as MapIcon } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
+import EmptyRouteModal from '@/components/khaslana/live-tracking/empty-route-modal';
 import MapDetailCard from '@/components/khaslana/live-tracking/map-detail-card';
 import StayPointActions from '@/components/khaslana/live-tracking/stay-point-actions';
 import StayPointInfoCard from '@/components/khaslana/live-tracking/stay-point-info-card';
@@ -43,6 +44,7 @@ export default function StayPoint() {
     const [showRouteLayer, setShowRouteLayer] = useState(false);
     const [routeNodes, setRouteNodes] = useState<RouteNode[]>([]);
     const [selectedRoutePin, setSelectedRoutePin] = useState<RouteNode | null>(null);
+    const [showEmptyModal, setShowEmptyModal] = useState(false);
     
     const { user } = useAuth();
 
@@ -195,12 +197,8 @@ export default function StayPoint() {
             try {
                 const res = await axios.get('/rute/api-data');
                 if (res.data.length === 0) {
-                    setModalConfig({
-                        title: 'Waduh!',
-                        desc: 'Anda Belum Memiliki Data Mangkal!',
-                        type: 'danger' // Pakai style danger buat warning
-                    });
-                    setShowModal(true);
+                    setShowEmptyModal(true);
+                
                 } else {
                     setRouteNodes(res.data);
                     setShowRouteLayer(true);
@@ -328,6 +326,14 @@ export default function StayPoint() {
                         )}
                         
                     </div>
+
+                    {showEmptyModal && (
+                        <EmptyRouteModal
+                            title="Waduh!"
+                            description="Anda Belum Memiliki Data Mangkal!"
+                            redirectUrl="/stay-point"
+                        />
+                    )}
 
                     {/* Komponen Modal Global */}
                     <StayPointModal 

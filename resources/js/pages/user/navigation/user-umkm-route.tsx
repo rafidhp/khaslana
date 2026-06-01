@@ -1,3 +1,4 @@
+// :contentReference[oaicite:0]{index=0}
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
@@ -73,8 +74,8 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
     
         const fetchAddress = async () => {
             try {
-                setAddress(null); // 🔥 pindah ke dalam async
-    
+                setAddress(null);
+
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${node.latitude}&lon=${node.longitude}`
                 );
@@ -101,12 +102,18 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
                 onClick={() => window.history.back()}
                 className="absolute top-6 left-4 z-[1000] flex items-center gap-2 bg-[#1A1A1A]/90 text-white px-5 py-2.5 rounded-full"
             >
-                <ChevronLeft className="w-4 h-4 text-[#99FF33]" />
+                <ChevronLeft className="w-8 h-8 text-[#99FF33]" />
                 Kembali
             </button>
 
             {/* EMPTY */}
-            {isEmpty && <EmptyRouteModal />}
+            {isEmpty && (
+                <EmptyRouteModal
+                    title="Waduh!"
+                    description="UMKM Ini Belum Memiliki Data Mangkal!"
+                    redirectUrl={`/umkm/detail/${umkm.id}`}
+                />
+            )}
 
             {/* MAP */}
             {!isEmpty && (
@@ -123,7 +130,7 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
 
             {/* TITLE */}
             <div className="absolute top-20 left-4 z-[1000] bg-[#1A1A1A]/90 text-[#99FF33] px-4 py-2 rounded-lg">
-                Riwayat Rute "{umkm.store_name}"
+                Rute "{umkm.store_name}"
             </div>
 
             {/* FLOATING DETAIL */}

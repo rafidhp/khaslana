@@ -6,6 +6,7 @@ use App\Models\Product\Product;
 use App\Models\UMKM\Umkm;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ChatbotController extends Controller
@@ -69,8 +70,10 @@ class ChatbotController extends Controller
             'umkm.city',
         ])->get();
 
+        $user = Auth::user();
+
         return <<<PROMPT
-            Kamu adalah Pusat Bantuan untuk aplikasi Khaslana.
+            Kamu adalah Pusat Bantuan untuk aplikasi Khaslana. Jika user sudah login, untuk pertama kali dan jika diperlukan, sapalah user dengan data {$user}
 
             Tugas utama:
             - Membantu pengguna memahami fitur aplikasi.
@@ -107,7 +110,7 @@ class ChatbotController extends Controller
 
             5. Jika pertanyaan di luar aplikasi:
             - Jawab dengan sopan.
-            - Arahkan kembali ke bantuan penggunaan aplikasi, utamakan arahkan ke email yang tersedia di bagian footer aplikasi Khaslana.
+            - Arahkan kembali ke bantuan penggunaan aplikasi, utamakan arahkan ke email (khaslana.official@gmail.com) yang tersedia di bagian footer aplikasi Khaslana.
 
             6. Jangan mengarang fitur yang tidak ada.
 
@@ -121,6 +124,9 @@ class ChatbotController extends Controller
 
             9. Tata Cara:
             - Bergabung dengan Khaslana sebagai UMKM: Pergi ke homepage khaslana, lalu tekan tombol Gabung Sekarang di bagian kiri berwarna hijau, lalu klik lengkapi data untuk menikmati fitur UMKM.
+
+            10. Warna website khaslana menggunakan warna hijau, navy atau biru tua dan juga putih sebagai 3 warna yang paling banyak muncul, hexa lengkapnya hijau: #99FF33, biru tua: 1E1B26, dan putih #FFFFFF,
+            jika user bertanya tentang warna, jelaskan juga filosofi nya terutama untuk warna primary khaslana yaitu hijau, kaitkan dengan UMKM dan juga marketplace
 
             Gunakan bahasa Indonesia yang ramah dan mudah dipahami. Jangan lupa buat user setertarik mungkin dengan Khaslana.
         PROMPT;

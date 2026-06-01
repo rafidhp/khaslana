@@ -1,18 +1,18 @@
-import { Head } from '@inertiajs/react';
-import AboutIndex from '@/components/khaslana/about/about-index';
-import UserLayout from '@/layouts/user-layout';
+import { Head } from "@inertiajs/react";
+import ChatbotIndex from "@/components/khaslana/chatbot/chatbot-index";
+import UserLayout from "@/layouts/user-layout";
 
-export default function About() {
+export default function Cart() {
     return (
         <UserLayout>
-            <Head title='About'>
+            <Head title="Help">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
                     rel="stylesheet"
                 />
             </Head>
-            <AboutIndex />
+            <ChatbotIndex />
         </UserLayout>
-    );
+    )
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product\Product;
+use App\Models\UMKM\Umkm;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,10 +28,21 @@ class CatalogController extends Controller
     }
 
     public function show($id) {
-        $product = Product::where('id', $id)->firstOrFail();
+        $product = Product::where('id', $id)->with([
+            'category',
+            'promo',
+            'productImages',
+            'productVariants.attributeValues.attribute',
+            'umkm',
+            'umkm.city',
+        ])->firstOrFail();
 
-        return Inertia::render('user/catalog/index', [
+        return Inertia::render('user/catalog/detail', [
             'product' => $product,
         ]);
+    }
+
+    public function dialogStore($product_id) {
+        
     }
 }

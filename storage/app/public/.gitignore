@@ -1,2 +1,6 @@
 *
 !.gitignore
+!posts/
+!posts/*
+!products/
+!products/*

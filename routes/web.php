@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CatalogController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\MappingController;
 use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -48,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    // store management
+    // store management routes
     Route::controller(StoreController::class)->group(function() {
         Route::get('/store-management', 'index')->name('storeManagement');
         Route::post('/store-management/store', 'store')->name('storeManagement.store');
@@ -56,25 +59,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
     });
 
-    // Community page
+    // community routes
     Route::controller(CommunityController::class)->group(function() {
-        Route::get('/community/create-post', [CommunityController::class, 'create'])->name('community.create');
-        
-        Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
+        Route::get('/community/create-post', 'create')->name('community.create');
+        Route::post('/community', 'store')->name('community.store');
 
-        Route::get('/community/my-posts', [CommunityController::class, 'myPosts'])->name('community.myPosts');
+        Route::get('/community/my-posts', 'myPosts')->name('community.myPosts');
 
-        Route::get('/community/{post}', [CommunityController::class, 'show'])->name('community.show');
+        Route::get('/community/{post}', 'show')->name('community.show');
+        Route::delete('/community/{post}', 'destroy')->name('community.destroy');
+        Route::post('/community/{post}/like', 'toggleLike')->name('community.like');
 
-        Route::delete('/community/{post}', [CommunityController::class, 'destroy'])->name('community.destroy');
+        Route::post('/community/{post}/comment', 'storeComment')->name('community.comments.store');
+        Route::post('/community/{post}/comment/{comment}/like', 'toggleLikeComment')->name('community.comments.like');
+        Route::delete('/community/{post}/comment/{comment}', 'deleteComment')->name('community.comments.delete');
+    });
 
-        Route::post('/community/{post}/like', [CommunityController::class, 'toggleLike'])->name('community.like');
+    // catalog routes
+    Route::controller(OrderController::class)->group(function () {
+        Route::post('/order/store/{product_id}')->name('order.store');
+    });
 
-        Route::post('/community/{post}/comment', [CommunityController::class, 'storeComment'])->name('community.comments.store');
-
-        Route::post('/community/{post}/comment/{comment}/like', [CommunityController::class, 'toggleLikeComment'])->name('community.comments.like');
-
-        Route::delete('/community/{post}/comment/{comment}', [CommunityController::class, 'deleteComment'])->name('community.comments.delete');
+    Route::controller(CartController::class)->group(function () {
+        Route::get('/cart', 'index')->name('cart');
     });
 });
 
@@ -82,7 +89,6 @@ Route::get('/community', [CommunityController::class, 'index'])->name('community
 
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
-
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
 });
 
@@ -94,6 +100,10 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm/tracking/{umkm_id?}', 'tracking')->name('umkm.tracking');
     Route::get('/umkm/rute/{umkm_id}', 'rute')->name('umkm.rute');
     
+});
+
+Route::controller(ChatbotController::class)->group(function () {
+    Route::get('/help', 'index')->name('chatbot');
 });
 
 require __DIR__.'/settings.php';

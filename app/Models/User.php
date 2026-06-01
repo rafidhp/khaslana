@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Notifications\VerifyEmailNotification;
 
 use App\Models\UMKM\Umkm;
 use App\Models\Review\Review;
@@ -20,7 +21,7 @@ use App\Models\Post\PostLike;
 use App\Models\Post\Comment;
 use App\Models\Post\CommentLike;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes;
@@ -34,6 +35,7 @@ class User extends Authenticatable
         'name',
         'username',
         'email',
+        'email_verified_at',
         'password',
         'is_umkm',
     ];
@@ -68,6 +70,10 @@ class User extends Authenticatable
 
     public function profile() {
         return $this->hasOne(UserProfile::class, 'user_id', 'id');
+    }
+
+    public function location() {
+        return $this->hasOne(UserLocation::class, 'user_id');
     }
 
     public function umkm() {
@@ -116,5 +122,10 @@ class User extends Authenticatable
 
     public function orders() {
         return $this->hasMany(Order::class);
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification());
     }
 }

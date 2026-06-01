@@ -33,6 +33,7 @@ class GoogleController extends Controller
                     'name' => $googleUser->getName() ?? 'User Google',
                     'username' => $username,
                     'email' => $googleUser->getEmail(),
+                    'email_verified_at' => now(),
                     'password' => bcrypt(str()->random(16)),
                 ]);
             }

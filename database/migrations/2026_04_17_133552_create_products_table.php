@@ -47,6 +47,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attribute_id')->constrained('attributes')->onDelete('cascade');
             $table->string('value');
+            $table->decimal('additional_price', 12)->default(0);
             $table->timestamps();
         });
 

@@ -1,18 +1,9 @@
-import { usePage, router } from '@inertiajs/react';
-import { ThumbsUp, MessageCircleMore, Trash, SendHorizontal } from "lucide-react";
+import { usePage, router, Head } from '@inertiajs/react';
+import { ThumbsUp, MessageCircleMore, Trash } from "lucide-react";
 import { useState } from 'react';
 import ProfileIcon from "@/assets/icons/default-profile.png";
+import { useAuth } from '@/hooks/use-auth';
 import UnusedNavLayout from '@/layouts/unused-nav-layout';
-
-
-interface SharedProps {
-    auth:  {
-        user: {
-            id: number;
-            name: string;
-        } | null;
-    };
-}
 
 interface User {
     id: number;
@@ -70,15 +61,12 @@ interface DetailProps {
 }
 
 export default function DetailPost() {
-    const { auth } = usePage().props as unknown as SharedProps;
-    const currentUser = auth.user;
-
+    const { user } = useAuth();
     const { post } = usePage().props as unknown as DetailProps;
 
-    const isMyPost = currentUser && post.user_id === currentUser.id;
+    const isMyPost = user && post.user_id === user.id;
 
     const [commentText, setCommentText] = useState('');
-
     const [isUploaded, setIsUploaded] = useState(false);
 
     const handleLike = (postId: number) => {
@@ -123,6 +111,10 @@ export default function DetailPost() {
         })
     };
 
+    const handleCancelComment = () => {
+        setCommentText('');
+    }
+
     const handleDeleteComment = (commentId: number, postId: number) => {
         if (confirm('Yakin ingin menghapus komentar ini?')) {
             router.delete(`/community/${postId}/comment/${commentId}`);
@@ -143,6 +135,13 @@ export default function DetailPost() {
 
     return (
         <UnusedNavLayout backHref='/community'>
+            <Head title='Detail Postingan'>
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
             <div className='flex flex-col gap-10 justify-between mb-20 lg:mx-20 md:mx-14'>
                 <div key={post.id} className="post-card w-full flex flex-3 flex-col gap-4 bg-[#222] p-6 rounded-[15px]">
                     <div className="flex flex-col gap-4">
@@ -176,7 +175,7 @@ export default function DetailPost() {
                                     key={imgData.id}
                                     src={`/storage/${imgData.image}`} 
                                     alt="Post Content" 
-                                    className="w-full max-w-sm h-auto rounded-xl" 
+                                    className="w-full max-w-sm max-h-sm rounded-xl" 
                                 />
                             ))}
                         </div>
@@ -201,20 +200,23 @@ export default function DetailPost() {
 
                     <div className="relative flex flex-col items-center w-full">        
                         {isUploaded &&  (
-                            <div className="w-full bg-[#99FF33]/20 border border-[#99FF33] text-[#99FF33] p-4 rounded-[15px] text-sm font-medium">Komentar berhasil diupload!</div>
+                            <div className="w-full bg-[#99FF33]/20 border border-[#99FF33] text-[#99FF33] p-4 rounded-[15px] text-sm font-medium mb-8">Komentar berhasil diupload!</div>
                         )}
             
-                        <div className="create-comment flex justify-between w-full p-3 gap-10 rounded-[15px]">
+                        <div className="create-comment flex flex-col justify-between w-full p-3 gap-4 rounded-[15px]">
                             <div className="post-top flex items-center gap-5 w-full">
                                 <img src={ProfileIcon} alt="Profile" className="w-10 max-md:w-7" />
                                 <input type="text" placeholder="Bagikan komentar Anda..." className="main-input flex flex-1 bg-transparent border-b border-white/30 w-full outline-0 text-white focus:border-[#99ff33] transition-all duration-200"
                                 value={commentText} 
                                 onChange={(e) => setCommentText(e.target.value)}/>
                             </div>
-                            <button onClick={() => handleSubmitComment()}
-                                className='hover:text-[#99ff33] transition-all duration-200 cursor-pointer'>
-                                <SendHorizontal />
-                            </button>
+
+                            <div className={`post-bottom flex relative items-center justify-end gap-3 duration-200 transition-all ${commentText !== '' ? 'opacity-100 translate-y-0' : 
+                                     'opacity-0 -translate-y-3'
+                            }`}>
+                                <button onClick={() => handleCancelComment()} className='btn-publish bg-muted py-2.5 px-8 font-medium cursor-pointer rounded-[999px] text-muted-foreborder-muted-foreground hover:bg-muted-foreground hover:text-black transition-all duration-200'>Batal</button>
+                                <button onClick={() => handleSubmitComment()} className='btn-publish bg-[#99FF33] border border-[#99FF33] py-2.5 px-8 font-medium cursor-pointer rounded-[999px] text-black hover:bg-transparent hover:text-[#99ff33] transition-all duration-200'>Kirim</button>
+                            </div>
                         </div>
                     </div>
 
@@ -222,8 +224,8 @@ export default function DetailPost() {
                         post.comments
                         .slice()
                         .sort((a, b) => {
-                            const isMeA = currentUser && a.user.id === currentUser.id ? 1 : 0;
-                            const isMeB = currentUser && b.user.id === currentUser.id ? 1 : 0;
+                            const isMeA = user && a.user.id === user.id ? 1 : 0;
+                            const isMeB = user && b.user.id === user.id ? 1 : 0;
 
                             const sortByMe = isMeB - isMeA;
 

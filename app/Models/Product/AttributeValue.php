@@ -10,6 +10,7 @@ class AttributeValue extends Model
     protected $fillable = [
         'attribute_id',
         'value',
+        'additional_price',
     ];
 
     // from this table
@@ -18,9 +19,8 @@ class AttributeValue extends Model
     }
 
     // from other product table
-    public function variant() {
-        return $this->belongsToMany(ProductVariant::class, 'variant_attributes', 'variant_id', 'attribute_value_id')
-                    ->using(VariantAttribute::class)
+    public function variants() {
+        return $this->belongsToMany(ProductVariant::class, 'variant_attributes', 'attribute_value_id', 'variant_id')
                     ->withTimestamps();
     }
 

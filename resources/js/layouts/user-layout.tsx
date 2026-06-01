@@ -1,6 +1,8 @@
-import { Head } from "@inertiajs/react"
+import { Head, Link } from "@inertiajs/react"
+import { BotMessageSquare } from "lucide-react"
 import Footer from "@/components/khaslana/footer"
 import Navbar from "@/components/khaslana/navbar"
+import { chatbot } from "@/routes"
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -13,6 +15,19 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                 />
             </Head>
             <Navbar />
+            <Link
+                href={chatbot()}
+                className="
+                    fixed border-2 border-[#99ff33]
+                    bg-[#97ff2e] hover:bg-[#1E1B26]
+                    text-[#1E1B26] hover:text-[#99ff33]
+                    p-2 z-[999]
+                    rounded-full bottom-5 md:bottom-15 right-5 md:right-15
+                    transition-all duration-200
+                "
+            >
+                <BotMessageSquare className="size-8"/>
+            </Link>
             <div className="min-h-screen h-auto">
                 {children}
             </div>

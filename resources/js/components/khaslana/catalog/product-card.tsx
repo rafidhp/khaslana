@@ -3,6 +3,7 @@ import { PackageOpen } from 'lucide-react';
 import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
+import { show } from '@/routes/catalog';
 import type { Product } from '@/types/product';
 
 interface ProductCardProps {
@@ -13,7 +14,7 @@ export function ProductCard({
     products,
 }: ProductCardProps) {
     const handleCardClicked = (id: number) => {
-        router.visit(`/catalog/${id}`);
+        router.visit(show(id).url);
     }
 
     const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
@@ -59,7 +60,7 @@ export function ProductCard({
                                 src={`/storage/${product.product_images?.[0]?.image}`}
                                 alt={product.name}
                                 className="
-                                    w-full h-full object-cover
+                                    w-full h-full object-cover bg-white
                                     transition-transform duration-500
                                     group-hover:scale-105
                                 "
@@ -96,10 +97,10 @@ export function ProductCard({
                                     flex items-center justify-center
                                     w-8 h-8 lg:w-10 lg:h-10
                                     rounded-[8px]
-                                    bg-white/20
-                                    backdrop-blur-md
+                                    bg-gray-800/40
+                                    backdrop-blur-xl
                                     transition
-                                    hover:bg-white/30
+                                    hover:bg-gray-800/50
                                     hover:cursor-pointer
                                 "
                             >

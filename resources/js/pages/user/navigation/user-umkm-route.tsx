@@ -27,43 +27,65 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
     const [address, setAddress] = useState<string | null>(null);
 
-    const isEmpty = routeNodes.length < 2;
+    const isEmpty = routeNodes.length === 0;
 
     // ================== OSRM ROUTE ==================
     useEffect(() => {
-        if (routeNodes.length < 2) return;
-
-        const fetchRoute = async () => {
+        const processRoute = async () => {
+    
+            // ❌ kosong
+            if (routeNodes.length === 0) {
+                setRoutePath([]);
+                return;
+            }
+    
+            // ✅ 1 titik
+            if (routeNodes.length === 1) {
+                setRoutePath([
+                    [routeNodes[0].latitude, routeNodes[0].longitude]
+                ]);
+                return;
+            }
+    
+            // ✅ >=2 titik
             try {
                 const fullPath: [number, number][] = [];
-
+    
                 for (let i = 0; i < routeNodes.length - 1; i++) {
                     const start = routeNodes[i];
                     const end = routeNodes[i + 1];
-
+    
                     const url = `https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson`;
-
+    
                     const res = await axios.get(url);
-
+    
                     if (res.data.routes?.length > 0) {
                         const coords = res.data.routes[0].geometry.coordinates.map(
                             (c: [number, number]) => [c[1], c[0]] as [number, number]
                         );
-
-                        fullPath.push([start.latitude, start.longitude]);
+    
+                        if (i === 0) {
+                            fullPath.push([start.latitude, start.longitude]);
+                        }
+    
                         fullPath.push(...coords);
                         fullPath.push([end.latitude, end.longitude]);
                     }
                 }
-
+    
                 setRoutePath(fullPath);
-
+    
             } catch (err) {
                 console.error("OSRM route gagal:", err);
+    
+                // fallback
+                const fallbackPath = routeNodes.map(n => [n.latitude, n.longitude] as [number, number]);
+                setRoutePath(fallbackPath);
             }
         };
-
-        fetchRoute();
+    
+        processRoute();
+    
     }, [routeNodes]);
 
     // ================== REVERSE GEOCODING ==================

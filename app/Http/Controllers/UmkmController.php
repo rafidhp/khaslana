@@ -133,11 +133,15 @@ class UmkmController extends Controller
      */
     public function rute($umkm_id)
     {
-        $umkm = Umkm::where('type', 'KELILING')->with(['user.profile'])->findOrFail($umkm_id);
+        // ✅ FIX: jangan pakai findOrFail setelah where
+        $umkm = Umkm::where('id', $umkm_id)
+            ->where('type', 'KELILING')
+            ->with(['user.profile'])
+            ->firstOrFail();
 
-        // Ambil rangkaian titik mangkal untuk dijahit menjadi garis aspal histori rute
+        // ✅ Ambil titik mangkal
         $routeNodes = UmkmLocation::selectRaw('latitude, longitude, COUNT(*) as total_mangkal, MIN(created_at) as first_visit')
-            ->where('umkm_id', $umkm_id)
+            ->where('umkm_id', $umkm->id) // ✅ lebih aman pakai dari object
             ->where('status', 'MANGKAL')
             ->groupBy('latitude', 'longitude')
             ->orderBy('first_visit', 'asc')
@@ -148,7 +152,8 @@ class UmkmController extends Controller
                     'longitude' => (float) $node->longitude,
                     'total_mangkal' => (int) $node->total_mangkal,
                 ];
-            });
+            })
+            ->values(); // ✅ reset index (biar frontend aman)
 
         return Inertia::render('user/navigation/user-umkm-route', [
             'umkm' => $umkm,

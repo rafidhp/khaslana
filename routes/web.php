@@ -81,7 +81,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // catalog routes
     Route::controller(OrderController::class)->group(function () {
-        Route::post('/order/store/{product_id}')->name('order.store');
+        Route::get('order/create', 'index')->name('order.index');
+        Route::post('/order/store/{product_id}', 'store')->name('order.store');
     });
 
     Route::controller(CartController::class)->group(function () {
@@ -94,6 +95,8 @@ Route::get('/community', [CommunityController::class, 'index'])->name('community
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
+    Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
+    Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
 });
 
 Route::controller(UmkmController::class)->group(function() {

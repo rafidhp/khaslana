@@ -89,11 +89,6 @@ export default function VariantDialog({
         selectedAttributes,
     ]);
 
-    if (!user) {
-        router.visit(login());
-        return;
-    }
-
     const price = selectedVariant?.price ?? 0;
     const stock = selectedVariant?.stock ?? 0;
     const isPurchasable = selectedVariant !== undefined && stock > 0;
@@ -112,6 +107,11 @@ export default function VariantDialog({
     };
 
     const handleSubmit = () => {
+        if (!user) {
+            router.visit(login());
+            return;
+        }
+
         if (!selectedVariant) {
             return;
         }
@@ -129,6 +129,22 @@ export default function VariantDialog({
          *
          * dialogStore.post(...)
          */
+        if (actionType === "add-cart") {
+            console.log("Fitur Keranjang Belum Aktif.");
+            return;
+        }
+
+        if (actionType === "buy-now") {
+            router.visit("/order/create", {
+                method: "get",
+                data: {
+                    product_id: product.id,
+                    variant_id: selectedVariant.id,
+                    quantity,
+                    attributes: selectedAttributes,
+                }
+            })
+        }
     };
 
     if (!open) return null;

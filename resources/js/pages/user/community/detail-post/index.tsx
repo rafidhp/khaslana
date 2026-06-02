@@ -41,6 +41,7 @@ interface Comment {
     is_liked: boolean;
     created_at: string;
 }
+
 interface Post {
     id: number;
     user_id: number;
@@ -65,6 +66,9 @@ export default function DetailPost() {
     const { post } = usePage().props as unknown as DetailProps;
 
     const isMyPost = user && post.user_id === user.id;
+    const isMyComment = (commentUserId: number) => {
+        return user && commentUserId === user.id;
+    }
 
     const [commentText, setCommentText] = useState('');
     const [isUploaded, setIsUploaded] = useState(false);
@@ -175,7 +179,7 @@ export default function DetailPost() {
                                     key={imgData.id}
                                     src={`/storage/${imgData.image}`} 
                                     alt="Post Content" 
-                                    className="w-full max-w-sm max-h-sm rounded-xl" 
+                                    className="w-full max-w-3xl rounded-xl" 
                                 />
                             ))}
                         </div>
@@ -219,53 +223,57 @@ export default function DetailPost() {
                             </div>
                         </div>
                     </div>
+                    
+                    <div className={`flex flex-col gap-10 transition-all duration-200 ${commentText == '' ? '-translate-y-10' : ''}`} >
+                        {post.comments && post.comments.length > 0 ? (
+                            post.comments
+                            .slice()
+                            .sort((a, b) => {
+                                const isMeA = user && a.user.id === user.id ? 1 : 0;
+                                const isMeB = user && b.user.id === user.id ? 1 : 0;
 
-                    {post.comments && post.comments.length > 0 ? (
-                        post.comments
-                        .slice()
-                        .sort((a, b) => {
-                            const isMeA = user && a.user.id === user.id ? 1 : 0;
-                            const isMeB = user && b.user.id === user.id ? 1 : 0;
+                                const sortByMe = isMeB - isMeA;
 
-                            const sortByMe = isMeB - isMeA;
+                                if (sortByMe !== 0) return sortByMe;
 
-                            if (sortByMe !== 0) return sortByMe;
+                                const likesA = a.comment_likes?.length || 0;
+                                const likesB = b.comment_likes?.length || 0;
 
-                            const likesA = a.comment_likes?.length || 0;
-                            const likesB = b.comment_likes?.length || 0;
-
-                            return likesB - likesA;
-                        })
-                        .map((comment) => (
-                            <div key={comment.id} className='flex flex-col gap-5 mx-3'>
-                                <div className="flex items-center gap-5 w-full justify-between">
-                                    <div className='flex gap-5 items-center'>
-                                        <div className="post-avatar">
-                                            <img src={ProfileIcon} alt="Profile" className="avatar w-10 h-10 max-md:w-8 max-md:h-8 rounded-full object-cover" />
+                                return likesB - likesA;
+                            })
+                            .map((comment) => (
+                                <div key={comment.id} className='flex flex-col gap-4 mx-3'>
+                                    <div className="flex items-center gap-5 w-full justify-between">
+                                        <div className='flex gap-5 items-center'>
+                                            <div className="post-avatar">
+                                                <img src={ProfileIcon} alt="Profile" className="avatar w-10 h-10 max-md:w-8 max-md:h-8 rounded-full object-cover" />
+                                            </div>
+                                            <div className="post-user flex flex-col">
+                                                <h6 className="text-white font-medium text-lg">{comment.user.name || "Anggota Khaslana"}</h6>
+                                                <p className="text-[#888] text-sm">
+                                                    {comment.created_at ? new Date(comment.created_at).toLocaleDateString('id-ID', {
+                                                        year: 'numeric', month: 'long', day: 'numeric'
+                                                    }) : "Baru saja"}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="post-user flex flex-col">
-                                            <h6 className="text-white font-medium text-lg">{comment.user.name || "Anggota Khaslana"}</h6>
-                                            <p className="text-[#888] text-sm">
-                                                {comment.created_at ? new Date(comment.created_at).toLocaleDateString('id-ID', {
-                                                    year: 'numeric', month: 'long', day: 'numeric'
-                                                }) : "Baru saja"}
-                                            </p>
-                                        </div>
+                                        {isMyComment(comment.user.id) && (
+                                            <button onClick={() => handleDeleteComment(comment.id, post.id)} className='hover:text-[#99ff33] duration-200 transition-all cursor-pointer'>
+                                                <Trash className="w-4"/>
+                                            </button>
+                                        )}
                                     </div>
-                                    <button onClick={() => handleDeleteComment(comment.id, post.id)} className='hover:text-[#99ff33] duration-200 transition-all cursor-pointer'>
-                                        <Trash className="w-4"/>
+                                    {comment.comment}
+                                    <button type="button" onClick={() => handleLikeComment(post.id, comment.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${comment.is_liked ? 'text-[#99ff33]' : ''}`}>
+                                        <ThumbsUp className={`w-4 h-4`} /> 
+                                        {comment.comment_likes.length}
                                     </button>
                                 </div>
-                                {comment.comment}
-                                <button type="button" onClick={() => handleLikeComment(post.id, comment.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${comment.is_liked ? 'text-[#99ff33]' : ''}`}>
-                                    <ThumbsUp className={`w-4 h-4`} /> 
-                                    {comment.comment_likes.length}
-                                </button>
-                            </div>
-                        ))
-                    ) : (
-                        <p className='w-full text-center text-white/40'>Belum ada komentar</p>
-                    )}
+                            ))
+                        ) : (
+                            <p className='w-full text-center text-white/40'>Belum ada komentar</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </UnusedNavLayout>

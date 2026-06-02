@@ -28,7 +28,7 @@ import {
 } from "@/routes";
 import { profile } from "@/routes";
 import { myPosts } from "@/routes/community";
-
+import { tracking } from "@/routes/umkm";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -42,7 +42,7 @@ export default function Navbar() {
             { id: 2, name: "UMKM", href: umkm().url },
             { id: 3, name: "Katalog", href: catalog().url },
             { id: 4, name: "Komunitas", href: community().url },
-            { id: 5, name: "Stay Point", href: "/umkm/tracking" },
+            { id: 5, name: "Stay Point", href: tracking().url },
             // ...(user.is_umkm
             //     ? [{ id: 5, name: "Kelola Toko", href: dashboard().url }]
             //     : []),
@@ -162,9 +162,9 @@ export default function Navbar() {
                         {
                             user ? (
                                 <div className="flex flex-col-reverse min-[970px]:flex-row items-end min-[970px]:items-center justify-center gap-4 md:gap-8">
-                                    <div className="flex cursor-pointer">
+                                    <div className="hidden cursor-pointer min-[970px]:block">
                                         <Link href={cart()}>
-                                            <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200" />
+                                            <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200 hidden min-[970px]:block" />
                                         </Link>
                                     </div>
                                     <div className="navbar-mobile-profile-actions relative" ref={profileRef}>
@@ -219,13 +219,19 @@ export default function Navbar() {
                                         </motion.button>
                                         <div className="navbar-mobile-links">
                                             <Link
+                                                href={cart()}
+                                                className="nav-link hidden min-[970px]:block"
+                                            >
+                                                <ShoppingCart className="w-5 h-5" />
+                                            </Link>
+                                            <Link
                                                 href={profile()}
                                                 className="nav-link"
                                             >
                                                 Profile
                                                 <User className="w-5 h-5" />
                                             </Link>
-                                            {user.is_umkm && (
+                                            {user.is_umkm === true && (
                                                 <Link
                                                     href={dashboard()}
                                                     className="nav-link"
@@ -303,7 +309,7 @@ export default function Navbar() {
                                                         </span>
                                                     </Link>
 
-                                                    {user.is_umkm && (
+                                                    {user.is_umkm === true && (
                                                         <Link
                                                             href={dashboard()}
                                                             className="

@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // dashboard route
     Route::controller(DashboardController::class)->group(function() {
         Route::get('/dashboard', 'index')->name('dashboard');
+        Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatus');
     });
 
     // product routes
@@ -107,22 +108,6 @@ Route::controller(UmkmController::class)->group(function() {
 Route::controller(ChatbotController::class)->group(function () {
     Route::get('/help', 'index')->name('chatbot');
     Route::post('/help/store', 'message')->name('chatbot.store');
-});
-
-Route::post('/dashboard/store-status', function (Request $request) {
-
-    $request->validate([
-        'status' => 'required|in:BUKA,TUTUP',
-    ]);
-
-    /** @var \App\Models\User $user */
-    $user = Auth::user();
-
-    $user->umkm()->update([
-        'status' => $request->status,
-    ]);
-
-    return back();
 });
 
 require __DIR__.'/settings.php';

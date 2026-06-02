@@ -1,7 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';

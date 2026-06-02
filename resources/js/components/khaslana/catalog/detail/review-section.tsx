@@ -35,8 +35,10 @@ export default function ReviewSection() {
     const { user } = useAuth();
     const { product } = usePage().props as unknown as ProductDetailProps;
     const reviews = product.reviews || [];
-    
-    const isMyReview = user && reviews[].user.id == user.id;
+
+    const isMyReview = (reviewUserId: number) => {
+        return user && reviewUserId === user.id
+    }
 
     const [isUploaded, setIsUploaded] = useState(false);
     const [reviewText, setReviewText] = useState('');
@@ -135,37 +137,50 @@ export default function ReviewSection() {
                     </div>
                 </div>
 
-                {reviews.length > 0 ? (
-                    reviews.map((review) => (
-                        <div key={review.id} className='flex flex-col gap-5 mx-3 bg-[#222] p-8 rounded-3xl'>
-                            <div className="flex items-center gap-5 w-full justify-between">
-                                <div className='flex gap-5 items-center'>
-                                    <div className="post-avatar">
-                                        <img src={ProfileIcon} alt="Profile" className="avatar w-10 h-10 max-md:w-8 max-md:h-8 rounded-full object-cover" />
+                <div className={`flex flex-col gap-5 duration-200 transition-all ${reviewText !== '' ? "translate-y-5" : "-translate-y-10"}`}>
+                    {reviews.length > 0 ? (
+                        reviews.map((review) => (
+                            <div key={review.id} className='flex flex-col gap-5 mx-3 bg-[#222] p-8 rounded-3xl'>
+                                <div className="flex items-center gap-5 w-full justify-between">
+                                    <div className='flex gap-5 items-center'>
+                                        <div className="post-avatar">
+                                            <img src={ProfileIcon} alt="Profile" className="avatar w-10 h-10 max-md:w-8 max-md:h-8 rounded-full object-cover" />
+                                        </div>
+                                        <div className="post-user flex flex-col">
+                                            <h6 className="text-white font-medium text-lg">{review.user.name || "Anggota Khaslana"}</h6>
+                                            <p className="text-[#888] text-sm">
+                                                {review.created_at ? new Date(review.created_at).toLocaleDateString('id-ID', {
+                                                    year: 'numeric', month: 'long', day: 'numeric'
+                                                }) : "Baru saja"}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="post-user flex flex-col">
-                                        <h6 className="text-white font-medium text-lg">{review.user.name || "Anggota Khaslana"}</h6>
-                                        <p className="text-[#888] text-sm">
-                                            {review.created_at ? new Date(review.created_at).toLocaleDateString('id-ID', {
-                                                year: 'numeric', month: 'long', day: 'numeric'
-                                            }) : "Baru saja"}
-                                        </p>
+
+                                    <div className="flex text-[#99ff33]">
+                                        {"★".repeat(review.rating)}
                                     </div>
                                 </div>
-                                <button onClick={() => handleDeleteReview(review.id, product.id)} className='hover:text-[#99ff33] duration-200 transition-all cursor-pointer'>
-                                    <Trash className="w-4"/>
-                                </button>
+
+                                {review.comment}
+                                
+                                <div className="flex justify-between">
+                                    <button type="button" onClick={() => handleLikeReview(review.id, product.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${review.is_liked ? 'text-[#99ff33]' : ''}`}>
+                                        <ThumbsUp className={`w-4 h-4`} /> 
+                                        {review.review_likes.length}
+                                    </button>
+
+                                    {isMyReview(review.user.id) && (
+                                        <button onClick={() => handleDeleteReview(review.id, product.id)} className='hover:text-[#99ff33] duration-200 transition-all cursor-pointer'>
+                                            <Trash className="w-4"/>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            {review.comment}
-                            <button type="button" onClick={() => handleLikeReview(review.id, product.id)} className={`post-opt-btn flex items-center gap-2 text-sm cursor-pointer transition-all duration-100 ${review.is_liked ? 'text-[#99ff33]' : ''}`}>
-                                <ThumbsUp className={`w-4 h-4`} /> 
-                                {review.review_likes.length}
-                            </button>
-                        </div>
-                    ))
-                ) : (
-                    <div className="flex w-full justify-center text-[#adaaaa]">Belum ada ulasan terkait produk ini :(</div>
-                )}
+                        ))
+                    ) : (
+                        <div className="flex w-full justify-center text-[#adaaaa]">Belum ada ulasan terkait produk ini :(</div>
+                    )}
+                </div>
             </div> 
         </div>
     )

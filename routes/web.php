@@ -34,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // dashboard route
     Route::controller(DashboardController::class)->group(function() {
         Route::get('/dashboard', 'index')->name('dashboard');
-        Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatus');
+        Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatusRoute');
     });
 
     // product routes

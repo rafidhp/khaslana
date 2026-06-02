@@ -4,6 +4,7 @@ import CtaCard from '@/components/khaslana/dashboard/cta-card';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
+import { storeStatusRoute } from '@/routes/dashboard';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,13 +26,13 @@ export default function Dashboard({
 
     const [storeStatus, setStoreStatus] = useState(status);
 
-    const toggleStore = () => {
+    const handleToggleStore = () => {
         const newStatus =
             storeStatus === 'BUKA'
                 ? 'TUTUP'
                 : 'BUKA';
 
-        router.post('/dashboard/store-status', {
+        router.post(storeStatusRoute(), {
             status: newStatus,
         });
 
@@ -64,7 +65,7 @@ export default function Dashboard({
                                 </span>
 
                                 <button
-                                    onClick={toggleStore}
+                                    onClick={handleToggleStore}
                                     className={`rounded-lg px-4 py-2 text-white ${storeStatus === 'BUKA'
                                             ? 'bg-green-500'
                                             : 'bg-red-500'

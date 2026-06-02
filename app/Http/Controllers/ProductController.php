@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
+use App\Models\Category;
 use App\Models\Product\Product;
+use App\Models\Product\Attribute;
+use App\Models\Product\AttributeValue;
+use App\Models\Product\ProductVariant;
+use App\Models\Product\ProductImage;
+use App\Models\Product\VariantAttribute;
 
 class ProductController extends Controller
 {
@@ -28,7 +36,7 @@ class ProductController extends Controller
                 'productVariants.attributeValues.attribute',
                 'umkm',
                 'umkm.city',
-            ])->get();
+            ])->paginate(20);
             $categories = Category::all();
         }
 
@@ -43,5 +51,162 @@ class ProductController extends Controller
         return Inertia::render('umkm/product/product-create', [
             'categories' => $categories,
         ]);
+    }
+
+    public function store(Request $request) {
+        $validated = $request->validate([
+            'category_id' => ['required', 'exists:categories,id'],
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'images' => ['required', 'array'],
+            'images.*' => ['image', 'max:10240'],
+            'attributes' => ['required', 'array'],
+            'attributes.*.name' => ['required', 'string'],
+            'attributes.*.values' => ['required', 'array'],
+            'attributes.*.values.*' => ['required', 'string'],
+            'variants' => ['required', 'array'],
+            'variants.*.price' => ['required', 'numeric', 'min:0'],
+            'variants.*.stock' => ['required', 'integer', 'min:0'],
+            'variants.*.attributes' => ['required', 'array'],
+        ]);
+
+        DB::beginTransaction();
+        $imagePaths = [];
+
+        try {
+            $umkm = Auth::user()->umkm;
+            $product = Product::create([
+                'umkm_id' =>Auth::user()->umkm->id,
+                'category_id' => $validated['category_id'],
+                'name' => $validated['name'],
+                'description' => $validated['description'],
+            ]);
+
+            // product images create
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $originalName = pathinfo(
+                        $image->getClientOriginalName(),
+                        PATHINFO_FILENAME
+                    );
+                    
+                    $extension = $image->getClientOriginalExtension();
+                    $fileName =
+                        substr(Str::slug($originalName), 0, 70)
+                        . '-'
+                        . time()
+                        . '-'
+                        . uniqid()
+                        . '.'
+                        . $extension;
+
+                    $path = $image->storeAs(
+                        "products/{$umkm->id}", $fileName, 'public'
+                    );
+
+                    $imagePaths[] = $path;
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => $path,
+                    ]);
+                }
+            }
+
+            // attribute and attribute value create
+            $attributeMap = [];
+
+            foreach ($validated['attributes'] as $attributeData) {
+                $attribute = Attribute::create([
+                    'name' => trim($attributeData['name']),
+                ]);
+
+                foreach ($attributeData['values'] as $value) {
+                    $attributeValue = AttributeValue::create([
+                        'attribute_id' => $attribute->id,
+                        'value' => trim($value),
+                    ]);
+                    $attributeMap[trim($attribute->name)][trim($value)] = $attributeValue->id;
+                }
+            }
+
+            // variants create
+            foreach ($validated['variants'] as $variantData) {
+                $variant = ProductVariant::create([
+                    'product_id' => $product->id,
+                    'price' => $variantData['price'],
+                    'stock' => $variantData['stock'],
+                ]);
+
+                foreach ($variantData['attributes'] as $attribute) {
+                    VariantAttribute::create([
+                        'variant_id' => $variant->id,
+                        'attribute_value_id' => $attributeMap[
+                            trim($attribute['attribute'])
+                        ][
+                            trim($attribute['value'])
+                        ],
+                    ]);
+                }
+            }
+            DB::commit();
+
+            return redirect()->route('product')->with('success', 'Produk berhasil ditambahkan.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            foreach ($imagePaths as $path) {
+                if (
+                    Storage::disk('public')->exists($path)
+                ) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+            return redirect()->back()->withErrors(['message' => $th->getMessage()]);
+        }
+
+        // DB::transaction(function () use ($validated, $request) {
+
+        //     foreach ($request->file('images') as $image) {
+        //         $path = $image->store(
+        //             'products',
+        //             'public'
+        //         );
+        //         ProductImage::create([
+        //             'product_id' => $product->id,
+        //             'image' => $path,
+        //         ]);
+        //     }
+
+        //     $attributeMap = [];
+        //     foreach ($validated['attributes'] as $attributeData) {
+        //         $attribute = Attribute::create([
+        //             'name' => $attributeData['name'],
+        //         ]);
+
+        //         foreach ($attributeData['values'] as $value) {
+        //             $attributeValue = AttributeValue::create([
+        //                 'attribute_id' => $attribute->id,
+        //                 'value' => $value,
+        //             ]);
+        //             $attributeMap[$attribute->name][$value] = $attributeValue->id;
+        //         }
+        //     }
+
+        //     foreach ($validated['variants'] as $variantData) {
+        //         $variant = ProductVariant::create([
+        //             'product_id' => $product->id,
+        //             'price' => $variantData['price'],
+        //             'stock' => $variantData['stock'],
+        //         ]);
+
+        //         foreach ($variantData['attributes'] as $attribute) {
+        //             VariantAttribute::create([
+        //                 'variant_id' => $variant->id,
+        //                 'attribute_value_id' => $attributeMap[$attribute['attribute']][$attribute['value']],
+        //             ]);
+        //         }
+        //     };
+
+        // });
     }
 }

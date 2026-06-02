@@ -1,11 +1,14 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { useEffect, useRef } from 'react';
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
 import ProductIndex from '@/components/khaslana/product/product-index';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
+import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import { product } from '@/routes';
 import { create } from '@/routes/product';
 import type { BreadcrumbItem } from '@/types';
+import type { PaginatedProducts } from '@/types/paginated-product';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,8 +17,42 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Product() {
+interface ProductProps {
+    products: PaginatedProducts;
+}
+
+export default function Product({
+    products,
+}: ProductProps) {
     const { user } = useAuth();
+    const { props } = usePage<{
+        flash: {
+            success?: string;
+            error?: string;
+        };
+    }>();
+    const hasShownToast = useRef(false);
+
+    useEffect(() => {
+        if (hasShownToast.current) return;
+
+        if (props.flash?.success) {
+            hasShownToast.current = true;
+
+            showSuccessToast(
+                'Berhasil',
+                props.flash.success,
+            );
+        }
+        if (props.flash?.error) {
+            hasShownToast.current = true;
+
+            showErrorToast(
+                'Gagal',
+                props.flash.error,
+            );
+        }
+    }, [props.flash]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -52,7 +89,7 @@ export default function Product() {
                     </div>
         
                     {/* content */}
-                    <ProductIndex />
+                    <ProductIndex products={products} />
                 </>
             )}
         </AppLayout>

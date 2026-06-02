@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ProductController::class)->group(function() {
         Route::get('/product', 'index')->name('product');
         Route::get('/product/create', 'create')->name('product.create');
+        Route::post('/product/store', 'store')->name('product.store');
     });
 
     // tracking routes

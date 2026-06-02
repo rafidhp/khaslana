@@ -9,6 +9,7 @@ export interface PaginatedProducts {
     total: number;
     prev_page_url: string | null;
     next_page_url: string | null;
+    from: number;
 
     links: {
         url: string | null;

@@ -1,3 +1,4 @@
+import { useForm } from "@inertiajs/react";
 import { ImagePlus, X, Plus } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from "@/components/ui/textarea";
+import { store } from "@/routes/product";
 
 interface CreateIndexProps {
     categories: {
@@ -26,16 +28,42 @@ interface CreateIndexProps {
 export default function CreateIndex({
     categories,
 }: CreateIndexProps) {
-    console.log(categories);
     const [images, setImages] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
-
+    const form = useForm({
+        category_id: "",
+        name: "",
+        description: "",
+        images: [] as File[],
+        attributes: [] as {
+            name: string;
+            values: string[];
+        }[],
+        variants: [] as {
+            attributes: {
+                attribute: string;
+                value: string;
+            }[];
+            price: number;
+            stock: number;
+        }[],
+    });
     const [attributes, setAttributes] = useState([
         {
             name: "",
             values: [""],
         },
     ]);
+    const [variantData, setVariantData] =
+        useState<
+            Record<
+                string,
+                {
+                    price: string;
+                    stock: string;
+                }
+            >
+        >({});
 
     const addAttribute = () => {
         setAttributes((prev) => [
@@ -80,29 +108,19 @@ export default function CreateIndex({
     ) => {
         setAttributes((prev) =>
             prev.map((attr, i) => {
-                if (
-                    i !== attributeIndex
-                )
-                    return attr;
+                if (i !== attributeIndex) return attr;
 
                 const values = [
                     ...attr.values,
                 ];
+                values[valueIndex] = value;
 
-                values[valueIndex] =
-                    value;
-
-                const isLast =
-                    valueIndex ===
-                    values.length - 1;
-
+                const isLast = valueIndex === values.length - 1;
                 if (
-                    isLast &&
-                    value.trim() !== ""
+                    isLast && value.trim() !== ""
                 ) {
                     values.push("");
                 }
-
                 return {
                     ...attr,
                     values,
@@ -111,11 +129,107 @@ export default function CreateIndex({
         );
     };
 
+    const generateVariantCombinations = () => {
+        const validAttributes = attributes
+            .filter(
+                (attribute) =>
+                    attribute.name.trim() !== ""
+            )
+            .map((attribute) => ({
+                name: attribute.name,
+                values: attribute.values.filter(
+                    (value) =>
+                        value.trim() !== ""
+                ),
+            }))
+            .filter(
+                (attribute) =>
+                    attribute.values.length > 0
+            );
+
+        if (
+            validAttributes.length === 0
+        ) {
+            return [];
+        }
+
+        let combinations = validAttributes[0].values.map(
+            (value) => [
+                {
+                    attribute:
+                        validAttributes[0]
+                            .name,
+                    value,
+                },
+            ]
+        );
+
+        for (
+            let i = 1;
+            i < validAttributes.length;
+            i++
+        ) {
+            const currentAttribute =
+                validAttributes[i];
+
+            const newCombinations: {
+                attribute: string;
+                value: string;
+            }[][] = [];
+
+            combinations.forEach(
+                (combination) => {
+                    currentAttribute.values.forEach(
+                        (value) => {
+                            newCombinations.push([
+                                ...combination,
+                                {
+                                    attribute:
+                                        currentAttribute.name,
+                                    value,
+                                },
+                            ]);
+                        }
+                    );
+                }
+            );
+            combinations = newCombinations;
+        }
+
+        return combinations.map(
+            (combination) => ({
+                attributes:
+                    combination,
+                key: combination
+                    .map(
+                        (item) =>
+                            `${item.attribute}:${item.value}`
+                    )
+                    .join("|"),
+            })
+        );
+    };
+
+    const generatedVariants = generateVariantCombinations();
+
+    const updateVariantData = (
+        key: string,
+        field: "price" | "stock",
+        value: string
+    ) => {
+        setVariantData((prev) => ({
+            ...prev,
+            [key]: {
+                ...prev[key],
+                [field]: value,
+            },
+        }));
+    };
+
     const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(
             e.target.files || []
         );
-
         if (!files.length) return;
 
         const validFiles = files.filter(
@@ -125,14 +239,68 @@ export default function CreateIndex({
             ...prev,
             ...validFiles,
         ]);
+        form.setData(
+            "images",
+            [
+                ...form.data.images,
+                ...validFiles,
+            ]
+        );
     };
 
     const removeImage = (index: number) => {
-        setImages(
-            images.filter(
-                (_, i) => i !== index
-            )
+        const updatedImages = images.filter((_, i) => i !== index);
+        setImages(updatedImages);
+        form.setData(
+            "images",
+            updatedImages
         );
+    };
+
+    const formatRupiah = (value: string) => {
+        const number = value.replace(/\D/g, "");
+
+        return new Intl.NumberFormat(
+            "id-ID"
+        ).format(Number(number));
+    };
+
+    const parseRupiah = (value: string) => {
+        return value.replace(/\D/g, "");
+    };
+
+    const handleSubmit = () => {
+        const formattedAttributes = attributes
+            .filter(attribute => attribute.name.trim() !== "")
+            .map(
+                (attribute) => ({
+                    name: attribute.name,
+                    values: attribute.values.filter((value) => value.trim() !== ""),
+                })
+            )
+            .filter(attribute => attribute.values.length > 0);
+
+        const formattedVariants = generatedVariants.map(variant => ({
+            attributes: variant.attributes,
+            price: Number(
+                variantData[variant.key]?.price || 0
+            ),
+            stock: Number(
+                variantData[variant.key]?.stock || 0
+            ),
+        }));
+
+        console.log(form.data);
+        form.transform(data => ({
+            ...data,
+            attributes: formattedAttributes,
+            variants: formattedVariants,
+        }));
+
+        form.post(store().url, {
+            forceFormData: true,
+            preserveScroll: true,
+        });
     };
     
     return (
@@ -152,6 +320,10 @@ export default function CreateIndex({
                             Nama Produk <span className="text-red-400"> *</span>
                         </Label>
                         <Input
+                            value={form.data.name}
+                            onChange={(e) =>
+                                form.setData('name', e.target.value)
+                            }
                             placeholder="Contoh: Ayam Geprek Original"
                             className="
                                 mt-2
@@ -162,12 +334,21 @@ export default function CreateIndex({
                                 transition-colors duration-200
                             "
                         />
+                        {form.errors.name && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.name}
+                            </p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label>
                             Deskripsi <span className="text-red-400"> *</span>
                         </Label>
                         <Textarea
+                            value={form.data.description}
+                            onChange={(e) =>
+                                form.setData('description', e.target.value)
+                            }
                             rows={5}
                             placeholder="Deskripsi produk..."
                             className="
@@ -179,12 +360,21 @@ export default function CreateIndex({
                                 transition-colors duration-200
                             "
                         />
+                        {form.errors.description && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.description}
+                            </p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label>
                             Kategori <span className="text-red-400"> *</span>
                         </Label>
-                        <Select>
+                        <Select
+                            onValueChange={(value) =>
+                                form.setData("category_id", value)
+                            }
+                        >
                             <SelectTrigger
                                 className="
                                     mt-2
@@ -211,9 +401,7 @@ export default function CreateIndex({
                                     (category) => (
                                         <SelectItem
                                             key={category.id}
-                                            value={String(
-                                                category.id
-                                            )}
+                                            value={String(category.id)}
                                         >
                                             {category.name}
                                         </SelectItem>
@@ -221,19 +409,18 @@ export default function CreateIndex({
                                 )}
                             </SelectContent>
                         </Select>
+                        {form.errors.category_id && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.category_id}
+                            </p>
+                        )}
                     </div>
                    <div className="space-y-3">
                         <Label>
-                            Foto Produk
-                            <span className="text-red-400">
-                                *
-                            </span>
+                            Foto Produk <span className="text-red-400"> *</span>
                         </Label>
-
                         <div
-                            onClick={() =>
-                                inputRef.current?.click()
-                            }
+                            onClick={() => inputRef.current?.click()}
                             className="
                                 border-2 border-dashed
                                 border-[#99FF33]/40
@@ -253,133 +440,85 @@ export default function CreateIndex({
                                         flex items-center justify-center
                                     "
                                 >
-                                    <ImagePlus
-                                        className="
-                                            h-7 w-7
-                                            text-[#99FF33]
-                                        "
-                                    />
+                                    <ImagePlus className="h-7 w-7 text-[#99FF33]" />
                                 </div>
-
                                 <div>
                                     <p className="font-medium">
                                         Klik untuk upload foto
                                     </p>
-
-                                    <p
-                                        className="
-                                            text-sm
-                                            text-muted-foreground
-                                        "
-                                    >
-                                        PNG, JPG, JPEG
-                                        • Maks 10MB
+                                    <p className="text-sm text-muted-foreground">
+                                        PNG, JPG, JPEG • Maks 10MB
                                     </p>
                                 </div>
                             </div>
-
                             <input
                                 ref={inputRef}
                                 type="file"
                                 accept="image/*"
                                 multiple
                                 className="hidden"
-                                onChange={
-                                    handleImagesChange
-                                }
+                                onChange={handleImagesChange}
                             />
                         </div>
 
                         {images.length > 0 && (
-                            <div
-                                className="
-                                    grid
-                                    grid-cols-2
-                                    md:grid-cols-4
-                                    gap-4
-                                "
-                            >
-                                {images.map(
-                                    (
-                                        image,
-                                        index
-                                    ) => (
-                                        <div
-                                            key={index}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {images.map((image, index) => (
+                                    <div
+                                        key={index}
+                                        className="
+                                            relative
+                                            overflow-hidden
+                                            rounded-xl
+                                            border
+                                            border-[#99FF33]/30
+                                            group
+                                        "
+                                    >
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt={image.name}
+                                            className="h-40 w-full object-cover" />
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                removeImage(index)
+                                            }
                                             className="
-                                                relative
-                                                overflow-hidden
-                                                rounded-xl
-                                                border
-                                                border-[#99FF33]/30
-                                                group
+                                                absolute
+                                                top-2 right-2
+                                                h-8 w-8
+                                                rounded-full
+                                                bg-black/70
+                                                text-white
+                                                flex items-center justify-center
+                                                opacity-0
+                                                group-hover:opacity-100 transition-all
                                             "
                                         >
-                                            <img
-                                                src={URL.createObjectURL(
-                                                    image
-                                                )}
-                                                alt={
-                                                    image.name
-                                                }
-                                                className="
-                                                    h-40
-                                                    w-full
-                                                    object-cover
-                                                "
-                                            />
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    removeImage(
-                                                        index
-                                                    )
-                                                }
-                                                className="
-                                                    absolute
-                                                    top-2
-                                                    right-2
-                                                    h-8
-                                                    w-8
-                                                    rounded-full
-                                                    bg-black/70
-                                                    text-white
-                                                    flex
-                                                    items-center
-                                                    justify-center
-                                                    opacity-0
-                                                    group-hover:opacity-100
-                                                    transition-all
-                                                "
-                                            >
-                                                <X
-                                                    className="
-                                                        h-4
-                                                        w-4
-                                                    "
-                                                />
-                                            </button>
-                                        </div>
-                                    )
-                                )}
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
+                        )}
+                        {form.errors.images && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.images}
+                            </p>
                         )}
                     </div>
                     <div className="space-y-6">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-6">
                             <div>
-                                <h3 className="font-semibold text-[#99FF33]">
+                                <h2 className="text-lg font-semibold text-[#99FF33]">
                                     Attribute Produk
-                                </h3>
+                                </h2>
                                 <p className="text-sm text-muted-foreground">
-                                    Contoh:
-                                    Warna, Ukuran,
-                                    Tingkat Pedas,
-                                    Kemasan, dll
+                                    Contoh: Warna, Ukuran, Tingkat Pedas, Kemasan, dll
                                 </p>
                             </div>
-
                             <Button
                                 type="button"
                                 onClick={addAttribute}
@@ -389,6 +528,7 @@ export default function CreateIndex({
                                     border border-[#99FF33]
                                     hover:bg-[#1E1B26]
                                     hover:text-[#99FF33]
+                                    transition-colors duration-200
                                     cursor-pointer
                                 "
                             >
@@ -398,32 +538,20 @@ export default function CreateIndex({
                         </div>
 
                         {attributes.map(
-                            (
-                                attribute,
-                                attributeIndex
-                            ) => (
+                            (attribute, attributeIndex) => (
                                 <div
                                     key={attributeIndex}
-                                    className="
-                                        border
-                                        border-[#99FF33]/20
-                                        rounded-xl
-                                        p-4
-                                        space-y-4
-                                    "
+                                    className="border border-[#99FF33]/20 rounded-xl p-4 space-y-4"
                                 >
                                     <div>
                                         <Label>
-                                            Nama Attribute
+                                            Nama Atribute
                                             <span className="text-red-400">
                                                 *
                                             </span>
                                         </Label>
-
                                         <Input
-                                            value={
-                                                attribute.name
-                                            }
+                                            value={attribute.name}
                                             onChange={(e) =>
                                                 updateAttributeName(
                                                     attributeIndex,
@@ -436,56 +564,60 @@ export default function CreateIndex({
                                                 border-gray-500/30
                                                 focus-visible:border-[#99FF33]
                                                 focus-visible:ring-0
+                                                transition-colors duration-200
                                             "
                                         />
+                                        {form.errors[`attributes.${attributeIndex}.name`] && (
+                                            <p className="text-xs text-red-500">
+                                                {form.errors[`attributes.${attributeIndex}.name`]}
+                                            </p>
+                                        )}
                                     </div>
-
                                     <div className="space-y-2">
                                         <Label>
-                                            Value Attribute
+                                            Isi Atribut
                                             <span className="text-red-400">
                                                 *
                                             </span>
                                         </Label>
 
                                         {attribute.values.map(
-                                            (
-                                                value,
-                                                valueIndex
-                                            ) => (
-                                                <Input
-                                                    key={
-                                                        valueIndex
-                                                    }
-                                                    value={
-                                                        value
-                                                    }
-                                                    onChange={(
-                                                        e
-                                                    ) =>
-                                                        updateAttributeValue(
-                                                            attributeIndex,
-                                                            valueIndex,
-                                                            e.target
-                                                                .value
-                                                        )
-                                                    }
-                                                    placeholder={`Value ${
-                                                        valueIndex +
-                                                        1
-                                                    }`}
-                                                    className="
-                                                        border-gray-500/30
-                                                        focus-visible:border-[#99FF33]
-                                                        focus-visible:ring-0
-                                                    "
-                                                    required={
-                                                        valueIndex !==
-                                                        attribute.values
-                                                            .length -
+                                            (value, valueIndex) => (
+                                                <div key={valueIndex} className="flex flex-col gap-1">
+                                                    <Input
+                                                        key={valueIndex}
+                                                        value={value}
+                                                        onChange={(e) =>
+                                                            updateAttributeValue(attributeIndex, valueIndex, e.target.value)
+                                                        }
+                                                        placeholder={`Contoh: Merah ${
+                                                            valueIndex +
                                                             1
-                                                    }
-                                                />
+                                                        }`}
+                                                        className="
+                                                            border-gray-500/30
+                                                            focus-visible:border-[#99FF33]
+                                                            focus-visible:ring-0
+                                                        "
+                                                        required={
+                                                            valueIndex !==
+                                                            attribute.values
+                                                                .length -
+                                                                1
+                                                        }
+                                                    />
+                                                    {form.errors[
+                                                        `attributes.${attributeIndex}.values.${valueIndex}`
+                                                    ] && (
+                                                        <p className="text-xs text-red-500">
+                                                            {
+                                                                form.errors[
+                                                                    `attributes.${attributeIndex}.values.${valueIndex}`
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
                                             )
                                         )}
                                     </div>
@@ -496,9 +628,7 @@ export default function CreateIndex({
                                             type="button"
                                             variant="destructive"
                                             onClick={() =>
-                                                removeAttribute(
-                                                    attributeIndex
-                                                )
+                                                removeAttribute(attributeIndex)
                                             }
                                         >
                                             Hapus Attribute
@@ -508,8 +638,104 @@ export default function CreateIndex({
                             )
                         )}
                     </div>
+                    <div className="space-y-4">
+                        <div>
+                            <h2 className="text-lg font-semibold text-[#99FF33] mt-6">
+                                Variant Produk
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                Tentukan harga dan stok
+                                setiap variasi produk
+                            </p>
+                        </div>
+
+                        {generatedVariants.map(
+                            (variant, index) => (
+                                <div
+                                    key={variant.key}
+                                    className="border border-[#99FF33]/20 rounded-xl p-4 space-y-4"
+                                >
+                                    <div
+                                        className="text-sm font-medium text-[#99FF33]">
+                                        {form.data.name ||
+                                            "Produk"}{" "}
+                                        •{" "}
+                                        {variant.attributes
+                                        .map((item) => `${item.attribute}: ${item.value}`)
+                                        .join(" | ")}
+                                    </div>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label>
+                                                Harga
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                value={formatRupiah(variantData[variant.key]?.price || "")}
+                                                onChange={(e) =>
+                                                    updateVariantData(
+                                                        variant.key,
+                                                        "price",
+                                                        parseRupiah(e.target.value)
+                                                    )
+                                                }
+                                                placeholder="100.000"
+                                                className="
+                                                    mt-2
+                                                    border-gray-500/30
+                                                    focus-visible:border-[#99FF33]
+                                                    focus-visible:ring-0
+                                                    [appearance:textfield]
+                                                    [&::-webkit-outer-spin-button]:appearance-none
+                                                    [&::-webkit-inner-spin-button]:appearance-none
+                                                "
+                                            />
+                                            {form.errors[`variants.${index}.price`] && (
+                                                <p className="text-xs text-red-500">
+                                                    {form.errors[`variants.${index}.price`]}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <Label>
+                                                Stok
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                value={variantData[variant.key]?.stock || ""}
+                                                onChange={(e) =>
+                                                    updateVariantData(
+                                                        variant.key,
+                                                        "stock",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="
+                                                    mt-2
+                                                    border-gray-500/30
+                                                    focus-visible:border-[#99FF33]
+                                                    focus-visible:ring-0
+                                                    [appearance:textfield]
+                                                    [&::-webkit-outer-spin-button]:appearance-none
+                                                    [&::-webkit-inner-spin-button]:appearance-none
+                                                "
+                                            />
+                                            {form.errors[`variants.${index}.stock`] && (
+                                                <p className="text-xs text-red-500 mt-1">
+                                                    {form.errors[`variants.${index}.stock`]}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        )}
+                    </div>
                     <Button
+                        onClick={handleSubmit}
+                        disabled={form.processing}
                         className="
+                            mt-4
                             bg-[#99FF33]
                             border border-[#99FF33]
                             text-[#1E1B26]
@@ -519,7 +745,7 @@ export default function CreateIndex({
                             cursor-pointer
                         "
                     >
-                        Simpan Produk
+                        {form.processing ? "Menyimpan..." : "Simpan Produk"}
                     </Button>
                 </CardContent>
             </Card>

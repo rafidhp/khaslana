@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -9,9 +10,12 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\MappingController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -30,25 +34,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // dashboard route
     Route::controller(DashboardController::class)->group(function() {
         Route::get('/dashboard', 'index')->name('dashboard');
+        Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatusRoute');
     });
 
     // product routes
     Route::controller(ProductController::class)->group(function() {
         Route::get('/product', 'index')->name('product');
+        Route::get('/product/create', 'create')->name('product.create');
     });
 
     // tracking routes
-    Route::controller(TrackingController::class)->group(function () {
-        Route::post('/umkm/update-location', 'updateLocation')->name('umkm.update-location');
-        Route::get('/umkm/current-location-status', 'getCurrentStatus');
+    Route::controller(TrackingController::class)->prefix('stay-point')->group(function () {
+        Route::get('/', 'index')->name('stayPoint');
+        Route::post('/update-location', 'updateLocation')->name('stayPoint.updateLocation');
+        Route::get('/current-location-status', 'getCurrentStatus')->name('stayPoint.currentLocation');
     });
-    
-    // TODO: ini contoh sebelum yg di bawah comment ini, route atas comment ini contoh setelahnya, nanti di fe pake route dari wayfinder, import { stayPoint } from '@/routes'; atau kalau mau ambil sub route bisa kaya gini, import { updateLocation } from '@/routes/stayPoint'; kalo si sub route nya namanya updateLocation
-    // Route::get('/umkm/current-location-status', [App\Http\Controllers\TrackingController::class, 'getCurrentStatus']);
 
-    Route::get('/umkm/stay-point', function () {
-        return inertia('umkm/stay-point');
-    })->name('umkm.stay-point');
+    Route::controller(MappingController::class)->prefix('rute')->group(function () {
+        Route::get('/api-data', 'getRouteData')->name('rute.data');
+    });
 
 
     // store management routes
@@ -98,6 +102,14 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm', 'index')->name('umkm');
     Route::get('/umkm/detail/{umkm_id}', 'detail')->name('umkm.detail');
     Route::get('/umkm/products', 'umkmProducts')->name('umkm.products');
+    Route::get('/umkm/navigasi/{umkm_id}', 'navigasi')->name('umkm.navigasi');
+    Route::get('/umkm/tracking/{umkm_id?}', 'tracking')->name('umkm.tracking');
+    Route::get('/umkm/rute/{umkm_id}', 'rute')->name('umkm.rute'); 
+});
+
+Route::controller(ChatbotController::class)->group(function () {
+    Route::get('/help', 'index')->name('chatbot');
+    Route::post('/help/store', 'message')->name('chatbot.store');
 });
 
 require __DIR__.'/settings.php';

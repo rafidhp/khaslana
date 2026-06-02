@@ -109,6 +109,28 @@ export default function StoreIndex({
         } else {
             form.post(store().url);
         }
+        // const handleError = (
+        //     errors: Record<string, string>
+        // ) => {
+        //     const uniqueErrors = [...new Set(Object.values(errors))];
+
+        //     uniqueErrors.forEach((message) => {
+        //         showErrorToast(
+        //             'Validasi gagal',
+        //             message
+        //         );
+        //     });
+        // };
+
+        // if (user.is_umkm) {
+        //     form.put(update().url, {
+        //         onError: handleError,
+        //     });
+        // } else {
+        //     form.post(store().url, {
+        //         onError: handleError,
+        //     });
+        // }
     };
 
     useEffect(() => {

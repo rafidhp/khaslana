@@ -1,9 +1,10 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
+import { storeStatusRoute } from '@/routes/dashboard';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -13,9 +14,31 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Dashboard() {
+type Props = {
+    status: 'BUKA' | 'TUTUP';
+};
+
+export default function Dashboard({
+    status,
+}: Props) {
+
     const { user } = useAuth();
-    
+
+    const [storeStatus, setStoreStatus] = useState(status);
+
+    const handleToggleStore = () => {
+        const newStatus =
+            storeStatus === 'BUKA'
+                ? 'TUTUP'
+                : 'BUKA';
+
+        router.post(storeStatusRoute(), {
+            status: newStatus,
+        });
+
+        setStoreStatus(newStatus);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -23,19 +46,37 @@ export default function Dashboard() {
                 <CtaCard />
             ) : (
                 <>
-                    <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                        <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                            <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                    <div>
+                        <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
+                            <h2 className="text-xl font-bold">
+                                Status Toko
+                            </h2>
+
+                            <p className="mt-2 text-sm text-muted-foreground">Atur status operasional toko Anda</p>
+
+                            <div className="mt-6 flex items-center justify-between">
+                                <span
+                                    className={`font-semibold ${storeStatus === 'BUKA'
+                                        ? 'text-green-500'
+                                        : 'text-red-500'
+                                        }`}
+                                >
+                                    {storeStatus}
+                                </span>
+
+                                <button
+                                    onClick={handleToggleStore}
+                                    className={`rounded-lg px-4 py-2 text-white ${storeStatus === 'BUKA'
+                                            ? 'bg-green-500'
+                                            : 'bg-red-500'
+                                        }`}
+                                >
+                                    {storeStatus === 'BUKA'
+                                        ? 'Tutup Toko'
+                                        : 'Buka Toko'}
+                                </button>
+                            </div>
                         </div>
-                        <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                            <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                        </div>
-                        <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                            <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                        </div>
-                    </div>
-                    <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                     </div>
                 </>
             )}

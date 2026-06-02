@@ -1,5 +1,5 @@
 import { router, usePage, Link } from "@inertiajs/react";
-import { ThumbsUp, MessageCircleMore, Trash, Plus } from "lucide-react";
+import { ThumbsUp, MessageCircleMore, Trash } from "lucide-react";
 import ProfileIcon from "@/assets/icons/default-profile.png";
 
 interface SharedProps {
@@ -79,11 +79,6 @@ export default function CommunityIndex() {
 
     return (
         <div className="relative flex flex-col items-center pt-20 md:pt-28 px-6 md:px-12 lg:px-17.5 w-full min-h-screen">
-
-            <Link href="/community/create-post" className="create-post fixed border-2 border-[#99ff33] bg-[#97ff2e] hover:bg-transparent text-black hover:text-[#99ff33] p-2 rounded-[999px] bottom-15 right-15 transition-all duration-200">
-                <Plus className="size-15"/>
-            </Link>
-
             <section className="community-header flex flex-col w-full pt-8 pb-10 max-md:pb-5 gap-2">
                 <h2 className="text-[#99ff33] font-medium text-2xl md:text-5xl">Terhubung, Berkolaborasi, dan Berdaya Bersama.</h2>
                 <p className="text-[#adaaaa] font-light text-md max-md:text-md">Bagikan perjalanan bisnismu, temukan solusi bersama, dan tumbuh lebih kuat dalam ekosistem komunitas Khaslana</p>

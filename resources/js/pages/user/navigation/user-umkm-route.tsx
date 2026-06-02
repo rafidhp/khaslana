@@ -33,13 +33,13 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
     useEffect(() => {
         const processRoute = async () => {
     
-            // ❌ kosong
+            // kosong
             if (routeNodes.length === 0) {
                 setRoutePath([]);
                 return;
             }
     
-            // ✅ 1 titik
+            // 1 titik
             if (routeNodes.length === 1) {
                 setRoutePath([
                     [routeNodes[0].latitude, routeNodes[0].longitude]
@@ -47,7 +47,7 @@ export default function UserUmkmRoute({ umkm, routeNodes }: Props) {
                 return;
             }
     
-            // ✅ >=2 titik
+            // >=2 titik
             try {
                 const fullPath: [number, number][] = [];
     

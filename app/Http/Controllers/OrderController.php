@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 use App\Models\Product\Product;
@@ -20,6 +21,7 @@ class OrderController extends Controller
 {
     public function index($order_id) {
         $order = Order::with([
+            'umkm',
             'orderItems.product.productImages',
             'orderItems.variant.attributeValues.attribute',
             'payment',
@@ -90,7 +92,7 @@ class OrderController extends Controller
                 'payment_status' => 'BELUM DIBAYAR',
 
                 'address' => '',
-                'shipping_cost' => 0,
+                'shipping_cost' => $product->umkm->shipping_cost,
             ]);
 
             $order->orderItems()->create([
@@ -140,5 +142,44 @@ class OrderController extends Controller
         );
 
         return response()->json(['snap_token' => $snapToken]);
+    }
+
+    public function checkout(Request $request, Order $order) {
+        $request->validate([
+            'type' => [
+                'required',
+                Rule::in(['DIAMBIL','DIANTAR']),
+            ],
+            'notes' => ['nullable', 'string'],
+            'address' => ['required', 'string'],
+        ]);
+
+        $shippingCost = $request->type === 'DIANTAR'
+            ? $order->umkm->shipping_cost
+            : 0;
+
+        $subtotal = $order->orderItems->sum('subtotal');
+        $serviceFee = 2000;
+        $totalPrice = $subtotal + $serviceFee + $shippingCost;
+
+        $order->update([
+            'type' => $request->type,
+            'notes' => $request->notes,
+            'address' => $request->type === 'DIANTAR'
+                ? $request->address
+                : '',
+
+            'shipping_cost' => $shippingCost,
+            'total_price' => $totalPrice,
+            'status' => 'MENUNGGU PEMBAYARAN',
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function ngrokTest() {
+        dd('BERHASIL');
     }
 }

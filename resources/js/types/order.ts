@@ -1,5 +1,6 @@
 import type { OrderItem } from '@/types/order-item';
 import type { Payment } from '@/types/payment';
+import type { Umkm } from '@/types/umkm';
 
 export interface Order {
     id: number;
@@ -41,4 +42,5 @@ export interface Order {
 
     order_items?: OrderItem[];
     payment?: Payment;
+    umkm?: Umkm;
 }

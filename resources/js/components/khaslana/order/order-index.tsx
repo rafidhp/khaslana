@@ -1,8 +1,25 @@
+import { Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Wallet, QrCode, Landmark, WalletMinimal, Minus, Plus, Trash } from "lucide-react";
+import {
+    Truck
+} from "lucide-react";
 import { useState } from "react";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/hooks/use-auth';
 import { useMidtrans } from '@/hooks/use-midtrans';
+import { showErrorToast } from '@/lib/toast';
+import { profile } from '@/routes';
 import { generatePayment } from "@/routes/order";
+import { checkout } from '@/routes/order';
 import type { Order } from "@/types/order";
 
 interface OrderPageProps {
@@ -13,22 +30,24 @@ export default function OrderIndex({
     order,
 }: OrderPageProps) {
     useMidtrans();
+    const { user } = useAuth();
     const item = order.order_items?.[0];
     const product = item?.product;
     const variant = item?.variant;
     const quantity = item?.quantity ?? 1;
-    const [muchQuantity, setQuantity] = useState(quantity);
+    const address = user.location?.address ?? "";
+    const [notes, setNotes] = useState(order.notes ?? '');
     const [openingPayment, setOpeningPayment] = useState(false);
+    const [orderType, setOrderType] = useState<'DIAMBIL' | 'DIANTAR'>(order.type);
 
-    const stock = variant?.stock ?? 0;
-    const total_price = item?.subtotal ?? 0;
     const service_fee = 2000;
-
-    const paymentOptions = [
-        {label: 'QRIS', icon: <QrCode />},
-        {label: 'Transfer Bank', icon: <Landmark />},
-        {label: 'E-Wallet', icon: <WalletMinimal />},
-    ];
+    const subtotal = Number(item?.subtotal ?? 0);
+    const shippingCost = orderType === 'DIANTAR'
+        ? Number(order.shipping_cost ?? 0)
+        : 0;
+    const total_price = subtotal + service_fee + shippingCost;
+    const isShippingFeature = order.umkm?.is_shipping_feature == 1;
+    const isOrderFeature = order.umkm?.is_order_feature == 1;
 
     const formatRupiah = (value: number) =>
         new Intl.NumberFormat("id-ID", {
@@ -37,6 +56,14 @@ export default function OrderIndex({
             maximumFractionDigits: 0,
         }
     ).format(value);
+
+    if (
+        order.type === 'DIANTAR' &&
+        !user.location?.address
+    ) {
+        showErrorToast('Silakan lengkapi alamat terlebih dahulu');
+        return;
+    }
 
     // ! JANGAN PERNAH DIUBAH😒
     const handlePay = async () => {
@@ -48,6 +75,11 @@ export default function OrderIndex({
             return;
         }
         try {
+            await axios.patch(checkout(order.id).url, {
+                type: orderType,
+                notes,
+                address,
+            });
             const response = await axios.post(generatePayment(order.id).url);
             const snapToken = response.data.snap_token;
 
@@ -103,100 +135,182 @@ export default function OrderIndex({
     };
     
     return (
-        <div>
+        <div className='mb-12'>
             <div className="flex flex-col gap-2 mb-8">
                 <h3 className="font-bold text-5xl max-md:text-3xl">Beli Produk</h3>
                 <p className="text-[#adaaaa] max-lg:text-sm">Selesaikan pesanan Anda untuk mendukung pertumbuhan ekonomi lokal.</p>
             </div>
-
             <div className="flex max-lg:flex-col gap-4">
                 <div className="flex flex-col gap-5 flex-3">
                     <div className="flex gap-6 bg-[#131313] p-8 rounded-3xl justify-between">
-
-                    <div className="flex gap-5">
-                        <div className="flex">
-                            <img
-                                src={
-                                     product?.product_images?.[0]?.image
-                                        ? `/storage/${product.product_images[0].image}`
-                                        : '/images/placeholder.png'
-                                }
-                                alt={product?.name}
-                                className="h-30 w-30 object-cover bg-white rounded-xl"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2 justify-between">
-                            <div className="flex flex-col">
-                                <h5 className="font-semibold text-2xl">{product?.name}</h5>
-                                <span className="flex gap-3 text-[#adaaaa]">
-                                    {item?.variant_detail}
-                                </span>
+                        <div className="flex gap-5">
+                            <div className="flex">
+                                <img
+                                    src={
+                                        product?.product_images?.[0]?.image
+                                            ? `/storage/${product.product_images[0].image}`
+                                            : '/images/placeholder.png'
+                                    }
+                                    alt={product?.name}
+                                    className="h-30 w-30 object-cover bg-white rounded-xl"
+                                />
                             </div>
-
-                            <div className="mt-8 flex items-center justify-between gap-5">
-                                <div
-                                    className="
-                                        flex items-center
-                                        border border-[#3A3547]
-                                        rounded-2xl
-                                        overflow-hidden
-                                    "
-                                >
-                                    <button
-                                        onClick={() =>
-                                            setQuantity((prev) => Math.max(1, prev - 1))
-                                        }
-                                        disabled={stock <= 1}
-                                        className={`
-                                            w-12 h-12
-                                            flex items-center justify-center
-                                            text-white
-                                            cursor-pointer
-                                            disabled:cursor-not-allowed
-                                            disabled:text-white/50
-                                            ${muchQuantity <= 1 && 'text-white/50 hover:cursor-not-allowed'}
-                                        `}
-                                    >
-                                        <Minus size={18} />
-                                    </button>
-                                    <span className="w-14 text-center text-white font-semibold">
-                                        {muchQuantity}
+                            <div className="flex flex-col gap-2 justify-between">
+                                <div className="flex flex-col">
+                                    <h5 className="font-semibold text-2xl">{product?.name}</h5>
+                                    <span className="flex gap-3 text-[#adaaaa]">
+                                        {item?.variant_detail}
                                     </span>
-                                    <button
-                                        onClick={() =>
-                                            setQuantity((prev) => Math.min(stock, prev + 1))
-                                        }
-                                        disabled={stock <= 0 || muchQuantity >= stock}
-                                        className="
-                                            w-12 h-12
-                                            flex items-center justify-center
-                                            text-white
-                                            cursor-pointer
-                                            disabled:cursor-not-allowed
-                                            disabled:text-white/50
-                                        "
-                                    >
-                                        <Plus size={18} />
-                                    </button>
+                                </div>
+                                <div className="mt-8 flex items-center justify-between gap-5">
+                                    <span>Kuantitas: {quantity} unit</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div className="flex flex-col justify-between items-end">
-                        <div className="">
-                            <Trash className="w-5"/>
+                        <div className="flex flex-col justify-between items-end">
+                            <div></div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[#adaaaa] font-medium text-sm">
+                                    {formatRupiah(variant?.price ?? 0)} / unit
+                                </span>
+                                <span className="text-[#99ff33] font-bold text-3xl">
+                                    {formatRupiah(total_price)}
+                                </span>
+                            </div>
                         </div>
+                    </div>
 
-                        <div className="flex flex-col items-end">
-                            <span className="text-[#adaaaa] font-medium text-sm">{formatRupiah(variant?.price ?? 0)} / unit</span>
-                            <span className="text-[#99ff33] font-bold text-3xl">{formatRupiah(total_price)}</span>
+                    <div className='flex flex-col bg-[#131313] rounded-2xl p-8 gap-8'>
+                        <span className="flex text-base gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">
+                            <Truck className="text-[#99ff33]"/> DETAIL PENGIRIMAN
+                        </span>
+                        <div className='flex flex-col gap-4'>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[#adaaaa] tracking-wide font-semibold uppercase text-sm">
+                                    NOMOR INVOICE
+                                </span>
+                                <span className="font-mono text-sm break-all">
+                                    {order.invoice_number}
+                                </span>
+                            </div>
+                            <div className="h-0.5 w-full bg-white/5"></div>
+                            <div className='flex flex-col gap-1'>
+                                <Label htmlFor='name' className='text-[#adaaaa] tracking-wide font-semibold uppercase text-sm'>Nama Penerima</Label>
+                                <Input
+                                    placeholder="Contoh: Fajri Bagas"
+                                    value={user.name}
+                                    className="mt-2 border-gray-500/30 focus-visible:border-[#99FF33] bg-[#181818] focus-visible:ring-0 transition-all duration-200"
+                                    required
+                                />
+                            </div>
+                            <div className='flex flex-col gap-1'>
+                                <Label className='text-[#adaaaa] tracking-wide font-semibold uppercase text-sm'>
+                                    Tipe Pembelian
+                                </Label>
+                                <Select
+                                    value={orderType}
+                                    onValueChange={(value) =>
+                                        setOrderType(
+                                            value as
+                                                | 'DIAMBIL'
+                                                | 'DIANTAR'
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className="
+                                            mt-2
+                                            border-gray-500/30
+                                            transition-all duration-200
+                                            bg-[#181818]
+                                            focus:ring-0
+                                            focus:border-[#99FF33]
+                                            data-[state=open]:border-[#99FF33]
+                                            hover:border-[#99FF33]
+                                        "
+                                    >
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {isOrderFeature && (
+                                            <SelectItem value="DIAMBIL">
+                                                Ambil Sendiri
+                                            </SelectItem>
+                                        )}
+                                        {isShippingFeature && (
+                                            <SelectItem value="DIANTAR">
+                                                Diantar
+                                            </SelectItem>
+                                        )}
+                                    </SelectContent>
+
+                                     {!isShippingFeature && (
+                                        <span className="text-xs text-[#adaaaa]">
+                                            UMKM ini tidak menyediakan layanan pengantaran.
+                                        </span>
+                                    )}
+                                     {!isOrderFeature && (
+                                        <span className="text-xs text-[#adaaaa]">
+                                            UMKM ini tidak menyediakan layanan ambil sendiri.
+                                        </span>
+                                    )}
+                                </Select>
+                            </div>
+                            {orderType === 'DIANTAR' && (
+                                <div className='flex flex-col gap-1'>
+                                    <Label htmlFor='address' className='text-[#adaaaa] tracking-wide font-semibold uppercase text-sm'>Alamat Penerima</Label>
+                                    {address ? (
+                                        <Textarea
+                                            value={address}
+                                            className="
+                                                mt-2
+                                                border-gray-500/30
+                                                bg-[#181818]
+                                                focus-visible:border-[#99FF33]
+                                                focus-visible:ring-0
+                                            "
+                                            readOnly
+                                        />
+                                    ) : (
+                                        <Link
+                                            href={profile().url}
+                                            className="
+                                                mt-2
+                                                flex items-center justify-center
+                                                h-28
+                                                rounded-xl
+                                                border border-dashed border-[#99ff33]
+                                                bg-[#181818]
+                                                text-[#99ff33]
+                                                font-medium
+                                                hover:bg-[#99ff33]/10
+                                                transition-all
+                                            "
+                                        >
+                                            Lengkapi alamat terlebih dahulu
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+                            <div className='flex flex-col gap-1'>
+                                <Label htmlFor='notes' className='text-[#adaaaa] tracking-wide font-semibold uppercase text-sm'>Catatan (Opsional)</Label>
+                                <Textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    className="
+                                        mt-2
+                                        border-gray-500/30
+                                        bg-[#181818]
+                                        focus-visible:border-[#99FF33]
+                                        focus-visible:ring-0
+                                    "
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                    <div className="flex flex-col bg-[#131313] rounded-2xl p-8 gap-8">
-                        <span className="flex text-sm gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">
+                    {/* <div className="flex flex-col bg-[#131313] rounded-2xl p-8 gap-8">
+                        <span className="flex text-base gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">
                             <Wallet className="text-[#99ff33]"/> METODE PEMBAYARAN
                         </span>
                         <div className="flex w-full justify-between gap-4 max-md:flex-col">
@@ -212,7 +326,7 @@ export default function OrderIndex({
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="flex flex-col gap-5 flex-2 bg-[#222] rounded-2xl p-8 h-fit max-lg:mb-10">
@@ -225,12 +339,21 @@ export default function OrderIndex({
                         <span>Biaya Layanan</span>
                         {formatRupiah(service_fee)}
                     </span>
+                    {orderType === 'DIANTAR' && (
+                        <span className="flex justify-between w-full text-[#adaaaa]">
+                            <span>Biaya Pengantaran</span>
+                            <span>
+                                {formatRupiah(shippingCost)}
+                            </span>
+                        </span>
+                    )}
                     <div className="h-0.5 w-full bg-white/5"></div>
                     <span className="flex justify-between w-full items-center">
                         <span className="font-semibold text-xl">Total Pembayaran</span>
-                        <span className="font-semibold text-3xl text-[#99ff33]">{formatRupiah(total_price + service_fee)}</span>
+                        <span className="font-semibold text-3xl text-[#99ff33]">{formatRupiah(total_price)}</span>
                     </span>
                     <button
+                        disabled={openingPayment}
                         onClick={handlePay}
                         className="w-full flex py-4 bg-[#99ff33] rounded-full border border-[#99ff33] items-center justify-center font-medium text-[#222] transition-all duration-200 cursor-pointer hover:bg-transparent hover:text-[#99ff33]"
                     >

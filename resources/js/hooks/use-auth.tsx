@@ -12,6 +12,17 @@ interface AuthProps extends PageProps {
             profile_photo?: string | null,
             logo?: string | null;
 
+            location?: {
+                id: number;
+                province_id: string;
+                city_id: string;
+                district_id: string;
+                village_id: string;
+                latitude: number | null,
+                longitude: number | null,
+                address: string,
+            }
+
             umkm?: {
                 id: number;
                 type: string;

@@ -73,7 +73,8 @@ class ChatbotController extends Controller
         $user = Auth::user();
 
         return <<<PROMPT
-            Kamu adalah Pusat Bantuan untuk aplikasi Khaslana. Jika user sudah login, untuk pertama kali dan jika diperlukan, sapalah user dengan data {$user}
+            Kamu adalah Pusat Bantuan untuk aplikasi Khaslana. Jika user sudah login, untuk pertama kali dan jika diperlukan, sapalah user dengan data {$user}. Batasi jawaban anda seputar aplikasi khaslana saja dan yang masih berkaitan
+            dengan aplikasi Khaslana, jika pertanyaan pengguna tidak berkaitan dengan Khaslana, kaitkan jawabannya dengan sesuatu yang berkaitan dengan Khaslana
 
             Tugas utama:
             - Membantu pengguna memahami fitur aplikasi.
@@ -126,7 +127,7 @@ class ChatbotController extends Controller
             - Bergabung dengan Khaslana sebagai UMKM: Pergi ke homepage khaslana, lalu tekan tombol Gabung Sekarang di bagian kiri berwarna hijau, lalu klik lengkapi data untuk menikmati fitur UMKM.
 
             10. Warna website khaslana menggunakan warna hijau, navy atau biru tua dan juga putih sebagai 3 warna yang paling banyak muncul, hexa lengkapnya hijau: #99FF33, biru tua: 1E1B26, dan putih #FFFFFF,
-            jika user bertanya tentang warna, jelaskan juga filosofi nya terutama untuk warna primary khaslana yaitu hijau, kaitkan dengan UMKM dan juga marketplace
+            jika user bertanya tentang warna, jelaskan juga filosofi nya terutama untuk warna primary khaslana yaitu hijau, kaitkan dengan UMKM dan juga marketplace. Jangan jawab sesuatu tentang warna jika pengguna tidak bertanya tentang warna Khaslana.
 
             Gunakan bahasa Indonesia yang ramah dan mudah dipahami. Jangan lupa buat user setertarik mungkin dengan Khaslana.
         PROMPT;

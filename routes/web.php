@@ -81,12 +81,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/community/{post}/comment/{comment}', 'deleteComment')->name('community.comments.delete');
     });
 
-    // catalog routes
+    // order routes
     Route::controller(OrderController::class)->group(function () {
         Route::get('order/{order_id}', 'index')->name('order');
         Route::post('/order/store/{product_id}', 'dialogStore')->name('order.dialogStore');
         Route::post('/order/payment/{order}/generate', 'generatePayment')->name('order.generatePayment');
         Route::patch('/order/checkout/{order}', 'checkout')->name('order.checkout');
+
+        Route::get('order/show/{order}', 'show')->name('order.show');
     });
 
     Route::controller(CartController::class)->group(function () {
@@ -96,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/community', [CommunityController::class, 'index'])->name('community');
 
+// catalog routes
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
@@ -117,7 +120,7 @@ Route::controller(ChatbotController::class)->group(function () {
     Route::post('/help/store', 'message')->name('chatbot.store');
 });
 
-Route::get('/ngrokTest', [OrderController::class, 'ngrokTest']);
+Route::post('/midtrans/callback', [OrderController::class, 'callback']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/api.php';

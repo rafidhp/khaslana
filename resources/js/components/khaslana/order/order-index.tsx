@@ -20,6 +20,7 @@ import { showErrorToast } from '@/lib/toast';
 import { profile } from '@/routes';
 import { generatePayment } from "@/routes/order";
 import { checkout } from '@/routes/order';
+import { show } from '@/routes/order';
 import type { Order } from "@/types/order";
 
 interface OrderPageProps {
@@ -86,6 +87,7 @@ export default function OrderIndex({
             window.snap.pay(snapToken, {
                 onSuccess() {
                     setOpeningPayment(false);
+                    window.location.href = show(order.id).url;
                 },
                 onPending() {
                     setOpeningPayment(false);

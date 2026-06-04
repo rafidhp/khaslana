@@ -23,6 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->validateCsrfTokens(
+            except: [
+                'midtrans/callback',
+            ]
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (

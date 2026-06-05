@@ -142,7 +142,7 @@ export default function UmkmSection({
                         />
                         
                         {/* overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
 
                         {/* category */}
                         <div className="absolute top-4 left-4">

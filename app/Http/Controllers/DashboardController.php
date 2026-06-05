@@ -64,13 +64,19 @@ class DashboardController extends Controller
             ];
         }
 
+        $latestOrders = Order::with(['user', 'orderItems'])
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
         return Inertia::render('umkm/dashboard', [
             'status' => $user->umkm?->status ?? 'TUTUP',
             'umkm_stat' => $umkmStat,
             'active_product' => $activeProduct,
             'store_rating' => $storeRating,
             'top_products' => $topProducts,
-            'sales_chart' => $formattedChartData
+            'sales_chart' => $formattedChartData,
+            'latest_orders' => $latestOrders
         ]);
     }
 

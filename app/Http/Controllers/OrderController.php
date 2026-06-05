@@ -27,6 +27,7 @@ class OrderController extends Controller
             'orderItems.product.productImages',
             'orderItems.variant.attributeValues.attribute',
             'payment',
+            'user'
         ])
         ->where('user_id', Auth::id())
         ->findOrFail($order_id);

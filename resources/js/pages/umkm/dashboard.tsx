@@ -68,7 +68,7 @@ interface DashboardProps {
     store_rating: StoreRating[];
     top_products: TopProducts[];
     sales_chart: ChartItem[];
-    orders: Order[];
+    latest_orders: Order[];
 }
 
 interface ChartItem {
@@ -83,7 +83,7 @@ export default function Dashboard({
     store_rating,
     top_products,
     sales_chart,
-    orders
+    latest_orders
 }: DashboardProps) {
 
     const { user } = useAuth();
@@ -178,7 +178,7 @@ export default function Dashboard({
                         ))}
                     </div>
 
-                    <div className='flex gap-5 justify-between w-full'>
+                    <div className='flex mb-4 gap-5 justify-between w-full'>
                         <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 py-6 flex-4'>
                             <span className='text-2xl font-semibold'>Grafik Penjualan</span>
 
@@ -202,10 +202,10 @@ export default function Dashboard({
                             </ResponsiveContainer>
                         </div>
 
-                        <div className='flex flex-col gap-4 bg-[#191720] w-full rounded-4xl p-6 py-6 flex-2 mb-6'>
+                        <div className='flex flex-col gap-4 bg-[#191720] w-full rounded-4xl p-6 py-6 flex-2'>
                             <span className='text-2xl font-semibold pb-3'>Produk Terlaris</span>
                             {top_products.map((item) => (
-                                <div className='flex justify-between gap-3'>
+                                <div className='flex justify-between gap-3' key={item.id}>
                                     <div className='flex gap-4'>
                                         <img src={`storage/${item.product_images}`} alt="tes" className='size-13 bg-white rounded-[999px]'/>
 
@@ -229,23 +229,44 @@ export default function Dashboard({
                         <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 flex-4 gap-6'>
                             <span className='text-2xl font-semibold'>Pesanan Terbaru</span>
                             <div className='flex justify-between w-full px-10'>
-                                <div className='flex flex-col'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF]'>PELANGGAN</span>
-                                    {orders.map((item) => (
-                                        <span key={item.id}>{item.user_id}</span>
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PELANGGAN</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-semibold'>
+                                            {item.user?.name}
+                                        </span>
                                     ))}
                                 </div>
                                 
-                                <div className='flex flex-col'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF]'>PRODUK</span>
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PRODUK</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-normal text-[#adaaaa]'>
+                                            {item.order_items?.[0].product_name}
+                                        </span>
+                                    ))}
                                 </div>
 
-                                <div className='flex flex-col'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF]'>STATUS</span>
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>STATUS</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-medium text-yellow-200'>
+                                            {item.status}
+                                        </span>
+                                    ))}
                                 </div>
 
-                                <div className='flex flex-col'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF]'>TOTAL</span>
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>TOTAL</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-semibold'>
+                                            Rp {item.total_price}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                         </div>

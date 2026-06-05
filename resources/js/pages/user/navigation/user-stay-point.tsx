@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
+import KhaslanaLogo from "@/assets/icons/khaslana-logo-green.png";
 import MerchantSidebar from '@/components/khaslana/live-tracking/merchant-sidebar';
 import SelectedMerchantCard from '@/components/khaslana/live-tracking/selected-merchant-card';
 import UserMapViewer from '@/components/khaslana/live-tracking/user-map-viewer';
@@ -26,8 +27,6 @@ interface Props {
 }
 
 export default function UserStayPoint({ activeMerchants, initialSelectedId }: Props) {
-    
-    // ================== STATE ==================
     const [userLoc, setUserLoc] = useState<[number, number] | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(initialSelectedId);
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
@@ -145,20 +144,55 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId }: Pr
             {initialSelectedId ? (
                 <Link
                     href={`/umkm/detail/${initialSelectedId}`}
-                    className="absolute top-6 left-4 z-[1000] flex items-center gap-2 bg-[#1A1A1A]/90 hover:bg-[#2A2A2A] text-white px-5 py-2.5 rounded-full border border-white/10 shadow-2xl backdrop-blur-md font-bold text-sm transition-all"
+                    className="absolute top-6 left-4 z-50 flex items-center gap-2 bg-[#1A1A1A]/90 hover:bg-[#2A2A2A] text-white px-5 py-2.5 rounded-full border border-white/10 shadow-2xl backdrop-blur-md font-bold text-sm transition-all"
                 >
                     <ChevronLeft className="w-8 h-8 text-[#99FF33]" />
                     Kembali
                 </Link>
             ) : (
                 <button
-                    onClick={() => window.history.length > 1 ? window.history.back() : window.location.replace('/umkm')}
-                    className="absolute top-6 left-4 z-[1000] flex items-center gap-2 bg-[#1A1A1A]/90 hover:bg-[#2A2A2A] text-white px-5 py-2.5 rounded-full border border-white/10 shadow-2xl backdrop-blur-md font-bold text-sm transition-all"
+                    onClick={() =>
+                        window.history.length > 1 ?
+                        window.history.back() :
+                        window.location.replace('/umkm')
+                    }
+                    className="
+                        group
+                        absolute top-6 left-4 z-50
+                        flex items-center gap-2
+                        bg-[#1A1A1A]/90 hover:bg-[#232323]
+                        text-white hover:text-[#99FF33]
+                        px-5 py-2.5 rounded-full
+                        border border-white/10 hover:border-[#99FF33]/40
+                        shadow-2xl hover:shadow-[0_0_25px_rgba(153,255,51,0.25)]
+                        backdrop-blur-md
+                        font-bold text-sm
+                        hover:-translate-y-0.5
+                        hover:scale-105 active:scale-95
+                        cursor-pointer
+                        transition-all duration-300
+                    "
                 >
-                    <ChevronLeft className="w-8 h-8 text-[#99FF33]" />
+                    <ChevronLeft
+                        className="
+                            w-6 h-6
+                            text-[#99FF33]
+                            transition-all duration-300
+                            group-hover:-translate-x-0.5
+                            group-hover:scale-105
+                        "
+                    />
                     Kembali
                 </button>
             )}
+
+            <div className='absolute top-4 right-4 z-50 rounded-full p-2 bg-[#262626]'>
+                <img
+                    src={KhaslanaLogo}
+                    alt="Khaslana Logo"
+                    className='h-12 w-12 aspect-square shrink-0 hover:-rotate-25 transition-all duration-300'
+                />
+            </div>
 
             {/* MAP */}
             <UserMapViewer 

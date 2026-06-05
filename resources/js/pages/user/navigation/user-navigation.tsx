@@ -75,11 +75,9 @@ export default function UserNavigation({ umkm }: Props) {
     return (
         <div className="w-full h-screen overflow-hidden relative bg-[#242424]">
             <Head title={`Navigasi Toko - ${umkm.store_name}`} />
-
-            {/* FLOATING ACTION OVERLAY: Tombol Kembali ke Detail UMKM */}
             <Link
                 href={`/umkm/detail/${umkm.id}`}
-                className="absolute top-6 left-4 z-[1000] flex items-center gap-2 bg-[#1A1A1A]/90 hover:bg-[#2A2A2A] text-white px-5 py-2.5 rounded-full border border-white/10 shadow-2xl backdrop-blur-md font-bold text-sm transition-all"
+                className="absolute top-6 left-4 z-50 flex items-center gap-2 bg-[#1A1A1A]/90 hover:bg-[#2A2A2A] text-white px-5 py-2.5 rounded-full border border-white/10 shadow-2xl backdrop-blur-md font-bold text-sm transition-all"
             >
                 <ChevronLeft className="w-8 h-8 text-[#99FF33]" />
                 Kembali

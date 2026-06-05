@@ -1,5 +1,6 @@
-import { Link } from "@inertiajs/react"
+import { Link, router } from "@inertiajs/react"
 import { ChevronRight, Plus, PackageOpen } from "lucide-react"
+import { show } from "@/routes/catalog";
 import type { Product } from "@/types/product";
 
 interface MenuSectionProps {
@@ -9,6 +10,9 @@ interface MenuSectionProps {
 export default function MenuSection({
     products,
 }: MenuSectionProps) {
+    const handleCardClicked = (productId: number) => {
+        router.visit(show(productId));
+    }
     return (
         <div className="flex flex-col items-center w-full mt-18">
             <div className="flex flex-col w-full gap-2">
@@ -46,18 +50,14 @@ export default function MenuSection({
                                 hover:-translate-y-1
                                 hover:shadow-[0_10px_40px_rgba(153,255,51,0.08)]
                             "
+                            onClick={() => handleCardClicked(product.id)}
                         >
                             <div className="relative">
                                 <img
                                     src={`/storage/${product.product_images?.[0]?.image}`}
                                     alt={product.name}
-                                    className="
-                                        w-full
-                                        h-64
-                                        object-cover
-                                        bg-[#202020]
-                                    "
-                                />
+                                    className="w-full h-64 object-cover bg-white"/>
+                                <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent pointer-events-none" />
 
                                 {product.promo && (
                                     <span
@@ -81,17 +81,9 @@ export default function MenuSection({
                                 <h4 className="text-white text-base md:text-xl font-semibold">
                                     {product.name}
                                 </h4>
-
-                                <p
-                                    className="
-                                        text-sm
-                                        text-muted-foreground
-                                        line-clamp-2
-                                    "
-                                >
+                                <p className="text-sm text-muted-foreground line-clamp-2">
                                     {product.description}
                                 </p>
-
                                 <div className="flex justify-between items-center mt-2">
                                     <span
                                         className="
@@ -105,7 +97,6 @@ export default function MenuSection({
                                                 ?.price ?? 0
                                         ).toLocaleString("id-ID")}
                                     </span>
-
                                     <button
                                         className="
                                             w-10 h-10

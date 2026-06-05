@@ -163,7 +163,7 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-4 max-md:grid-cols-2 gap-4 justify-between w-full mb-4'>
+                    <div className='grid grid-cols-4 max-lg:grid-cols-2 gap-4 justify-between w-full mb-4'>
                         {storeStatistics.map((item) => (
                             <div key={item.id}
                                 className='flex flex-col gap-4 w-full rounded-4xl p-6 bg-[#222]'>
@@ -178,8 +178,8 @@ export default function Dashboard({
                         ))}
                     </div>
 
-                    <div className='flex mb-4 gap-5 justify-between w-full'>
-                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 py-6 flex-4'>
+                    <div className='flex max-lg:flex-col mb-4 gap-5 justify-between w-full'>
+                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 py-6 max-lg:h-100 lg:flex-4'>
                             <span className='text-2xl font-semibold'>Grafik Penjualan</span>
 
                             <ResponsiveContainer width="100%" height="100%">
@@ -225,10 +225,10 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className='flex'>
-                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 flex-4 gap-6'>
+                    <div className='flex '>
+                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 lg:flex-4 gap-6'>
                             <span className='text-2xl font-semibold'>Pesanan Terbaru</span>
-                            <div className='flex justify-between w-full px-10'>
+                            <div className='flex justify-between w-full md:px-10 '>
                                 <div className='flex flex-col gap-3'>
                                     <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PELANGGAN</span>
                                     {latest_orders.map((item) => (
@@ -249,8 +249,8 @@ export default function Dashboard({
                                     ))}
                                 </div>
 
-                                <div className='flex flex-col gap-3'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>STATUS</span>
+                                <div className='flex flex-col gap-3 max-md:hidden'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4 '>STATUS</span>
                                     {latest_orders.map((item) => (
                                         <span key={item.id}
                                             className='font-medium text-yellow-200'>

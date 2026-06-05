@@ -4,6 +4,7 @@ import {
     Truck
 } from "lucide-react";
 import { useState } from "react";
+import Success from "@/assets/icons/success.png";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -20,6 +21,7 @@ import { showErrorToast } from '@/lib/toast';
 import { profile } from '@/routes';
 import { generatePayment } from "@/routes/order";
 import { checkout } from '@/routes/order';
+import { show } from '@/routes/order';
 import type { Order } from "@/types/order";
 
 interface OrderPageProps {
@@ -38,7 +40,9 @@ export default function OrderIndex({
     const address = user.location?.address ?? "";
     const [notes, setNotes] = useState(order.notes ?? '');
     const [openingPayment, setOpeningPayment] = useState(false);
+    const [successOrder, setSuccessOrder] = useState(false);
     const [orderType, setOrderType] = useState<'DIAMBIL' | 'DIANTAR'>(order.type);
+    const settlement = order.payment?.transaction_status === 'settlement';
 
     const service_fee = 2000;
     const subtotal = Number(item?.subtotal ?? 0);
@@ -86,6 +90,7 @@ export default function OrderIndex({
             window.snap.pay(snapToken, {
                 onSuccess() {
                     setOpeningPayment(false);
+                    setSuccessOrder(true);
                 },
                 onPending() {
                     setOpeningPayment(false);
@@ -419,6 +424,40 @@ export default function OrderIndex({
                                 Mohon tunggu sebentar,
                                 menghubungkan ke Midtrans...
                             </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {successOrder || settlement && (
+                <div
+                    className="
+                        fixed inset-0
+                        bg-black/80
+                        backdrop-blur-sm
+                        z-40
+                        flex items-center justify-center
+                    "
+                >
+                    <div
+                        className="
+                            flex flex-col items-center gap-6
+                            bg-[#131313]
+                            border border-[#99ff33]/20
+                            rounded-3xl
+                            px-24 py-16
+                            shadow-[0_0_40px_rgba(153,255,51,0.15)]
+                        "
+                    >
+                        <div className='flex'>
+                            <img src={Success} alt="success order" className='h-full w-24' />
+                        </div>
+
+                        <div className="flex flex-col items-center gap-2">
+                            <h4 className="font-semibold text-white text-xl">
+                                Pembayaran Berhasil
+                            </h4>
+
+                            <Link href={show(order.id)} className='btn-primary-khaslana py-2 mt-2'>Yeay</Link>
                         </div>
                     </div>
                 </div>

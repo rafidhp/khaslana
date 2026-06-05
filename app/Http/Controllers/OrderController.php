@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Product\Product;
 use App\Models\Product\ProductVariant;
@@ -16,6 +17,7 @@ use App\Models\Order\Payment;
 use Inertia\Inertia;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Notification;
 
 class OrderController extends Controller
 {
@@ -30,6 +32,12 @@ class OrderController extends Controller
         ->findOrFail($order_id);
 
         return Inertia::render('user/order/index', [
+            'order' => $order,
+        ]);
+    }
+
+    public function show(Order $order) {
+        return Inertia::render('user/order/show', [
             'order' => $order,
         ]);
     }
@@ -151,7 +159,12 @@ class OrderController extends Controller
                 Rule::in(['DIAMBIL','DIANTAR']),
             ],
             'notes' => ['nullable', 'string'],
-            'address' => ['required', 'string'],
+            'address' => [
+                Rule::requiredIf(
+                    $request->type === 'DIANTAR'
+                ),
+                'nullable', 'string'
+            ],
         ]);
 
         $shippingCost = $request->type === 'DIANTAR'
@@ -179,7 +192,74 @@ class OrderController extends Controller
         ]);
     }
 
-    public function ngrokTest() {
-        dd('BERHASIL');
+    public function callback(Request $request) {
+        Log::info('MIDTRANS CALLBACK', $request->all());
+
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
+
+        $notification = new Notification();
+
+        $orderId = $notification->order_id;
+        $transactionStatus = $notification->transaction_status;
+        $paymentType = $notification->payment_type;
+        $fraudStatus = $notification->fraud_status;
+        $grossAmount = $notification->gross_amount;
+
+        $order = Order::where('invoice_number', $orderId)->first();
+        $payment = Payment::where('midtrans_order_id', $orderId)->first();
+
+        if (
+            $transactionStatus === 'settlement' ||
+            (
+                $transactionStatus === 'capture' &&
+                $fraudStatus === 'accept'
+            )
+        ) {
+            $order->update([
+                'payment_status' => 'DIBAYAR',
+                'status' => 'DIBAYAR',
+                'paid_at' => now(),
+            ]);
+
+            $payment->update([
+                'transaction_status' => $transactionStatus,
+                'payment_type' => $paymentType,
+                'fraud_status' => $fraudStatus,
+                'gross_amount' => $grossAmount,
+                'paid_at' => now(),
+                'raw_response' => json_encode($notification),
+            ]);
+        }
+        
+        if ($transactionStatus === 'pending') {
+            $order->update([
+                'payment_status' => 'BELUM DIBAYAR',
+                'status' => 'MENUNGGU PEMBAYARAN',
+            ]);
+            $payment->update([
+                'transaction_status' => 'pending',
+            ]);
+        }
+
+        if ($transactionStatus === 'expire') {
+            $order->update([
+                'payment_status' => 'KADALUWARSA',
+                'status' => 'DIBATALKAN',
+            ]);
+        }
+
+        if (
+            $transactionStatus === 'cancel' ||
+            $transactionStatus === 'deny'
+        ) {
+            $order->update([
+                'payment_status' => 'GAGAL',
+                'status' => 'DIBATALKAN',
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

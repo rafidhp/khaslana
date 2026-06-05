@@ -50,6 +50,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('no action');
             $table->foreignId('variant_id')->constrained('product_variants')->onDelete('no action');
+            // snapshot
             $table->string('product_name');
             $table->string('variant_detail');
             $table->decimal('price', 12);

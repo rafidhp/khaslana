@@ -1,7 +1,11 @@
+import { router } from "@inertiajs/react";
 import { X, Minus, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import DefaultProduct from "@/assets/images/product/default-product.png";
-// import { store } from "@/routes/order";
+import { useAuth } from "@/hooks/use-auth";
+import { showErrorToast } from "@/lib/toast";
+import { login } from "@/routes";
+import { dialogStore } from "@/routes/order";
 import type { ProductVariant } from "@/types/attribute";
 import type { Product } from "@/types/product";
 
@@ -18,6 +22,8 @@ export default function VariantDialog({
     onClose,
     actionType,
 }: VariantDialogProps) {
+    const { user } = useAuth();
+    
     const groupedAttributes = useMemo(() => {
         const result: Record<string, string[]> = {};
 
@@ -102,6 +108,11 @@ export default function VariantDialog({
     };
 
     const handleSubmit = () => {
+        if (!user) {
+            router.visit(login());
+            return;
+        }
+
         if (!selectedVariant) {
             return;
         }
@@ -114,11 +125,28 @@ export default function VariantDialog({
             attributes: selectedAttributes,
         });
 
-        /**
-         * nanti route nya:
-         *
-         * dialogStore.post(...)
-         */
+        if (actionType === "add-cart") {
+            console.log("Fitur Keranjang Belum Aktif.");
+            return;
+        }
+
+        if (actionType === "buy-now") {
+            router.post(dialogStore(product.id).url,
+                {
+                    variant_id: selectedVariant.id,
+                    quantity,
+                },
+                {
+                    preserveScroll: true,
+                    onError: (errors) => {
+                        const firstError = Object.values(errors)[0];
+                        if (firstError) {
+                            showErrorToast("Gagal", String(firstError));
+                        }
+                    },
+                }
+            )
+        }
     };
 
     if (!open) return null;
@@ -126,7 +154,7 @@ export default function VariantDialog({
     return (
         <div
             className="
-                fixed inset-0 z-[999]
+                fixed inset-0 z-50
                 bg-black/70 backdrop-blur-sm
                 flex items-center justify-center
                 p-4

@@ -16,7 +16,8 @@
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
-        "laravolt/indonesia": "^0.41.0"
+        "laravolt/indonesia": "^0.41.0",
+        "midtrans/midtrans-php": "^2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -22,8 +22,8 @@ export interface Umkm {
 
     average_rating: number;
 
-    is_order_feature: boolean;
-    is_shipping_feature: boolean;
+    is_order_feature: boolean | number;
+    is_shipping_feature: boolean | number;
 
     shipping_cost: number;
 

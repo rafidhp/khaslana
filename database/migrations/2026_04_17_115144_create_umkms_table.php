@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->char('province_id', 2); // ini tuh sebenernya code yhh, cuma gua males ganti namanya, apalagi di fe owakoakw
             $table->char('city_id', 4);
-            $table->char('district_id', 6);
+            $table->char('district_id', 7);
             $table->char('village_id', 10);
             $table->string('store_name');
             $table->text('description');

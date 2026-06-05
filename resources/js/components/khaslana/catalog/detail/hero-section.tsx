@@ -22,6 +22,9 @@ export default function HeroSection({
     const [actionType, setActionType] = useState<
         "buy-now" | "add-cart"
     >("buy-now");
+    const isShippingFeature = product.umkm?.is_shipping_feature === 1;
+    const isOrderFeature = product.umkm?.is_order_feature === 1;
+    const canOrder = isOrderFeature || isShippingFeature;
 
     const handleBuyNowClicked = () => {
         setActionType("buy-now");
@@ -138,7 +141,7 @@ export default function HeroSection({
                                     </p>
                                 </div>
                             </div>
-                            {product.umkm?.is_shipping_feature &&
+                            {isShippingFeature && (
                                 <div className="bg-[#22202C] rounded-2xl p-4 flex items-center gap-3">
                                     <div
                                         className="
@@ -162,7 +165,7 @@ export default function HeroSection({
                                         </p>
                                     </div>
                                 </div>
-                            }
+                            )}
                         </div>
                         <p className="mt-4 text-gray-400 text-base leading-8 line-clamp-6">
                             {product.description}
@@ -177,34 +180,36 @@ export default function HeroSection({
                                 </span>
                             </span>
                         </div>
-                        <div className="flex gap-4 mt-8">
-                            <button
-                                onClick={handleBuyNowClicked}
-                                className="btn-primary-khaslana w-full cursor-pointer"
-                            >
-                                Beli Sekarang
-                            </button>
-                            <button
-                                onClick={handleAddCartClicked}
-                                className="
-                                    h-14 w-14 aspect-square
-                                    rounded-full
-                                    border
-                                    border-gray-700
-                                    flex
-                                    items-center
-                                    justify-center
-                                    text-white
-                                    hover:cursor-pointer hover:bg-white/10
-                                "
-                            >
-                                <img
-                                    src={AddToCartIcon}
-                                    alt="add to cart"
-                                    className="pb-1 h-6 w-6"
-                                />
-                            </button>
-                        </div>
+                        {canOrder && (
+                            <div className="flex gap-4 mt-8">
+                                <button
+                                    onClick={handleBuyNowClicked}
+                                    className="btn-primary-khaslana w-full cursor-pointer"
+                                >
+                                    Beli Sekarang
+                                </button>
+                                <button
+                                    onClick={handleAddCartClicked}
+                                    className="
+                                        h-14 w-14 aspect-square
+                                        rounded-full
+                                        border
+                                        border-gray-700
+                                        flex
+                                        items-center
+                                        justify-center
+                                        text-white
+                                        hover:cursor-pointer hover:bg-white/10
+                                    "
+                                >
+                                    <img
+                                        src={AddToCartIcon}
+                                        alt="add to cart"
+                                        className="pb-1 h-6 w-6"
+                                    />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

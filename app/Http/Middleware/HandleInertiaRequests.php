@@ -60,6 +60,18 @@ class HandleInertiaRequests extends Middleware
                             $request->user()->profile->logo
                         )
                         : null,
+                    
+                    'location' => $request->user()->location
+                        ? [
+                            'id' => $request->user()->location->id,
+                            'province_id' => $request->user()->location->province_id,
+                            'city_id' => $request->user()->location->city_id,
+                            'district_id' => $request->user()->location->district_id,
+                            'village_id' => $request->user()->location->village_id,
+                            'latitude' => $request->user()->location->latitude,
+                            'longitude' => $request->user()->location->longitude,
+                            'address' => $request->user()->location->address,
+                        ] : null,
 
                     'umkm' => $request->user()->umkm
                         ? [

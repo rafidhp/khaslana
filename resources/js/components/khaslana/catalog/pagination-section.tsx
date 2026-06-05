@@ -24,7 +24,7 @@ export function PaginationSection({
                     preserveScroll
                     className="
                         flex items-center justify-center
-                        w-[38px] h-[38px]
+                        w-9.5 h-9.5
                         rounded-full
                         bg-transparent
                         border border-white/5
@@ -52,7 +52,7 @@ export function PaginationSection({
                         preserveScroll
                         className={`
                             flex items-center justify-center
-                            w-[38px] h-[38px]
+                            w-9.5 h-9.5
                             rounded-full
                             text-sm
                             font-medium
@@ -85,7 +85,7 @@ export function PaginationSection({
                     preserveScroll
                     className="
                         flex items-center justify-center
-                        w-[38px] h-[38px]
+                        w-9.5 h-9.5
                         rounded-full
                         bg-transparent
                         border border-white/5

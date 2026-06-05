@@ -31,7 +31,7 @@ export function HeroSection({
                 <h1 className="text-white text-[32px] lg:text-[40px] font-bold leading-[1.2]">
                     <span className="text-[#99FF33]">Katalog Produk</span> Pilihan Kami.
                 </h1>
-                <p className="text-[#B7B7B7] text-sm lg:text-base max-w-[500px] leading-relaxed">
+                <p className="text-[#B7B7B7] text-sm lg:text-base max-w-125 leading-relaxed">
                     Mendukung pertumbuhan UMKM lokal melalui teknologi. 
                     Jelajahi karya tangan terbaik dari pengrajin dan produsen 
                     di seluruh Indonesia.

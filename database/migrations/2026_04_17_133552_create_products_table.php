@@ -47,14 +47,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attribute_id')->constrained('attributes')->onDelete('cascade');
             $table->string('value');
-            $table->decimal('additional_price', 12)->default(0);
             $table->timestamps();
         });
 
         Schema::create('variant_attributes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('variant_id')->constrained('product_variants')->onDelete('restrict');
-            $table->foreignId('attribute_value_id')->constrained('attribute_values')->onDelete('restrict');
+            $table->foreignId('variant_id')->constrained('product_variants')->onDelete('cascade');
+            $table->foreignId('attribute_value_id')->constrained('attribute_values')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -12,6 +12,7 @@ class Review extends Model
 {
     protected $table = 'reviews';
     protected $fillable = [
+        'user_id',
         'umkm_id',
         'product_id',
         'rating',
@@ -28,6 +29,10 @@ class Review extends Model
 
     public function reviewLikes() {
         return $this->hasMany(ReviewLike::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function likedByUser() {

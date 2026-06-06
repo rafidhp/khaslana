@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Package, MapPin} from 'lucide-react';
+import { LayoutGrid, Package, MapPin, ClipboardList } from 'lucide-react';
 import BackToHomepage from '@/components/back-to-homepage';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -15,6 +15,7 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { dashboard, product } from '@/routes';
 import { stayPoint } from '@/routes';
+import { order } from '@/routes/dashboard';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
@@ -32,6 +33,11 @@ export function AppSidebar() {
             title: 'Product',
             href: product(),
             icon: Package,
+        },
+        {
+            title: 'Order',
+            href: order(),
+            icon: ClipboardList,
         },
         ...(user?.is_umkm && user?.umkm?.type === 'KELILING'
             ? [

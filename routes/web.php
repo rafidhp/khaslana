@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(DashboardController::class)->group(function() {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatusRoute');
+        Route::get('/dashboard/order', 'order')->name('dashboard.order');
     });
 
     // product routes
@@ -83,11 +84,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // order routes
     Route::controller(OrderController::class)->group(function () {
+        // user
         Route::get('/order/list', 'list')->name('order.list');
         Route::get('/order/{order_id}', 'index')->name('order');
         Route::post('/order/store/{product_id}', 'dialogStore')->name('order.dialogStore');
         Route::post('/order/payment/{order}/generate', 'generatePayment')->name('order.generatePayment');
         Route::patch('/order/checkout/{order}', 'checkout')->name('order.checkout');
+        Route::patch('order/complete/{order}', 'complete')->name('order.complete');
         Route::get('/order/show/{order}', 'show')->name('order.show');
     });
 

@@ -10,6 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { storeStatusRoute } from '@/routes/dashboard';
 import type { BreadcrumbItem } from '@/types';
+import type { Order } from '@/types/order';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -67,6 +68,7 @@ interface DashboardProps {
     store_rating: StoreRating[];
     top_products: TopProducts[];
     sales_chart: ChartItem[];
+    latest_orders: Order[];
 }
 
 interface ChartItem {
@@ -80,7 +82,8 @@ export default function Dashboard({
     active_product,
     store_rating,
     top_products,
-    sales_chart
+    sales_chart,
+    latest_orders
 }: DashboardProps) {
     const { user } = useAuth();
     const [storeStatus, setStoreStatus] = useState(status);
@@ -102,8 +105,8 @@ export default function Dashboard({
     const storeProduct = store_rating?.[0]?.products?.[0];
 
     const storeStatistics = [
-        {id: 1, title: 'Pesanan hari ini', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8'/>},
-        {id: 2, title: 'Pendapatan hari ini', 'value': stat.total_pendapatan, 'icon': <DollarSign className='size-8'/>},
+        {id: 1, title: 'Pesanan', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8'/>},
+        {id: 2, title: 'Pendapatan', 'value': stat.total_pendapatan, 'icon': <DollarSign className='size-8'/>},
         {id: 3, title: 'Produk aktif', 'value': product.total_produk, 'icon': <Package className='size-8'/>},
         {id: 4, title: 'Rating toko', 'value': storeProduct?.reviews_avg_rating
             ? `${Number(storeProduct.reviews_avg_rating).toFixed(1)}/5.0`
@@ -117,51 +120,63 @@ export default function Dashboard({
                 <CtaCard />
             ) : (
                 <>
-                    <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
-                        <h2 className="text-xl font-bold">
-                            Status Toko
-                        </h2>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            Atur status operasional toko Anda
-                        </p>
-                        <div className="mt-6 flex items-center justify-between">
-                            <span
-                                className={`font-semibold ${storeStatus === 'BUKA'
-                                    ? 'text-green-500'
-                                    : 'text-red-500'
-                                    }`}
-                            >
-                                {storeStatus}
-                            </span>
-                            <button
-                                onClick={handleToggleStore}
-                                className={`rounded-lg px-4 py-2 text-white ${storeStatus === 'BUKA'
-                                        ? 'bg-green-500'
-                                        : 'bg-red-500'
-                                    }`}
-                            >
-                                {storeStatus === 'BUKA'
-                                    ? 'Tutup Toko'
-                                    : 'Buka Toko'}
-                            </button>
+                    <div className='flex'>
+                        <div className='flex flex-col gap-3 mb-4 justify-between'>
+                            <span className='font-semibold text-4xl'>Ringkasan Toko Anda.</span>
+                            <span className='text-[#adaaaa]'>Pantau kinerja toko Anda secara real-time</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
+                            <h2 className="text-xl font-bold">
+                                Status Toko
+                            </h2>
+
+                            <p className="mt-2 text-sm text-muted-foreground">Atur status operasional toko Anda</p>
+
+                            <div className="mt-6 flex items-center justify-between">
+                                <span
+                                    className={`font-semibold ${storeStatus === 'BUKA'
+                                        ? 'text-green-500'
+                                        : 'text-red-500'
+                                        }`}
+                                >
+                                    {storeStatus}
+                                </span>
+
+                                <button
+                                    onClick={handleToggleStore}
+                                    className={`rounded-lg px-4 py-2 text-white ${storeStatus === 'BUKA'
+                                            ? 'bg-green-500'
+                                            : 'bg-red-500'
+                                        }`}
+                                >
+                                    {storeStatus === 'BUKA'
+                                        ? 'Tutup Toko'
+                                        : 'Buka Toko'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-4 max-md:grid-cols-2 gap-4 justify-between w-full'>
+                    <div className='grid grid-cols-4 max-lg:grid-cols-2 gap-4 justify-between w-full mb-4'>
                         {storeStatistics.map((item) => (
                             <div key={item.id}
-                                className='flex flex-col gap-2 w-full rounded-4xl p-6 bg-[#222]'>
+                                className='flex flex-col gap-4 w-full rounded-4xl p-6 bg-[#222]'>
                                 <div className='w-fit p-3 text-[#99ff33] rounded-[999px] bg-[#cacaca]/20'>
                                     {item.icon}
                                 </div>
-                                <span className='text-[#adaaaa]'>{item.title}</span>
-                                <span className='font-semibold text-3xl'>{item.value}</span>
+                                <div className='flex flex-col'>
+                                    <span className='text-[#adaaaa]'>{item.title}</span>
+                                    <span className='font-semibold text-3xl'>{item.value}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className='flex gap-5 justify-between w-full'>
-                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 py-6 flex-4'>
+                    <div className='flex max-lg:flex-col mb-4 gap-5 justify-between w-full'>
+                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 py-6 max-lg:h-100 lg:flex-4'>
                             <span className='text-2xl font-semibold'>Grafik Penjualan</span>
 
                             <ResponsiveContainer width="100%" height="100%">
@@ -187,9 +202,9 @@ export default function Dashboard({
                         <div className='flex flex-col gap-4 bg-[#191720] w-full rounded-4xl p-6 py-6 flex-2'>
                             <span className='text-2xl font-semibold pb-3'>Produk Terlaris</span>
                             {top_products.map((item) => (
-                                <div className='flex justify-between gap-3'>
+                                <div className='flex justify-between gap-3' key={item.id}>
                                     <div className='flex gap-4'>
-                                        <img src={`storage/${item.product_images}`} alt="tes" className='size-16 bg-white rounded-[999px]'/>
+                                        <img src={`storage/${item.product_images}`} alt="tes" className='size-13 bg-white rounded-[999px]'/>
 
                                         <div className='flex flex-col justify-center'>
                                             <span className='text-lg font-medium'>{item.name}</span>
@@ -199,11 +214,58 @@ export default function Dashboard({
 
                                     <div className='flex flex-col justify-center items-end text-[#adaaaa]'>
                                         <span className='text-xl font-semibold text-[#99ff33]'>{item.total_terjual || 0}</span>
-                                        TERJUAL
+                                        <span className='text-sm'>TERJUAL</span>
                                     </div>
                                 </div>
                             ))}
                             <a href="/product" className='flex text-[#99ff33] font-semibold w-full justify-center mt-6'>Lihat Semua Produk</a>
+                        </div>
+                    </div>
+
+                    <div className='flex '>
+                        <div className='flex flex-col bg-[#191720] w-full rounded-4xl p-6 lg:flex-4 gap-6'>
+                            <span className='text-2xl font-semibold'>Pesanan Terbaru</span>
+                            <div className='flex justify-between w-full md:px-10 '>
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PELANGGAN</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-semibold'>
+                                            {item.user?.name}
+                                        </span>
+                                    ))}
+                                </div>
+                                
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PRODUK</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-normal text-[#adaaaa]'>
+                                            {item.order_items?.[0].product_name}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div className='flex flex-col gap-3 max-md:hidden'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4 '>STATUS</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-medium text-yellow-200'>
+                                            {item.status}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div className='flex flex-col gap-3'>
+                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>TOTAL</span>
+                                    {latest_orders.map((item) => (
+                                        <span key={item.id}
+                                            className='font-semibold'>
+                                            Rp {item.total_price}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </>

@@ -57,7 +57,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/api-data', 'getRouteData')->name('rute.data');
     });
 
-
     // store management routes
     Route::controller(StoreController::class)->group(function() {
         Route::get('/store-management', 'index')->name('storeManagement');

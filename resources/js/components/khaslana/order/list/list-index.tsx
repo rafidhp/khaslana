@@ -1,3 +1,4 @@
+import { router } from "@inertiajs/react";
 import type { Order } from "@/types/order"
 
 interface ListIndexProps {
@@ -50,6 +51,12 @@ export default function ListIndex({
         }
     }
 
+    const handleCompleteOrder = (orderId: number) => {
+        if (confirm("Apakah kamu yakin pesanan sudah diterima dengan baik")) {
+            router.patch(`/order/complete/${orderId}`)
+        }
+    }
+
     return (
         <>
             <div className="mb-8">
@@ -87,7 +94,7 @@ export default function ListIndex({
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col max-md:gap-3 justify-between">
+                        <div className="flex flex-col w-full items-end max-md:gap-3 justify-between">
                             <div className="flex flex-col items-end">
                                 <span className="text-[#adaaaa] font-medium text-sm">
                                     Total Belanja
@@ -96,10 +103,18 @@ export default function ListIndex({
                                     {formatRupiah(order.total_price)}
                                 </span>
                             </div>
-                            <a href={`/order/show/${order.id}`}
-                                className="flex border border-[#99ff33] justify-center text-[#99ff33] font-semibold py-2 rounded-[999px] text-sm hover:text-black hover:bg-[#99ff33] duration-200 transition-all">
-                                Lihat Detail
-                            </a>
+                            <div className="flex gap-2">
+                                <a href={`/order/show/${order.id}`}
+                                    className="flex border border-[#99ff33] justify-center text-[#99ff33] px-4.5 font-semibold py-2 rounded-[999px] text-sm hover:text-black hover:bg-[#99ff33] duration-200 transition-all">
+                                    Lihat Detail
+                                </a>
+                                {order.type == 'DIANTAR' && order.status == 'DIKIRIM' && (
+                                    <button onClick={() => handleCompleteOrder(order.id)}
+                                        className="flex border border-[#99ff33] justify-center hover:text-[#99ff33] px-4.5 font-semibold py-2 rounded-[999px] text-sm text-black bg-[#99ff33] hover:bg-transparent duration-200 transition-all">
+                                        Selesai
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </a>
                 ))}

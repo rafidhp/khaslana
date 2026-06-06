@@ -127,7 +127,7 @@ export default function ShowIndex({
             </div>
             
             <div className="flex max-md:flex-col justify-between w-full gap-6">
-                {order.shipping_service && (
+                {order.type == 'DIANTAR' && (
                     <div className="flex flex-col gap-6 bg-[#131313] p-8 rounded-3xl w-full">
                         <span className="font-semibold text-2xl">Info Pengiriman</span>
                         <div className="flex flex-col gap-2">

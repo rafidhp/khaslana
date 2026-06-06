@@ -41,7 +41,7 @@ class OrderController extends Controller
         $orders = Order::where('user_id', Auth::user()->id)->with([
             'umkm',
             'orderItems',
-        ])->get();
+        ])->orderBy('created_at', 'desc')->get();
         return Inertia::render('user/order/list', [
             'orders' => $orders,
         ]);
@@ -285,5 +285,13 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    public function complete(Request $request, Order $order) {
+        $order->update([
+            'status' => 'SELESAI'
+        ]);
+
+        return back()->with('success', 'Order berhasi diselesaikan');
     }
 }

@@ -88,6 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/order/store/{product_id}', 'dialogStore')->name('order.dialogStore');
         Route::post('/order/payment/{order}/generate', 'generatePayment')->name('order.generatePayment');
         Route::patch('/order/checkout/{order}', 'checkout')->name('order.checkout');
+        Route::patch('order/complete/{order}', 'complete')->name('order.complete');
         Route::get('/order/show/{order}', 'show')->name('order.show');
     });
 

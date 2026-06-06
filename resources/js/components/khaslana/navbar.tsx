@@ -11,6 +11,7 @@ import {
     History,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+
 import DefaultProfile from "@/assets/icons/default-profile.png";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";

@@ -1,3 +1,4 @@
+import "@/components/khaslana/css/navbar.css";
 import { Link, usePage, router } from "@inertiajs/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,7 +11,6 @@ import {
     History,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import "@/components/khaslana/css/navbar.css";
 import DefaultProfile from "@/assets/icons/default-profile.png";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";

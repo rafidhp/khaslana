@@ -2,9 +2,18 @@ import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapPin } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { renderToString } from 'react-dom/server';
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, Polyline, useMap, ZoomControl } from 'react-leaflet';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    CircleMarker,
+    Polyline,
+    useMap, 
+    ZoomControl
+} from 'react-leaflet';
 import type { RouteNode } from '@/pages/umkm/stay-point';
 
 // MAPPIN CUSTOM LUCIDE (STANDAR UNTUK MANGKAL SAAT INI)

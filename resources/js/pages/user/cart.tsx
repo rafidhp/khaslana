@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react";
-import UserLayout from "@/layouts/user-layout";
 import CartIndex from "@/components/khaslana/cart/cart-index";
+import UserLayout from "@/layouts/user-layout";
 
 export default function Cart() {
     return (

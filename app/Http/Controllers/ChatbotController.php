@@ -73,13 +73,18 @@ class ChatbotController extends Controller
             'umkm.city',
         ])->get();
 
-        $user = Auth::user();
+        $user = null;
+        $orders = collect();
 
-        $orders = Order::where('user_id', $user->id)->with([
-            'orderItems',
-            'payment',
-            'umkm',
-        ])->get();
+        if (Auth::check()) {
+            $user = Auth::user();
+    
+            $orders = Order::where('user_id', $user->id)->with([
+                'orderItems',
+                'payment',
+                'umkm',
+            ])->get();
+        }
 
         return <<<PROMPT
             Kamu adalah Pusat Bantuan untuk aplikasi Khaslana. Jika user sudah login, untuk pertama kali dan jika diperlukan, sapalah user dengan data {$user}. Batasi jawaban anda seputar aplikasi khaslana saja dan yang masih berkaitan

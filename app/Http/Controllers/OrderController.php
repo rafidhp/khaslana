@@ -292,6 +292,6 @@ class OrderController extends Controller
             'status' => 'SELESAI'
         ]);
 
-        return back()->with('success', 'Order berhasi diselesaikan');
+        return redirect()->route('order.list')->with('success', 'Order berhasil diselesaikan');
     }
 }

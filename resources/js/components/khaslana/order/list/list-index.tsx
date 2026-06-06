@@ -1,4 +1,5 @@
 import { router } from "@inertiajs/react";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 import type { Order } from "@/types/order"
 
 interface ListIndexProps {
@@ -54,7 +55,9 @@ export default function ListIndex({
     const handleCompleteOrder = (orderId: number) => {
         if (confirm("Apakah kamu yakin pesanan sudah diterima dengan baik")) {
             router.patch(`/order/complete/${orderId}`)
+            showSuccessToast("Pesanan berhasil diselesaikan");
         }
+        showErrorToast("Terjadi error, silahkan coba lagi.");
     }
 
     return (

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Package, MapPin, ClipboardList } from 'lucide-react';
+import { LayoutGrid, Package, MapPin, ClipboardList, TicketPercent} from 'lucide-react';
 
 import BackToHomepage from '@/components/back-to-homepage';
 import { NavMain } from '@/components/nav-main';
@@ -51,6 +51,11 @@ export function AppSidebar() {
             ]
             : []
         ),
+        {
+            title: 'Promo',
+            href: '/store-management/promo',
+            icon: TicketPercent,
+        },
     ];
 
     return (

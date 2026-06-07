@@ -13,6 +13,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\MappingController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PromoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-management/store', 'store')->name('storeManagement.store');
         Route::put('/store-management/update', 'update')->name('storeManagement.update');
         Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
+
+        Route::get('/store-management/promo', 'promoIndex')->name('storeManagement.promo.index');
+        Route::post('/store-management/promo', 'promoStore')->name('storeManagement.promo.store');
+        Route::put('/store-management/promo/{promo}', 'promoUpdate')->name('storeManagement.promo.update');
+        Route::delete('/store-management/promo/{promo}', 'promoDestroy')->name('storeManagement.promo.destroy');
     });
 
     // community routes
@@ -116,6 +122,10 @@ Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm/tracking/{umkm_id?}', 'tracking')->name('umkm.tracking');
     Route::get('/umkm/rute/{umkm_id}', 'rute')->name('umkm.rute');
 });
+
+Route::get('/promo/{id}', [PromoController::class, 'show'])->name('promo.show');
+
+Route::get('/umkm/{id}/promo', [\App\Http\Controllers\UmkmController::class, 'showPromo'])->name('umkm.promo');
 
 Route::controller(ChatbotController::class)->group(function () {
     Route::get('/help', 'index')->name('chatbot');

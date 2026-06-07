@@ -1,3 +1,5 @@
+import type { Promo } from "@/types/promo";
+
 export interface Umkm {
     id: number;
     user_id: number;
@@ -89,4 +91,6 @@ export interface Umkm {
             | 'KELILING'
             | null;
     }[];
+
+    promos?: Promo[];
 }

@@ -163,14 +163,14 @@
         transition: all;
         transition-duration: 300ms;
     }
-    
+
     .btn-primary-khaslana:hover {
         color: var(--primary-khaslana);
         background-color: transparent;
         transition: all;
         transition-duration: 200ms;
     }
-    
+
     .btn-secondary-khaslana {
         display: flex;
         align-items: center;
@@ -184,7 +184,7 @@
         transition: all;
         transition-duration: 300ms;
     }
-    
+
     .btn-secondary-khaslana:hover {
         color: var(--secondary-khaslana);
         background-color: var(--primary-khaslana);

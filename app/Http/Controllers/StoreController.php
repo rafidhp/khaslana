@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
+use App\Models\Promo;
 use App\Http\Requests\StoreRequest;
 use Laravolt\Indonesia\Models\Province;
 use App\Models\UMKM\Umkm;
@@ -416,5 +417,65 @@ class StoreController extends Controller
                     'message' => $th->getMessage(),
                 ]);
         }
+    }
+
+    public function promoIndex()
+    {
+        $umkm = Auth::user()->umkm;
+        $promos = $umkm ? $umkm->promos()->orderBy('created_at', 'desc')->get() : [];
+
+        return Inertia::render('umkm/promo', [
+            'promos' => $promos
+        ]);
+    }
+
+    public function promoStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:DISKON,PROMO',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'status' => 'required|in:SEGERA HADIR,BERLANGSUNG,BERAKHIR',
+            'discount_percent' => 'nullable|numeric|min:1|max:100',
+        ]);
+
+        $umkm = Auth::user()->umkm;
+        
+        $umkm->promos()->create($request->all());
+
+        return back();
+    }
+
+    public function promoUpdate(Request $request, Promo $promo)
+    {
+        if ($promo->umkm_id !== Auth::user()->umkm->id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:DISKON,PROMO',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'status' => 'required|in:SEGERA HADIR,BERLANGSUNG,BERAKHIR',
+            'discount_percent' => 'nullable|numeric|min:1|max:100',
+        ]);
+
+        $promo->update($request->all());
+
+        return back();
+    }
+
+    public function promoDestroy(Promo $promo)
+    {
+        if ($promo->umkm_id !== Auth::user()->umkm->id) {
+            abort(403);
+        }
+
+        $promo->delete();
+        return back();
     }
 }

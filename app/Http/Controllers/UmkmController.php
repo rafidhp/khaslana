@@ -40,6 +40,7 @@ class UmkmController extends Controller
             'umkmData',
             'umkmImages',
             'umkmLocations',
+            'promos',
         )->firstOrFail();
         $reviews = Review::where('umkm_id', $umkm_id)->with(
             'reviewLikes',
@@ -155,4 +156,15 @@ class UmkmController extends Controller
             'routeNodes' => $routeNodes
         ]);
     }
+
+    public function showPromo($id)
+{
+    // Mengambil data UMKM yang ingin ditampilkan promonya
+    $umkm = \App\Models\UMKM\Umkm::with('promos')->findOrFail($id);
+
+    // Mengembalikan (render) file page React yang Anda simpan
+    return Inertia::render('user/umkm-user/detail-umkm/promo', [
+        'umkmData' => $umkm,
+    ]);
+}
 }

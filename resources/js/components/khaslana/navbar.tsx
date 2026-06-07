@@ -15,6 +15,7 @@ import { useEffect, useState, useRef } from "react";
 import DefaultProfile from "@/assets/icons/default-profile.png";
 import hamburger from "@/assets/icons/hamburger.png";
 import logo from "@/assets/icons/khaslana-logo-green.png";
+import ConfirmationDialog from "@/components/khaslana/confirmation-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import {
@@ -37,6 +38,7 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
     const { user } = useAuth();
     const { url } = usePage();
     const menus = user
@@ -102,227 +104,219 @@ export default function Navbar() {
     const cleanup = useMobileNavigation();
     
     const handleLogout = () => {
+        setOpenLogoutDialog(true);
+        setProfileOpen(false);
+        setMenuOpen(false);
+    };
+
+    const confirmLogout = () => {
         cleanup();
-        router.flushAll();
+        router.post(logout(), {}, {
+            onSuccess: () => {
+                router.flushAll();
+                setOpenLogoutDialog(false);
+            }
+        });
     };
 
     return (
-        <nav
-            ref={navRef}
-            className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
-                menuOpen ? "menu-open" : ""
-            }`}
-        >
-            <div className="navbar-left">
-                <Link
-                    href={home()}
-                    onClick={handleCloseMenu}
-                    className="flex items-center gap-3"
-                >
-                    <img
-                        src={logo}
-                        alt="Logo Khaslana"
-                        className="navbar-logo hover:-rotate-390 hover:scale-115 transition-all duration-300"
-                    />
-                    <div className="font-semibold">Khaslana</div>
-                </Link>
-            </div>
-            <div 
-                className="navbar-toggle relative" 
+        <>
+            <nav
+                ref={navRef}
+                className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
+                    menuOpen ? "menu-open" : ""
+                }`}
             >
-                <img 
-                    src={hamburger}
-                    alt="menu" 
-                    onClick={handleToggle}
-                />
-            </div>
-            <div className={`flex justify-center items-center w-full navbar-right ${user ? "navbar-right-auth" : ""}`}>
-                <ul className={`
-                    ${user ? "navbar-authenticated" : ""}
-                    ${user ? "navbar-mobile-auth" : ""}
-                    ${user ? "max-[900px]:mb-8" : ""}
-                    `}>
-                    {menus.map((menu) => (
-                        <li key={menu.name}>
-                            <Link
-                                href={menu.href}
-                                onClick={handleCloseMenu}
-                                className={`nav-link ${
-                                    menu.href === '/'
-                                    ? url === '/'
-                                        ? 'navbar-active'
-                                        : ''
-                                    : url.startsWith(menu.href)
-                                        ? 'navbar-active'
-                                        : ''
-                                }`}
-                            >
-                                {menu.name}
-                            </Link>
-                        </li>
-                    ))}
-                    <li className={user ? "navbar-profile-item" : ""}>
-                        {
-                            user ? (
-                                <div className="flex flex-col-reverse min-[970px]:flex-row items-end min-[970px]:items-center justify-center gap-4 md:gap-8">
-                                    <div className="hidden cursor-pointer min-[970px]:block">
-                                        <Link href={cart()}>
-                                            <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200 hidden min-[970px]:block" />
-                                        </Link>
-                                    </div>
-                                    <div className="navbar-mobile-profile-actions relative" ref={profileRef}>
-                                        <motion.button
-                                            whileHover={{
-                                                scale: 1.05,
-                                            }}
-                                            whileTap={{
-                                                scale: 0.96,
-                                            }}
-                                            transition={{
-                                                duration: 0.2,
-                                            }}
-                                            onClick={() =>
-                                                setProfileOpen(!profileOpen)
-                                            }
-                                            className="
-                                                flex items-center gap-2
-                                                hover:cursor-pointer
-                                            "
-                                        >
-                                            <motion.img
-                                                src={
-                                                    user.profile_photo ??
-                                                    DefaultProfile
-                                                }
-                                                alt={user.name}
-                                                className="
-                                                    w-12 h-12
-                                                    rounded-full
-                                                    object-cover
-                                                    border border-white/10
-                                                    transition
-                                                "
-                                                whileHover={{
-                                                    boxShadow:
-                                                        "0 0 0 4px rgba(153,255,51,0.15)",
-                                                }}
-                                            />
-                                            <ChevronDown
-                                                className={`
-                                                    chevron-display
-                                                    w-4 h-4 text-[#989898]
-                                                    transition-transform duration-300
-                                                    ${
-                                                        profileOpen
-                                                            ? 'rotate-180'
-                                                            : ''
-                                                    }
-                                                `}
-                                            />
-                                        </motion.button>
-                                        <div className="navbar-mobile-links">
-                                            <Link
-                                                href={cart()}
-                                                className="nav-link hidden min-[970px]:block"
-                                            >
-                                                Keranjang
-                                                <ShoppingCart className="w-5 h-5" />
-                                            </Link>
-                                            <Link
-                                                href={profile()}
-                                                className="nav-link"
-                                            >
-                                                Profile
-                                                <User className="w-5 h-5" />
-                                            </Link>
-                                            {user.is_umkm === true && (
-                                                <Link
-                                                    href={dashboard()}
-                                                    className="nav-link"
-                                                >
-                                                    Kelola Toko
-                                                    <Store className="w-5 h-5" />
-                                                </Link>
-                                            )}
-                                            <Link
-                                                href={myPosts()}
-                                                className="nav-link"
-                                            >
-                                                Postingan
-                                                <LayoutDashboard className="w-5 h-5" />
-                                            </Link>
-                                            <Link
-                                                href={list()}
-                                                className="nav-link"
-                                            >
-                                                Riwayat Order
-                                                <History className="w-5 h-5" />
-                                            </Link>
-                                            <Link
-                                                href={logout()}
-                                                method="post"
-                                                as="button"
-                                                onClick={handleLogout}
-                                                className="logout"
-                                            >
-                                                Logout
-                                                <LogOut className="w-5 h-5" />
+                <div className="navbar-left">
+                    <Link
+                        href={home()}
+                        onClick={handleCloseMenu}
+                        className="flex items-center gap-3"
+                    >
+                        <img
+                            src={logo}
+                            alt="Logo Khaslana"
+                            className="navbar-logo hover:-rotate-390 hover:scale-115 transition-all duration-300"
+                        />
+                        <div className="font-semibold">Khaslana</div>
+                    </Link>
+                </div>
+                <div 
+                    className="navbar-toggle relative" 
+                >
+                    <img 
+                        src={hamburger}
+                        alt="menu" 
+                        onClick={handleToggle}
+                    />
+                </div>
+                <div className={`flex justify-center items-center w-full navbar-right ${user ? "navbar-right-auth" : ""}`}>
+                    <ul className={`
+                        ${user ? "navbar-authenticated" : ""}
+                        ${user ? "navbar-mobile-auth" : ""}
+                        ${user ? "max-[900px]:mb-8" : ""}
+                        `}>
+                        {menus.map((menu) => (
+                            <li key={menu.name}>
+                                <Link
+                                    href={menu.href}
+                                    onClick={handleCloseMenu}
+                                    className={`nav-link ${
+                                        menu.href === '/'
+                                        ? url === '/'
+                                            ? 'navbar-active'
+                                            : ''
+                                        : url.startsWith(menu.href)
+                                            ? 'navbar-active'
+                                            : ''
+                                    }`}
+                                >
+                                    {menu.name}
+                                </Link>
+                            </li>
+                        ))}
+                        <li className={user ? "navbar-profile-item" : ""}>
+                            {
+                                user ? (
+                                    <div className="flex flex-col-reverse min-[970px]:flex-row items-end min-[970px]:items-center justify-center gap-4 md:gap-8">
+                                        <div className="hidden cursor-pointer min-[970px]:block">
+                                            <Link href={cart()}>
+                                                <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200 hidden min-[970px]:block" />
                                             </Link>
                                         </div>
-                                        <AnimatePresence>
-                                            {profileOpen && (
-                                                <motion.div
-                                                    initial={{
-                                                        opacity: 0,
-                                                        y: -10,
-                                                        scale: 0.96,
-                                                    }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        y: 0,
-                                                        scale: 1,
-                                                    }}
-                                                    exit={{
-                                                        opacity: 0,
-                                                        y: -10,
-                                                        scale: 0.96,
-                                                    }}
-                                                    transition={{
-                                                        duration: 0.2,
-                                                    }}
+                                        <div className="navbar-mobile-profile-actions relative" ref={profileRef}>
+                                            <motion.button
+                                                whileHover={{
+                                                    scale: 1.05,
+                                                }}
+                                                whileTap={{
+                                                    scale: 0.96,
+                                                }}
+                                                transition={{
+                                                    duration: 0.2,
+                                                }}
+                                                onClick={() =>
+                                                    setProfileOpen(!profileOpen)
+                                                }
+                                                className="
+                                                    flex items-center gap-2
+                                                    hover:cursor-pointer
+                                                "
+                                            >
+                                                <motion.img
+                                                    src={
+                                                        user.profile_photo ??
+                                                        DefaultProfile
+                                                    }
+                                                    alt={user.name}
                                                     className="
-                                                        navbar-dropdown-desktop
-                                                        absolute right-0 mt-3
-                                                        min-w-55
-                                                        rounded-2xl
-                                                        bg-[#1F1D2B]/95
-                                                        backdrop-blur-xl
-                                                        shadow-2xl
-                                                        overflow-hidden
-                                                        z-50
+                                                        w-12 h-12
+                                                        rounded-full
+                                                        object-cover
                                                         border border-white/10
+                                                        transition
                                                     "
+                                                    whileHover={{
+                                                        boxShadow:
+                                                            "0 0 0 4px rgba(153,255,51,0.15)",
+                                                    }}
+                                                />
+                                                <ChevronDown
+                                                    className={`
+                                                        chevron-display
+                                                        w-4 h-4 text-[#989898]
+                                                        transition-transform duration-300
+                                                        ${
+                                                            profileOpen
+                                                                ? 'rotate-180'
+                                                                : ''
+                                                        }
+                                                    `}
+                                                />
+                                            </motion.button>
+                                            <div className="navbar-mobile-links">
+                                                <Link
+                                                    href={cart()}
+                                                    className="nav-link hidden min-[970px]:block"
                                                 >
+                                                    Keranjang
+                                                    <ShoppingCart className="w-5 h-5" />
+                                                </Link>
+                                                <Link
+                                                    href={profile()}
+                                                    className="nav-link"
+                                                >
+                                                    Profile
+                                                    <User className="w-5 h-5" />
+                                                </Link>
+                                                {user.is_umkm === true && (
                                                     <Link
-                                                        href={profile()}
+                                                        href={dashboard()}
+                                                        className="nav-link"
+                                                    >
+                                                        Kelola Toko
+                                                        <Store className="w-5 h-5" />
+                                                    </Link>
+                                                )}
+                                                <Link
+                                                    href={myPosts()}
+                                                    className="nav-link"
+                                                >
+                                                    Postingan
+                                                    <LayoutDashboard className="w-5 h-5" />
+                                                </Link>
+                                                <Link
+                                                    href={list()}
+                                                    className="nav-link"
+                                                >
+                                                    Riwayat Order
+                                                    <History className="w-5 h-5" />
+                                                </Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleLogout}
+                                                    className="logout"
+                                                >
+                                                    Logout
+                                                    <LogOut className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                            <AnimatePresence>
+                                                {profileOpen && (
+                                                    <motion.div
+                                                        initial={{
+                                                            opacity: 0,
+                                                            y: -10,
+                                                            scale: 0.96,
+                                                        }}
+                                                        animate={{
+                                                            opacity: 1,
+                                                            y: 0,
+                                                            scale: 1,
+                                                        }}
+                                                        exit={{
+                                                            opacity: 0,
+                                                            y: -10,
+                                                            scale: 0.96,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.2,
+                                                        }}
                                                         className="
-                                                            flex items-center gap-3
-                                                            px-5 py-4
-                                                            text-white
-                                                            transition
-                                                            hover:bg-white/5
-                                                            border-b border-white/5
+                                                            navbar-dropdown-desktop
+                                                            absolute right-0 mt-3
+                                                            min-w-55
+                                                            rounded-2xl
+                                                            bg-[#1F1D2B]/95
+                                                            backdrop-blur-xl
+                                                            shadow-2xl
+                                                            overflow-hidden
+                                                            z-50
+                                                            border border-white/10
                                                         "
                                                     >
-                                                        <User className="w-5 h-5" />
-                                                        <span>
-                                                            Profile
-                                                        </span>
-                                                    </Link>
-
-                                                    {user.is_umkm == 1 && (
                                                         <Link
-                                                            href={dashboard()}
+                                                            href={profile()}
                                                             className="
                                                                 flex items-center gap-3
                                                                 px-5 py-4
@@ -332,82 +326,109 @@ export default function Navbar() {
                                                                 border-b border-white/5
                                                             "
                                                         >
-                                                            <Store className="w-5 h-5" />
+                                                            <User className="w-5 h-5" />
                                                             <span>
-                                                                Kelola Toko
+                                                                Profile
                                                             </span>
                                                         </Link>
-                                                    )}
 
-                                                    <Link
-                                                        href={myPosts()}
-                                                        className="
-                                                            flex items-center gap-3
-                                                            px-5 py-4
-                                                            text-white
-                                                            transition
-                                                            hover:bg-white/5
-                                                            border-b border-white/5
-                                                        "
-                                                    >
-                                                        <LayoutDashboard className="w-5 h-5" />
-                                                        <span>
-                                                            Postingan
-                                                        </span>
-                                                    </Link>
-                                                    <Link
-                                                        href={list()}
-                                                        className="
-                                                            flex items-center gap-3
-                                                            px-5 py-4
-                                                            text-white
-                                                            transition
-                                                            hover:bg-white/5
-                                                            border-b border-white/5
-                                                        "
-                                                    >
-                                                        <History className="w-5 h-5" />
-                                                        <span>
-                                                            Riwayat Order
-                                                        </span>
-                                                    </Link>
-                                                    <Link
-                                                        href={logout()}
-                                                        method="post"
-                                                        as="button"
-                                                        onClick={handleLogout}
-                                                        className="
-                                                            flex items-center gap-3
-                                                            w-full
-                                                            px-5 py-4
-                                                            text-red-400
-                                                            transition
-                                                            hover:bg-red-500/10
-                                                            hover:cursor-pointer
-                                                        "
-                                                    >
-                                                        <LogOut className="w-5 h-5" />
-                                                        <span>
-                                                            Logout
-                                                        </span>
-                                                    </Link>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+                                                        {user.is_umkm == 1 && (
+                                                            <Link
+                                                                href={dashboard()}
+                                                                className="
+                                                                    flex items-center gap-3
+                                                                    px-5 py-4
+                                                                    text-white
+                                                                    transition
+                                                                    hover:bg-white/5
+                                                                    border-b border-white/5
+                                                                "
+                                                            >
+                                                                <Store className="w-5 h-5" />
+                                                                <span>
+                                                                    Kelola Toko
+                                                                </span>
+                                                            </Link>
+                                                        )}
+
+                                                        <Link
+                                                            href={myPosts()}
+                                                            className="
+                                                                flex items-center gap-3
+                                                                px-5 py-4
+                                                                text-white
+                                                                transition
+                                                                hover:bg-white/5
+                                                                border-b border-white/5
+                                                            "
+                                                        >
+                                                            <LayoutDashboard className="w-5 h-5" />
+                                                            <span>
+                                                                Postingan
+                                                            </span>
+                                                        </Link>
+                                                        <Link
+                                                            href={list()}
+                                                            className="
+                                                                flex items-center gap-3
+                                                                px-5 py-4
+                                                                text-white
+                                                                transition
+                                                                hover:bg-white/5
+                                                                border-b border-white/5
+                                                            "
+                                                        >
+                                                            <History className="w-5 h-5" />
+                                                            <span>
+                                                                Riwayat Order
+                                                            </span>
+                                                        </Link>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleLogout}
+                                                            className="
+                                                                flex items-center gap-3
+                                                                w-full
+                                                                px-5 py-4
+                                                                text-red-400
+                                                                transition
+                                                                hover:bg-red-500/10
+                                                                hover:cursor-pointer
+                                                            "
+                                                        >
+                                                            <LogOut className="w-5 h-5" />
+                                                            <span>
+                                                                Logout
+                                                            </span>
+                                                        </button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <Link
-                                    href={login()}
-                                    className="btn-primary-khaslana"
-                                >
-                                    Ayo Mulai
-                                </Link>
-                            )
-                        }
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                                ) : (
+                                    <Link
+                                        href={login()}
+                                        className="btn-primary-khaslana"
+                                    >
+                                        Ayo Mulai
+                                    </Link>
+                                )
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            {/* dialog */}
+            <ConfirmationDialog
+                open={openLogoutDialog}
+                title="Logout"
+                description="Apakah Anda yakin ingin keluar dari akun ini?"
+                confirmText="Logout"
+                onCancel={() => setOpenLogoutDialog(false)}
+                onConfirm={confirmLogout}
+            />
+        </>
     );
 }

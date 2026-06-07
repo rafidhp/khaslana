@@ -76,18 +76,19 @@ export default function ConfirmationDialog({
                         </button>
                         <button
                             onClick={onConfirm}
-                            className="
+                            className={`
                                 flex-1
                                 py-2.5 md:py-3
                                 text-sm md:text-base
                                 rounded-xl
-                                bg-[#99ff33]
-                                text-black
-                                hover:bg-transparent
-                                hover:text-[#99ff33]
-                                transition-all
+                                border
+                                transition-all duration-200
                                 cursor-pointer
-                            "
+                                ${confirmText === 'Logout' ?
+                                    'border-red-700 bg-red-400 hover:bg-red-700 text-white' :
+                                    'border-[#99FF33] hover:bg-transparent bg-[#99ff33] text-black hover:text-[#99ff33]'
+                                }
+                            `}
                         >
                             {confirmText}
                         </button>

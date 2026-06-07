@@ -15,7 +15,7 @@ export default function MapDetailCard({ selectedNode }: Props) {
     const [address, setAddress] = useState<string>('-');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Effect: Nembak API Geocoding HANYA saat ada pin yang diklik
+    // Hit Api GeoCoding, klo di klik
     useEffect(() => {
         if (!selectedNode) {
             setAddress('-');

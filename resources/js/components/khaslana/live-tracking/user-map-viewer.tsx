@@ -5,7 +5,6 @@ import { renderToString } from 'react-dom/server';
 import { MapContainer, TileLayer, Marker, Polyline, useMap, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// ================== TYPES ==================
 export interface MerchantMapData {
     id: number;
     latitude: number;
@@ -41,7 +40,7 @@ interface Props {
     onNodeClick?: (index: number) => void;
 }
 
-// ================== ICON ==================
+// ICON 
 const createStoreProfileIcon = (logoUrl: string | null, storeName: string, isActive: boolean) => {
     const finalLogo = logoUrl ? `/storage/${logoUrl}` : '/images/default-store.png';
     const borderColor = isActive ? '#99FF33' : '#8B8B8B';
@@ -95,19 +94,18 @@ const UserLocationIcon = L.divIcon({
     iconAnchor: [12, 12],
 });
 
-// ================== FIT BOUNDS ==================
+// FIT BOUNDS
 function FitMapBounds({ merchants, userLocation, routePath, routeNodes, activeNodeIndex }: FitBoundsProps) {
     const map = useMap();
     
     useEffect(() => {
-        // 🔥 PRIORITAS: kalau klik node → jangan fitBounds
         if (
             typeof activeNodeIndex === 'number' &&
             routeNodes &&
             routeNodes[activeNodeIndex]
         ) {
             const node = routeNodes[activeNodeIndex];
-            map.setView([node.latitude, node.longitude], 17, {
+            map.setView([node.latitude, node.longitude], 19, {
                 animate: true,
                 duration: 1
             });
@@ -130,7 +128,7 @@ function FitMapBounds({ merchants, userLocation, routePath, routeNodes, activeNo
             map.fitBounds(bounds, { 
                 paddingTopLeft, 
                 paddingBottomRight, 
-                maxZoom: 17,
+                maxZoom: 20,
                 animate: true,
                 duration: 1.5
             });
@@ -140,7 +138,7 @@ function FitMapBounds({ merchants, userLocation, routePath, routeNodes, activeNo
     return null;
 }
 
-// ================== MAIN ==================
+// MAIN
 export default function UserMapViewer({
     userLocation,
     merchants,

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\Product\Product;
 use App\Models\Product\ProductVariant;
+use App\Models\Cart\CartItem;
 use App\Models\Order\Order;
 use App\Models\Order\Payment;
 
@@ -233,11 +234,19 @@ class OrderController extends Controller
                     $transactionStatus === 'capture' &&
                     $fraudStatus === 'accept'
                 )
+                
             )
+            
         ) {
             $order->load('orderItems.variant');
             foreach ($order->orderItems as $item) {
                 $item->variant->decrement('stock', $item->quantity);
+
+                CartItem::where('variant_id', $item->variant_id)
+                    ->whereHas('cart', function ($q) use ($order) {
+                        $q->where('user_id', $order->user_id);
+                    })
+                    ->delete();
             }
 
             $order->update([

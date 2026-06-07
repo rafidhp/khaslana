@@ -1,14 +1,13 @@
 import { MapPin, Star } from 'lucide-react';
 import React from 'react';
 
-// 1. RE-CHECK INTERFACE: Disesuaikan dengan kebutuhan data aktual
 export interface MerchantSidebarData {
     id: number;
     storeName: string;
-    description: string;  // Menggantikan category
-    locationText: string; // Penggalan nama jalan hasil reverse geocoding (Bukan alamat lengkap/Lokasi Live)
+    description: string;  
+    locationText: string; 
     rating: number;
-    status: 'MANGKAL' | 'KELILING' | 'TUTUP'; // Diambil dari status lokasi terakhir
+    status: 'MANGKAL' | 'KELILING' | 'TUTUP';
 }
 
 interface Props {
@@ -22,7 +21,6 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
     if (merchants.length === 0) return null;
 
     return (
-        // UI REBUILD: Background abu-abu transparan sesuai Gambar 1
         <div className="flex flex-col w-full bg-[#2A2A2A]/80 backdrop-blur-xl rounded-[24px] border border-white/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-left-4 duration-300">
             
             {/* Header */}
@@ -33,21 +31,19 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
                 </div>
             </div>
 
-            {/* List Toko (Scrollable) */}
-            {/* UI REBUILD: Gap antar card diubah menjadi 15px */}
+            {/* List Toko */}
             <div className="flex-1 overflow-y-auto px-5 pb-5 flex flex-col gap-[15px] custom-scrollbar min-h-0">
                 {merchants.map((merchant) => {
                     const isSelected = selectedMerchantId === merchant.id;
                     
-                    // UI REBUILD: Badge Status Dinamis
                     let statusColor = "text-gray-400 border-gray-600";
                     let statusText = "Closed";
                     
                     if (merchant.status === 'MANGKAL') {
                         statusColor = "text-[#99FF33] border-[#99FF33]";
-                        statusText = "Mangkal"; // Sesuai Gambar 1
+                        statusText = "Mangkal";
                     } else if (merchant.status === 'KELILING') {
-                        statusColor = "text-[#F5A623] border-[#F5A623]"; // Warna pembeda untuk keliling
+                        statusColor = "text-[#F5A623] border-[#F5A623]"; 
                         statusText = "Keliling";
                     }
 
@@ -55,7 +51,6 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
                         <button
                             key={merchant.id}
                             onClick={() => onSelectMerchant(merchant.id)}
-                            // UI REBUILD: Card Background lebih gelap (#121212)
                             className={`w-full text-left p-4 rounded-[16px] transition-all duration-300 group bg-[#161616] border ${
                                 isSelected 
                                 ? "border-[#99FF33]/50 shadow-[0_0_15px_rgba(153,255,51,0.1)]" 
@@ -72,7 +67,6 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
                                 </div>
                             </div>
 
-                            {/* UI REBUILD: Subtitle sekarang adalah Deskripsi UMKM */}
                             <p className="text-gray-400 text-[13px] mb-4 line-clamp-1">
                                 {merchant.description}
                             </p>
@@ -80,7 +74,6 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
                             {/* Baris Bawah: Lokasi & Rating */}
                             <div className="flex items-center justify-between text-sm mt-auto">
                                 
-                                {/* UI REBUILD: Lokasi Singkat */}
                                 <div className="flex items-center text-gray-400">
                                     <MapPin className="w-4 h-4 mr-1.5" />
                                     <span className="text-[13px] truncate max-w-[150px]">
@@ -88,7 +81,6 @@ export default function MerchantSidebar({ merchants, selectedMerchantId, onSelec
                                     </span>
                                 </div>
                                 
-                                {/* UI REBUILD: Rating teks putih, bintang hijau */}
                                 <div className="flex items-center text-white font-bold text-[14px]">
                                     <Star className="w-4 h-4 fill-[#99FF33] text-[#99FF33] mr-1.5" />
                                     {merchant.rating.toFixed(1)}

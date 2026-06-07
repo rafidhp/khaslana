@@ -34,10 +34,11 @@ export default function OrderIndex({
 }: OrderPageProps) {
     useMidtrans();
     const { user } = useAuth();
-    const item = order.order_items?.[0];
-    const product = item?.product;
-    const variant = item?.variant;
-    const quantity = item?.quantity ?? 1;
+    // const item = order.order_items?.[0];
+    // const product = item?.product;
+    // const variant = item?.variant;
+    // const quantity = item?.quantity ?? 1;
+    const items = order.order_items ?? [];
     const address = user.location?.address ?? "";
     const [notes, setNotes] = useState(order.notes ?? '');
     const [openingPayment, setOpeningPayment] = useState(false);
@@ -46,7 +47,10 @@ export default function OrderIndex({
     const settlement = order.payment?.transaction_status === 'settlement';
 
     const service_fee = 2000;
-    const subtotal = Number(item?.subtotal ?? 0);
+    const subtotal = items.reduce(
+        (acc, item) => acc + Number(item.subtotal ?? 0),
+        0
+    );
     const shippingCost = orderType === 'DIANTAR'
         ? Number(order.shipping_cost ?? 0)
         : 0;
@@ -148,43 +152,52 @@ export default function OrderIndex({
             </div>
             <div className="flex max-lg:flex-col gap-4">
                 <div className="flex flex-col gap-5 flex-3">
-                    <div className="flex gap-6 bg-[#131313] p-8 rounded-3xl justify-between">
-                        <div className="flex gap-5">
-                            <div className="flex">
-                                <img
-                                    src={
-                                        product?.product_images?.[0]?.image
-                                            ? `/storage/${product.product_images[0].image}`
-                                            : '/images/placeholder.png'
-                                    }
-                                    alt={product?.name}
-                                    className="h-30 w-30 object-cover bg-white rounded-xl"
-                                />
-                            </div>
-                            <div className="flex flex-col gap-2 justify-between">
-                                <div className="flex flex-col">
-                                    <h5 className="font-semibold text-2xl">{product?.name}</h5>
-                                    <span className="flex gap-3 text-[#adaaaa]">
-                                        {item?.variant_detail}
+                    {items.map((item) => {
+                        const product = item.product;
+                        const variant = item.variant;
+                        const quantity = item.quantity;
+
+                        return (
+                            <div key={item.id} className="flex gap-6 bg-[#131313] p-8 rounded-3xl justify-between">
+                                
+                                <div className="flex gap-5">
+                                    <img
+                                        src={
+                                            product?.product_images?.[0]?.image
+                                                ? `/storage/${product.product_images[0].image}`
+                                                : '/images/placeholder.png'
+                                        }
+                                        className="h-30 w-30 object-cover bg-white rounded-xl"
+                                    />
+
+                                    <div className="flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="font-semibold text-2xl">
+                                                {product?.name}
+                                            </h5>
+
+                                            <span className="text-[#adaaaa]">
+                                                {item.variant_detail}
+                                            </span>
+                                        </div>
+
+                                        <span>Kuantitas: {quantity} unit</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-end">
+                                    <span className="text-sm text-[#adaaaa]">
+                                        {formatRupiah(variant?.price ?? 0)} / unit
+                                    </span>
+
+                                    <span className="text-[#99ff33] font-bold text-2xl">
+                                        {formatRupiah(item.subtotal)}
                                     </span>
                                 </div>
-                                <div className="mt-8 flex items-center justify-between gap-5">
-                                    <span>Kuantitas: {quantity} unit</span>
-                                </div>
+
                             </div>
-                        </div>
-                        <div className="flex flex-col justify-between items-end">
-                            <div></div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[#adaaaa] font-medium text-sm">
-                                    {formatRupiah(variant?.price ?? 0)} / unit
-                                </span>
-                                <span className="text-[#99ff33] font-bold text-3xl">
-                                    {formatRupiah(total_price)}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        );
+                    })}
 
                     <div className='flex flex-col bg-[#131313] rounded-2xl p-8 gap-8'>
                         <span className="flex text-base gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">

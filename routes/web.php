@@ -93,8 +93,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/show/{order}', 'show')->name('order.show');
     });
 
-    Route::controller(CartController::class)->group(function () {
-        Route::get('/cart', 'index')->name('cart');
+    //Cart Route
+    Route::controller(CartController::class)->prefix('cart')->group(function () {
+        Route::get('/', 'index')->name('cart');
+        Route::post('/add', 'store')->name('cart.add');
+        Route::patch('/update/{id}', 'update')->name('cart.update');
+        Route::delete('/remove/{id}', 'destroy')->name('cart.remove');
+        // Route::delete('/clear', 'clear')->name('cart.clear');
+        Route::post('/checkout-order', 'checkoutToOrder')->name('cart.checkoutToOrder');
     });
 
     Route::controller(CatalogController::class)->group(function() {

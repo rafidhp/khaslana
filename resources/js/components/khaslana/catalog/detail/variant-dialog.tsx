@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import DefaultProduct from "@/assets/images/product/default-product.png";
 import { useAuth } from "@/hooks/use-auth";
-import { showErrorToast } from "@/lib/toast";
+import { showErrorToast, showSuccessToast } from "@/lib/toast";
 import { login } from "@/routes";
 import { dialogStore } from "@/routes/order";
 import type { ProductVariant } from "@/types/attribute";
@@ -127,7 +127,29 @@ export default function VariantDialog({
         });
 
         if (actionType === "add-cart") {
-            console.log("Fitur Keranjang Belum Aktif.");
+            router.post(
+                "/cart/add",
+                {
+                    product_variant_id: selectedVariant.id,
+                    quantity,
+                },
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        showSuccessToast(
+                            "Berhasil ditambahkan",
+                            "Produk masuk ke keranjang"
+                        );
+                        onClose();
+                    },
+                    onError: (errors) => {
+                        const firstError = Object.values(errors)[0];
+                        if (firstError) {
+                            showErrorToast("Gagal", String(firstError));
+                        }
+                    },
+                }
+            );
             return;
         }
 

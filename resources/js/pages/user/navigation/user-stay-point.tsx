@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -7,8 +8,9 @@ import KhaslanaLogo from "@/assets/icons/khaslana-logo-green.png";
 import MerchantSidebar from '@/components/khaslana/live-tracking/merchant-sidebar';
 import SelectedMerchantCard from '@/components/khaslana/live-tracking/selected-merchant-card';
 import UserMapViewer from '@/components/khaslana/live-tracking/user-map-viewer';
+import { showErrorToast } from "@/lib/toast";
 
-// ================== TYPES ==================
+
 interface IncomingActiveMerchant {
     id: number;
     storeName: string;
@@ -25,31 +27,61 @@ interface IncomingActiveMerchant {
 interface Props {
     activeMerchants: IncomingActiveMerchant[];
     initialSelectedId: number | null;
+    hasFiltered: boolean;
 }
 
-export default function UserStayPoint({ activeMerchants, initialSelectedId }: Props) {
+export default function UserStayPoint({ activeMerchants, initialSelectedId, hasFiltered }: Props) {
     const [userLoc, setUserLoc] = useState<[number, number] | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(initialSelectedId);
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
     const [isTracking, setIsTracking] = useState(false);
     const hasAutoRoutedRef = React.useRef(false);
-
     const selectedMerchant = activeMerchants.find(m => m.id === selectedId);
+    const [dataReady, setDataReady] = useState(false);
 
-    // ================== GPS ==================
+    // GPS
+    const [hasFetched, setHasFetched] = useState(false);
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    setUserLoc([pos.coords.latitude, pos.coords.longitude]);
-                },
-                (err) => console.error("Akses GPS bermasalah:", err),
-                { enableHighAccuracy: true }
-            );
-        }
-    }, []);
+        if (hasFetched) return;
 
-    // ================== FETCH ROUTE ==================
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                setUserLoc([lat, lng]);
+                router.get('/umkm/tracking', {
+                    lat,
+                    lng
+                }, {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setDataReady(true);
+                    }
+                });
+
+                setHasFetched(true);
+            },
+            (err) => {
+                console.error("Akses GPS bermasalah:", err);
+            },
+            { enableHighAccuracy: true }
+        );
+    }, [hasFetched]);
+
+    useEffect(() => {
+        if (!dataReady) return;
+    
+        if (hasFiltered && activeMerchants.length === 0) {
+            showErrorToast("Tidak ada UMKM di sekitar Anda");
+        }
+    }, [dataReady, activeMerchants, hasFiltered]);
+
+    // FETCH ROUTE
     const handleFetchRoute = useCallback(async (targetLat: number, targetLng: number) => {
         if (!userLoc) return;
 
@@ -75,7 +107,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId }: Pr
         }
     }, [userLoc]);
 
-    // ================== AUTO ROUTE (FROM DETAIL) ==================
+    // AUTO ROUTE (FROM DETAIL)
     useEffect(() => {
         if (
             initialSelectedId &&
@@ -95,29 +127,29 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId }: Pr
         }
     }, [initialSelectedId, userLoc, selectedMerchant, isTracking, handleFetchRoute]);
 
-    // ================== RESET LOGIC ==================
+    // RESET LOGIC
     
-    // 🔹 reset route SAJA (dipakai saat ganti merchant)
+    // reset route SAJA 
     const resetRouteOnly = () => {
         setRoutePath([]);
         setIsTracking(false);
     };
 
-    // 🔹 cancel tracking (BALIK KE GLOBAL)
+    // cancel tracking
     const handleCancelTracking = () => {
         setRoutePath([]);
         setIsTracking(false);
         setSelectedId(null); // 🔥 penting
     };
 
-    // 🔹 close card
+    // close card
     const handleCloseCard = () => {
         setSelectedId(null);
         setRoutePath([]);
         setIsTracking(false);
     };
 
-    // ================== DATA ADAPTER ==================
+    // DATA ADAPTER
     const sidebarMerchantsData = activeMerchants.map(m => ({
         id: m.id,
         storeName: m.storeName,
@@ -136,7 +168,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId }: Pr
         isActive: m.isActive
     }));
 
-    // ================== RENDER ==================
+    // RENDER
     return (
         <div className="w-full h-screen overflow-hidden relative bg-[#242424]">
             <Head title="Live Tracking - Pedagang Keliling" />

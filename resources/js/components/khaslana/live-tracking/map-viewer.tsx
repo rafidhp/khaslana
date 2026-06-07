@@ -17,23 +17,22 @@ interface Props {
     onPinClick: (node: RouteNode) => void;
 }
 
-// 1. UBAH ICON JADI FUNGSI DINAMIS
-// Menerima parameter isActive (boolean) untuk nentuin warna fill-nya
+// UBAH ICON JADI FUNGSI DINAMIS
 const createPinIcon = (isActive: boolean) => L.divIcon({
-    className: 'bg-transparent', // Biar nggak ada background putih bawaan Leaflet
+    className: 'bg-transparent',
     html: renderToString(
         <MapPin 
-            size={isActive ? 42 : 38} // Opsional: Bikin pin yang diklik sedikit lebih besar
-            color={isActive ? "#121212" : "white"} // Outline hitam saat aktif biar kontras sama warna hijau neon
-            fill={isActive ? "#96FC30" : "#EA4335"} // Ini warna saklar lu (Hijau Neon / Merah)
+            size={isActive ? 42 : 38} 
+            color={isActive ? "#121212" : "white"} // Outline 
+            fill={isActive ? "#96FC30" : "#EA4335"} // Fill
             strokeWidth={isActive ? 2.5 : 2} 
         />
     ),
     iconSize: isActive ? [42, 42] : [38, 38],
-    iconAnchor: isActive ? [21, 42] : [19, 38], // Anchor disesuaikan sama size biar ujung pin tetap presisi di jalan
+    iconAnchor: isActive ? [21, 42] : [19, 38],
 });
 
-// Komponen ajaib buat nge-zoom peta otomatis biar semua pin kelihatan
+//Zoom Agar Semua Pin Terlihat
 function FitBounds({ nodes }: { nodes: RouteNode[] }) {
     const map = useMap();
     useEffect(() => {
@@ -48,18 +47,17 @@ function FitBounds({ nodes }: { nodes: RouteNode[] }) {
 export default function MapViewer({ nodes, onPinClick }: Props) {
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
     
-    // 2. TAMBAH STATE BUAT NGINGET PIN YANG DIKLIK
+    // STATE BUAT NGINGET PIN YANG DIKLIK
     const [activePinIndex, setActivePinIndex] = useState<number | null>(null);
 
-    // Tembak OSRM buat bikin garis belok-belok ngikutin jalan raya
+    // HIT OSRM Buat Bikin Polyline
     useEffect(() => {
         if (nodes.length < 2) return;
 
         const fetchRoute = async () => {
             try {
                 const finalFullPath: [number, number][] = [];
-
-                // 1. KITA PECAH REQUEST PER SEGMEN (A->B, B->C, dst)
+                //Pecah Request Per Segmen
                 const segmentPromises = [];
                 for (let i = 0; i < nodes.length - 1; i++) {
                     const startNode = nodes[i];
@@ -72,22 +70,22 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
                     );
                 }
 
-                // 2. TUNGGU SEMUA SEGMEN SELESAI DI-FETCH
+                // Tunggu Segmen di fetch
                 const results = await Promise.all(segmentPromises);
 
-                // 3. JAHIT PAKSA SETIAP PIN KE DALAM GARIS ASPAL
+                // Buat OSRM Narik Garis
                 results.forEach(({ res, startNode, endNode }) => {
                     if (res.data.routes && res.data.routes.length > 0) {
                         const osrmCoords = res.data.routes[0].geometry.coordinates.map((c: [number, number]) => [c[1], c[0]] as [number, number]);
 
-                        // Masukkan Pin Awal -> Rute Aspal -> Pin Akhir untuk segmen ini
+                        // Insert Pin Awal -> Rute Aspal -> Pin Akhir 
                         finalFullPath.push([startNode.latitude, startNode.longitude]);
                         finalFullPath.push(...osrmCoords);
                         finalFullPath.push([endNode.latitude, endNode.longitude]);
                     }
                 });
 
-                // Set final array path yang udah tersambung rapi
+                // Set final array path
                 setRoutePath(finalFullPath);
 
             } catch (error) {
@@ -117,7 +115,7 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
                 
                 <FitBounds nodes={nodes} />
 
-                {/* Cetak Garis Ngikut Jalan (Google Maps Style) */}
+                {/* Cetak Garis Ngikut Jalan */}
                 {routePath.length > 0 && (
                     <>
                         <Polyline 
@@ -135,17 +133,17 @@ export default function MapViewer({ nodes, onPinClick }: Props) {
                     </>
                 )}
 
-                {/* 3. TERAPKAN WARNA KE MARKER */}
+                {/* Apply Warna Ke MArker */}
                 {nodes.map((node, index) => (
                     <Marker 
                         key={index} 
                         position={[node.latitude, node.longitude]} 
-                        // Cek apakah index ini yang lagi diklik, kalau iya lempar true
+                        //Cek Index Di Klik
                         icon={createPinIcon(activePinIndex === index)}
                         eventHandlers={{
                             click: () => {
-                                setActivePinIndex(index); // Warnain pin ini jadi hijau
-                                onPinClick(node); // Lempar data pin ke Induk (MapDetailCard)
+                                setActivePinIndex(index); 
+                                onPinClick(node); 
                             },
                         }}
                     />

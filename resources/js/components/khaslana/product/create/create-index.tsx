@@ -292,6 +292,7 @@ export default function CreateIndex({
         }));
 
         console.log(form.data);
+        console.log(form.errors);
         form.transform(data => ({
             ...data,
             attributes: formattedAttributes,
@@ -670,7 +671,9 @@ export default function CreateIndex({
                                                 Harga
                                             </Label>
                                             <Input
-                                                type="number"
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
                                                 value={formatRupiah(variantData[variant.key]?.price || "")}
                                                 onChange={(e) =>
                                                     updateVariantData(

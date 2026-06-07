@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-import SwitchOff from '../../assets/images/dashboard/switch-off.svg';
-import SwitchOn from '../../assets/images/dashboard/switch-on.svg';
+import SwitchOff from '@/assets/images/dashboard/switch-off.svg';
+import SwitchOn from '@/assets/images/dashboard/switch-on.svg';
 
 export default function DashboardSetting() {
     const [isActive, setIsActive] = useState(false);

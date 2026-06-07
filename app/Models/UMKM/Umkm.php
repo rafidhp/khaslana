@@ -32,6 +32,7 @@ class Umkm extends Model
         'store_name',
         'description',
         'type',
+        'status',
         'address',
         'phone_number',
         'open_days',

@@ -6,23 +6,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UMKM\UmkmLocation;
 use App\Models\UMKM\Umkm;
+use Inertia\Inertia;
 
 class TrackingController extends Controller
 {
 
     public function index()
     {
-        return inertia('umkm/stay-point');
+        $user = Auth::user();
+        return Inertia::render('umkm/stay-point', [
+            'statusToko' => $user->umkm?->status ?? 'TUTUP',
+            'statusLokasi' => $user->umkm?->umkmLocations()->latest('id')->first()?->status ?? 'TUTUP',
+        ]);
     }
 
     public function updateLocation(Request $request)
     {
-        // 1. Validasi Input dari Frontend
         $request->validate([
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'is_active' => 'required|boolean',
-            'status' => 'nullable|string|in:TUTUP,MANGKAL,KELILING'
+            'statusLokasi' => 'nullable|in:TUTUP,MANGKAL,KELILING',
         ]);
 
         $userId = Auth::id();
@@ -40,19 +44,12 @@ class TrackingController extends Controller
             ->latest('id')
             ->first();
 
-        // ==========================================
-        // THE GOLDEN RULE: MATIKAN SEMUA STATUS AKTIF LAMA!
-        // ==========================================
         UmkmLocation::query()
             ->where('umkm_id', $umkmId)
             ->where('is_active', true)
             ->update(['is_active' => false]);
 
-            // 2. Handle State: TUTUP
-            if (!$request->is_active || $request->status === 'TUTUP') {
-
-                // Gunakan koordinat dari Request JIKA ADA. 
-                // Kalau NULL, fallback (??) ambil dari $lastLocation->latitude/longitude.
+            if (!$request->is_active || $request->statusLokasi === 'TUTUP') {
                 $finalLatTutup = $request->latitude ?? ($lastLocation ? $lastLocation->latitude : null);
                 $finalLngTutup = $request->longitude ?? ($lastLocation ? $lastLocation->longitude : null);
 
@@ -61,13 +58,11 @@ class TrackingController extends Controller
                     'latitude' => $finalLatTutup,
                     'longitude' => $finalLngTutup,
                     'is_active' => false,
-                    'status' => 'TUTUP'
+                    'statusLokasi' => 'TUTUP'
                 ]);
-
                 return response()->json(['message' => 'Stay Point ditutup.']);
         }
 
-        // 3. Handle State: MANGKAL & KELILING
         $newLat = $request->latitude;
         $newLng = $request->longitude;
 
@@ -75,8 +70,6 @@ class TrackingController extends Controller
             return response()->json(['message' => 'Koordinat tidak valid'], 400);
         }
 
-        // CARI JANGKAR MANGKAL TERAKHIR BUAT PATOKAN (Batas Hari Ini Saja)
-        // Note: Array 2 param biar Intelephense nggak rewel
         $lastMangkal = UmkmLocation::query()
             ->where('umkm_id', $umkmId)
             ->where('status', 'MANGKAL')
@@ -89,28 +82,24 @@ class TrackingController extends Controller
         $distance = null;
         $msg = 'Titik Stay Point baru dicatat';
 
-        // LOGIKA ANCHOR SNAPPING
         if ($lastMangkal && $lastMangkal->latitude && $lastMangkal->longitude) {
             $distance = $this->haversine($lastMangkal->latitude, $lastMangkal->longitude, $newLat, $newLng);
 
             if ($request->status === 'MANGKAL' && $distance < 50) {
-                // KUNCI KOORDINAT! Timpa GPS baru pakai koordinat Jangkar dari shift sebelumnya
                 $finalLat = $lastMangkal->latitude;
                 $finalLng = $lastMangkal->longitude;
                 $msg = 'Kembali ke Jangkar sebelumnya';
             }
         }
 
-        // 4. EKSEKUSI FINAL: BIKIN RECORD BARU
         UmkmLocation::create([
             'umkm_id' => $umkmId,
             'latitude' => $finalLat,
             'longitude' => $finalLng,
             'is_active' => true, // Ini SATU-SATUNYA yang true sekarang
-            'status' => $request->status
+            'status' => $request->statusLokasi
         ]);
 
-        // 5. KEMBALIKAN RESPONSE KE FRONTEND
         return response()->json([
             'status' => 'success',
             'message' => $msg . ' (' . $request->status . ')',
@@ -127,7 +116,10 @@ class TrackingController extends Controller
         $umkm = Umkm::query()->where('user_id', $userId)->first();
 
         if (!$umkm) {
-            return response()->json(['status' => 'TUTUP']);
+            return response()->json([
+                'statusToko' => 'TUTUP',
+                'statusLokasi' => 'TUTUP',
+            ]);
         }
 
         $lastLocation = UmkmLocation::query()->where('umkm_id', $umkm->id)->latest('id')->first();
@@ -135,7 +127,8 @@ class TrackingController extends Controller
         // Kalau ada data lokasi terakhir dan statusnya masih aktif (MANGKAL / KELILING)
         if ($lastLocation && $lastLocation->is_active) {
             return response()->json([
-                'status' => $lastLocation->status,
+                'statusToko' => $umkm->status,
+                'statusLokasi' => $location?->status ?? 'TUTUP',
                 'latitude' => $lastLocation->latitude,
                 'longitude' => $lastLocation->longitude
             ]);

@@ -1,18 +1,23 @@
-import React from 'react';
-
 interface Props {
-    status: string;
+    statusToko: string;
+    statusLokasi: string;
     isLoading: boolean;
     onMangkal: () => void;
     onKeliling: () => void;
 }
 
-export default function StayPointActions({ status, isLoading, onMangkal, onKeliling }: Props) {
-    if (status === 'TUTUP') return null;
+export default function StayPointActions({
+    statusToko,
+    statusLokasi,
+    isLoading,
+    onMangkal,
+    onKeliling
+}: Props) {
+    if (statusToko === 'TUTUP') return null;
 
     return (
         <div className="mt-4 shrink-0">
-            {status === 'BUKA' || status === 'KELILING' ? (
+            {statusToko === 'BUKA' || statusLokasi === 'KELILING' ? (
                 <button 
                     onClick={onMangkal} 
                     disabled={isLoading} 

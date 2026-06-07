@@ -64,7 +64,8 @@ function FitRouteBounds({ nodes, showRouteLayer }: { nodes: RouteNode[], showRou
 }
 
 interface Props {
-    status: string;
+    statusToko: string;
+    statusLokasi: string;
     position: [number, number] | null;
     prevPosition: [number, number] | null;
     showLastPin: boolean;
@@ -75,7 +76,7 @@ interface Props {
 }
 
 export default function StayPointMap({ 
-    status, position, prevPosition, showLastPin, 
+    statusToko, statusLokasi, position, prevPosition, showLastPin, 
     showRouteLayer, routeNodes, onPinClick 
 }: Props) {
     
@@ -157,7 +158,7 @@ export default function StayPointMap({
             {/* Kalau rute nyala, kita sembunyiin pin Mangkal/Live biar fokus ke garis rute. Kalau mati, munculin lagi. */}
             {!showRouteLayer && (
                 <>
-                    {status === 'MANGKAL' && (
+                    {statusLokasi === 'MANGKAL' && (
                         <Marker position={position} icon={LucidePinIcon}>
                             <Popup>Lokasi Mangkal Saat Ini</Popup>
                         </Marker>
@@ -169,7 +170,7 @@ export default function StayPointMap({
                         </Marker>
                     )}
                     
-                    {status === 'BUKA' && (
+                    {statusToko === 'BUKA' && (
                         <CircleMarker center={position} pathOptions={{ color: '#99FF33', fillColor: '#99FF33', fillOpacity: 0.2 }} radius={30}>
                             <Popup>Lokasi GPS Anda</Popup>
                         </CircleMarker>

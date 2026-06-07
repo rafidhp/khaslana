@@ -1,13 +1,12 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect, useRef } from 'react';
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
-import EmptyRouteModal from '@/components/khaslana/live-tracking/empty-route-modal';
 import MapDetailCard from '@/components/khaslana/live-tracking/map-detail-card';
 import MapViewer from '@/components/khaslana/live-tracking/map-viewer';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
+import { showErrorToast } from "@/lib/toast";
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,13 +20,26 @@ interface RouteNode {
 }
 
 interface Props {
-    routeNodes: RouteNode[]; // Dapet dari MappingController (Backend)
+    routeNodes: RouteNode[];
 }
 
 export default function MapPoint({ routeNodes }: Props) {
     const { user } = useAuth();
-    // STATE: Nyimpen data pin mana yang baru aja diklik di peta
     const [selectedPin, setSelectedPin] = useState<RouteNode | null>(null);
+    const hasShownToast = useRef(false);
+
+    // HANDLE EMPTY ROUTE
+    useEffect(() => {
+        if (routeNodes.length === 0 && !hasShownToast.current) {
+            hasShownToast.current = true;
+
+            showErrorToast("Belum ada data rute, arahkan ke Stay Point 🚶");
+
+            setTimeout(() => {
+                router.visit('/stay-point');
+            }, 1500);
+        }
+    }, [routeNodes]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -38,7 +50,7 @@ export default function MapPoint({ routeNodes }: Props) {
             ) : (
                 <div className='flex flex-col p-4 lg:p-6 max-w-4xl mx-auto w-full'>
                     
-                    {/* Header: Tombol Kembali */}
+                    {/* Backbtn */}
                     <div className="flex items-center justify-between mb-4 shrink-0">
                         <button 
                             onClick={() => window.history.back()} 
@@ -49,18 +61,15 @@ export default function MapPoint({ routeNodes }: Props) {
                         </button>
                     </div>
 
-                    {/* Area Peta & Modal (Dibungkus relative biar modal nggak nutupin seluruh page) */}
+                    {/* Area Maps */}
                     <div className="relative w-full rounded-xl">
                         <MapViewer 
                             nodes={routeNodes} 
                             onPinClick={(node) => setSelectedPin(node)} 
                         />
-                        
-                        {/* Render Modal cuma kalau data rute kosong */}
-                        {routeNodes.length === 0 && <EmptyRouteModal />}
                     </div>
 
-                    {/* Area Detail Kotak Bawah */}
+                    {/* Map Detail Card */}
                     <div className="mt-4">
                         <MapDetailCard selectedNode={selectedPin} />
                     </div>

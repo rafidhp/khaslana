@@ -18,7 +18,7 @@ class CatalogController extends Controller
             'category',
             'promo',
             'productImages',
-            'productVariants',
+            'productVariants.attributeValues.attribute',
             'umkm',
             'umkm.city',
         ])

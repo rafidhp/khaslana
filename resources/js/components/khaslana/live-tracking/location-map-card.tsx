@@ -23,18 +23,16 @@ const NeonPinIcon = L.divIcon({
 });
 
 export default function LocationMapCard({ umkmData, locationData }: Props) {
-    // ==========================================
-    // THE GOLDEN FIX: Bypass prop yang salah
-    // ==========================================
-    // 1. Cari apakah ada lokasi yang sedang aktif (MANGKAL/KELILING)
+    
+    // Get Data Umkm keliling aktif
     const activeLocation = umkmData.umkm_locations?.find(loc => loc.is_active === true);
-    // 2. Jika tidak ada yang aktif, ambil lokasi yang didaftarkan paling terakhir (terbaru)
+    // Get Data Terakhir, Klo Gak ada data UMKM Yang Aktif
     const latestLocation = umkmData.umkm_locations?.[umkmData.umkm_locations.length - 1];
     
-    // Prioritas: Lokasi Aktif -> Lokasi Terbaru -> Prop bawaan temanmu
+    // Priority : Lokasi Aktif -> Lokasi Terbaru -> Prop bawaan 
     const realLocationData = activeLocation || latestLocation || locationData;
 
-    // Validasi menggunakan realLocationData
+    // Validasi pake realLocationData
     if (!realLocationData || realLocationData.latitude === null || realLocationData.longitude === null) {
         return (
             <div className="w-full h-[300px] bg-[#2A2A2A] rounded-3xl flex items-center justify-center border border-white/10 text-gray-400">
@@ -52,7 +50,7 @@ export default function LocationMapCard({ umkmData, locationData }: Props) {
         }
         
         if (umkmData.type === 'KELILING') {
-            // Gunakan realLocationData untuk mengecek status aktif
+            // Cek Status Aktif Pake realLocationData
             if (realLocationData.is_active) {
                 return `/umkm/tracking/${umkmData.id}`;
             }

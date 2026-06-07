@@ -1,8 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight, Star, X } from 'lucide-react';
 import React from 'react';
-
-// INTERFACE: Menyesuaikan properti data dengan backend UmkmController terbaru
 export interface SelectedMerchantData {
     id: number;
     storeName: string;
@@ -31,10 +29,8 @@ export default function SelectedMerchantCard({
     const finalLogo = merchant.logoUrl ? `/storage/${merchant.logoUrl}` : '/images/default-store.png';
 
     return (
-        // UI REBUILD: Container melayang menggunakan warna dasar abu-abu transparan mewah sesuai spesifikasi figma
         <div className="w-full shrink-0 bg-[#2A2A2A]/90 backdrop-blur-xl rounded-[24px] border border-white/5 shadow-2xl p-5 animate-in slide-in-from-bottom-6 fade-in duration-300 relative">
             
-            {/* Tombol X (Close) di Pojok Kanan Atas */}
             <button 
                 onClick={onClose}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
@@ -69,13 +65,13 @@ export default function SelectedMerchantCard({
                         </Link>
                     </div>
                     
-                    {/* Baris Bawah: Nama Toko (Hijau Neon) & Info Rating */}
+                    {/* Baris Bawah: Nama Toko & Rating */}
                     <div className="flex items-end justify-between w-full mt-1">
                         <h3 className="text-[#99FF33] font-bold text-[18px] truncate max-w-[140px] leading-tight">
                             {merchant.storeName}
                         </h3>
                         
-                        {/* Blok Rating Sesuai Tampilan Pecahan di Mockup */}
+                        {/* Blok Rating */}
                         <div className="flex items-center gap-2 pr-5">
                             <span className="text-[#99FF33] text-[22px] font-black leading-none">
                                 {merchant.rating.toFixed(1)}
@@ -103,9 +99,8 @@ export default function SelectedMerchantCard({
                 </div>
             </div>
 
-            {/* Area Tombol Aksi (Kondisional Berdasarkan State Tracking) */}
+            {/* Condotional Action Button */}
             {isTracking ? (
-                /* UI REBUILD MATCHING IMG3: Outline Hijau Neon Transparan */
                 <button 
                     onClick={onCancelClick}
                     className="w-full py-3 rounded-[14px] font-bold text-[14px] bg-transparent border border-[#99FF33] text-[#99FF33] hover:bg-[#99FF33]/10 transition-all duration-200"
@@ -113,7 +108,6 @@ export default function SelectedMerchantCard({
                     Batalkan
                 </button>
             ) : (
-                /* UI REBUILD MATCHING IMG2: Solid Hijau Neon Teks Hitam */
                 <button 
                     onClick={onTrackClick}
                     className="w-full py-3 rounded-[14px] font-bold text-[14px] bg-[#99FF33] text-black shadow-[0_4px_20px_rgba(153,255,51,0.25)] hover:bg-[#8ae62e] transition-all duration-200"

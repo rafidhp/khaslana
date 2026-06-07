@@ -17,7 +17,7 @@ import {
 
 import type { RouteNode } from '@/pages/umkm/stay-point';
 
-// MAPPIN CUSTOM LUCIDE (STANDAR UNTUK MANGKAL SAAT INI)
+// Lucide MapPin Custom
 const LucidePinIcon = L.divIcon({
     className: 'bg-transparent',
     html: renderToString(
@@ -27,14 +27,14 @@ const LucidePinIcon = L.divIcon({
     iconAnchor: [21, 42],
 });
 
-// ICON DINAMIS UNTUK FITUR RUTE
+// Icon Rute
 const createRoutePinIcon = (isActive: boolean) => L.divIcon({
     className: 'bg-transparent',
     html: renderToString(
         <MapPin 
             size={isActive ? 42 : 38} 
             color={isActive ? "#325E00" : "maroon"} 
-            fill={isActive ? "#96FC30" : "#EA4335"} // Pin default rute abu-abu/merah gelap, pas aktif jadi Hijau Neon
+            fill={isActive ? "#96FC30" : "#EA4335"}
             strokeWidth={isActive ? 2 : 1.5} 
         />
     ),
@@ -51,7 +51,7 @@ function ChangeView({ center }: { center: [number, number] }) {
     return null;
 }
 
-// Auto-zoom khusus pas rute dihidupkan
+// Auto-zoom rute
 function FitRouteBounds({ nodes, showRouteLayer }: { nodes: RouteNode[], showRouteLayer: boolean }) {
     const map = useMap();
     useEffect(() => {
@@ -69,7 +69,6 @@ interface Props {
     position: [number, number] | null;
     prevPosition: [number, number] | null;
     showLastPin: boolean;
-    // Props Layer Rute
     showRouteLayer: boolean;
     routeNodes: RouteNode[];
     onPinClick: (node: RouteNode) => void;
@@ -80,11 +79,10 @@ export default function StayPointMap({
     showRouteLayer, routeNodes, onPinClick 
 }: Props) {
     
-    // STATE UNTUK LAYER RUTE
     const [routePath, setRoutePath] = useState<[number, number][]>([]);
     const [activeRoutePinIndex, setActiveRoutePinIndex] = useState<number | null>(null);
 
-    // FETCH LOGIC OSRM KALAU LAYER RUTE NYALA
+    // Fetch OSRM Rute
     useEffect(() => {
         if (!showRouteLayer || routeNodes.length < 2) {
             return;
@@ -122,7 +120,7 @@ export default function StayPointMap({
         fetchRoute();
     }, [routeNodes, showRouteLayer]);
 
-    // Kalau posisi kosong, render placeholder
+    // Placeholder Klo Posisi Kosong
     if (!position) {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
@@ -148,14 +146,14 @@ export default function StayPointMap({
             
             <ZoomControl position="bottomright" />  
             
-            {/* Hanya ngefek center ke GPS kalau Rute lagi MATI */}
+            {/* Center GPS */}
             {!showRouteLayer && <ChangeView center={showLastPin && prevPosition ? prevPosition : position} />}
             
             {/* Auto-Zoom ke seluruh area rute kalau Rute lagi NYALA */}
             <FitRouteBounds nodes={routeNodes} showRouteLayer={showRouteLayer} />
             
-            {/* === RENDER PIN DEFAULT (STAY POINT) === */}
-            {/* Kalau rute nyala, kita sembunyiin pin Mangkal/Live biar fokus ke garis rute. Kalau mati, munculin lagi. */}
+            {/* Render PIN Default StayPoint */}
+            {/* Hide Live Pin, Klo Rute Jalan */}
             {!showRouteLayer && (
                 <>
                     {statusLokasi === 'MANGKAL' && (
@@ -178,7 +176,7 @@ export default function StayPointMap({
                 </>
             )}
 
-            {/* === RENDER LAYER RUTE (Kalau Tombol Layer Diklik) === */}
+            {/* Render Layer Rute */}
             {showRouteLayer && (
                 <>
                     {/* TRIPLE POLYLINE */}
@@ -190,7 +188,7 @@ export default function StayPointMap({
                         </>
                     )}
 
-                    {/* PIN MASA LALU YANG BISA DIKLIK */}
+                    {/* PIN Sebelumnya */}
                     {routeNodes.map((node, index) => (
                         <Marker 
                             key={index} 

@@ -14,8 +14,6 @@ use App\Http\Controllers\MappingController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -36,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatusRoute');
         Route::get('/dashboard/order', 'order')->name('dashboard.order');
+        Route::get('/dashboard/order/{order}', 'showOrder')->name('dashboard.order.show');
+        Route::patch('/dashboard/order/change-status/{order}', 'changeOrderStatus')->name('dashboard.order.changeStatus');
     });
 
     // product routes
@@ -103,6 +103,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/checkout-order', 'checkoutToOrder')->name('cart.checkoutToOrder');
     });
 
+    Route::controller(CatalogController::class)->group(function() {
+        Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
+        Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
+    });
 });
 
 Route::get('/community', [CommunityController::class, 'index'])->name('community');
@@ -111,8 +115,6 @@ Route::get('/community', [CommunityController::class, 'index'])->name('community
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
-    Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
-    Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
 });
 
 Route::controller(UmkmController::class)->group(function() {

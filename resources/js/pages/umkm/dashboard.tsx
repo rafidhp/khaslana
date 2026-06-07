@@ -99,19 +99,25 @@ export default function Dashboard({
         });
     };
 
-    const stat = umkm_stat?.[0] || { total_pembeli: 0, total_pendapatan: 0 };
-    const product = active_product?.[0] || { total_produk: 0 };
+    const formatRupiah = (value: number | undefined) =>
+        new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0,
+        }
+    ).format(value ?? 0);
+
+    const stat = umkm_stat?.[0] || {total_pembeli: 0, total_pendapatan: 0};
+    const product = active_product?.[0] || {total_produk: 0};
     const storeProduct = store_rating?.[0]?.products?.[0];
 
     const storeStatistics = [
-        { id: 1, title: 'Pesanan', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8' /> },
-        { id: 2, title: 'Pendapatan', 'value': stat.total_pendapatan, 'icon': <DollarSign className='size-8' /> },
-        { id: 3, title: 'Produk aktif', 'value': product.total_produk, 'icon': <Package className='size-8' /> },
-        {
-            id: 4, title: 'Rating toko', 'value': storeProduct?.reviews_avg_rating
-                ? `${Number(storeProduct.reviews_avg_rating).toFixed(1)}/5.0`
-                : '0.0/5.0', 'icon': <Star className='size-8' />
-        },
+        {id: 1, title: 'Pesanan', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8'/>},
+        {id: 2, title: 'Pendapatan', 'value': formatRupiah(Number(stat.total_pendapatan)), 'icon': <DollarSign className='size-8'/>},
+        {id: 3, title: 'Produk aktif', 'value': product.total_produk, 'icon': <Package className='size-8'/>},
+        {id: 4, title: 'Rating toko', 'value': storeProduct?.reviews_avg_rating
+            ? `${Number(storeProduct.reviews_avg_rating).toFixed(1)}/5.0`
+            : '0.0/5.0', 'icon': <Star className='size-8'/>},
     ]
 
     return (

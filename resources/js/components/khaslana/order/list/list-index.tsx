@@ -24,8 +24,6 @@ export default function ListIndex({
         }
     ).format(value ?? 0);
 
-    console.log(orders);
-
     const renderStatusBubble = (status: string) => {
         switch (status) {
             case 'TERTUNDA':
@@ -48,9 +46,13 @@ export default function ListIndex({
                 return (
                     <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-xs">DIKIRIM</div>
                 )
+            case 'SIAP DIAMBIL':
+                return (
+                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-xs">SIAP DIAMBIL</div>
+                )
             case 'SELESAI':
                 return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-xs">SELESAI</div>
+                    <div className="px-4 py-1.5 border border-green-500 text-green-400 bg-orange-500/10 rounded-full font-bold text-xs">SELESAI</div>
                 )
             default:
                 return (
@@ -134,7 +136,7 @@ export default function ListIndex({
                                     className="flex border border-[#99ff33] justify-center text-[#99ff33] px-4.5 font-semibold py-2 rounded-[999px] text-sm hover:text-black hover:bg-[#99ff33] duration-200 transition-all">
                                     Lihat Detail
                                 </a>
-                                {order.type == 'DIANTAR' && order.status == 'DIKIRIM' && (
+                                {(order.status == 'SIAP DIAMBIL' || order.status == 'DIKIRIM') && (
                                     <button onClick={(e) => handleCompleteOrder(e, order.id)}
                                         className="flex border border-[#99ff33] justify-center hover:text-[#99ff33] px-4.5 font-semibold py-2 rounded-[999px] text-sm text-black bg-[#99ff33] hover:bg-transparent duration-200 transition-all cursor-pointer">
                                         Selesai

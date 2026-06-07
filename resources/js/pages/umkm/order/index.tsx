@@ -56,7 +56,7 @@ export default function Order({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Products' />
+            <Head title='Orders' />
             {!user.is_umkm ? (
                 <CtaCard />   
             ) : (

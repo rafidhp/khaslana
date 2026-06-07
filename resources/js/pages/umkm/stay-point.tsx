@@ -68,18 +68,18 @@ export default function StayPoint({
         });
     };
 
-    const handleToggleLocationStatus = (locStatus: StatusType) => {
-        const newStatusLokasi = locStatus;
+    // const handleToggleLocationStatus = (locStatus: StatusType) => {
+    //     const newStatusLokasi = locStatus;
 
-        router.post(storeStatusRoute(), {
-            statusLokasi: newStatusLokasi,
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                showSuccessToast('Status toko berhasil diubah!');
-            }
-        });
-    };
+    //     router.post(storeStatusRoute(), {
+    //         statusLokasi: newStatusLokasi,
+    //     }, {
+    //         preserveScroll: true,
+    //         onSuccess: () => {
+    //             showSuccessToast('Status toko berhasil diubah!');
+    //         }
+    //     });
+    // };
 
     // 2. FUNGSI LOGIKA (API & GPS)
     const handleBuka = () => {
@@ -143,11 +143,14 @@ export default function StayPoint({
                     latitude: currentLat,
                     longitude: currentLng,
                     is_active: true,
-                    statusLokasi: 'MANGKAL'
+                    statusLokasi: 'MANGKAL',
                 }).then(() => {
-                    handleToggleLocationStatus('MANGKAL');
-                    setShowLastPin(false); 
-                    fetchAddress(currentLat, currentLng); 
+                    // handleToggleLocationStatus('MANGKAL');
+                    setShowLastPin(false);
+                    router.reload({
+                        only: ['statusLokasi']
+                    });
+                    fetchAddress(currentLat, currentLng);
                     setModalConfig({
                         title: 'Yeay Stay Point Sudah Aktif!',
                         desc: 'Costumer dapat melacak lokasi anda',
@@ -183,10 +186,13 @@ export default function StayPoint({
                     latitude: currentLat,
                     longitude: currentLng,
                     is_active: true,
-                    statusLokasi: 'KELILING'
+                    statusLokasi: 'KELILING',
                 }).then(() => {
-                    handleToggleLocationStatus('KELILING');
+                    // handleToggleLocationStatus('KELILING');
                     setShowLastPin(false);
+                    router.reload({
+                        only: ['statusLokasi']
+                    });
                 }).catch(() => alert("Gagal update status!")).finally(() => setIsLoading(false));
             },
             (err) => {
@@ -255,7 +261,7 @@ export default function StayPoint({
             setIsLoading(true);
             try {
                 const res = await axios.get('/stay-point/current-location-status');
-                const currentStatus = res.data.status;
+                const currentStatus = res.data.statusLokasi;
                 
                 if (currentStatus === 'MANGKAL' || currentStatus === 'KELILING') {
                     const lat = res.data.latitude;

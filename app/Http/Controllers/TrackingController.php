@@ -30,7 +30,6 @@ class TrackingController extends Controller
         ]);
 
         $userId = Auth::id();
-
         $umkm = Umkm::query()->where('user_id', $userId)->first();
 
         if (!$umkm) {
@@ -49,18 +48,18 @@ class TrackingController extends Controller
             ->where('is_active', true)
             ->update(['is_active' => false]);
 
-            if (!$request->is_active || $request->statusLokasi === 'TUTUP') {
-                $finalLatTutup = $request->latitude ?? ($lastLocation ? $lastLocation->latitude : null);
-                $finalLngTutup = $request->longitude ?? ($lastLocation ? $lastLocation->longitude : null);
+        if (!$request->is_active || $request->statusLokasi === 'TUTUP') {
+            $finalLatTutup = $request->latitude ?? ($lastLocation ? $lastLocation->latitude : null);
+            $finalLngTutup = $request->longitude ?? ($lastLocation ? $lastLocation->longitude : null);
 
-                UmkmLocation::create([
-                    'umkm_id' => $umkmId,
-                    'latitude' => $finalLatTutup,
-                    'longitude' => $finalLngTutup,
-                    'is_active' => false,
-                    'statusLokasi' => 'TUTUP'
-                ]);
-                return response()->json(['message' => 'Stay Point ditutup.']);
+            UmkmLocation::create([
+                'umkm_id' => $umkmId,
+                'latitude' => $finalLatTutup,
+                'longitude' => $finalLngTutup,
+                'is_active' => false,
+                'status' => 'TUTUP'
+            ]);
+            return response()->json(['message' => 'Stay Point ditutup.']);
         }
 
         $newLat = $request->latitude;
@@ -85,7 +84,7 @@ class TrackingController extends Controller
         if ($lastMangkal && $lastMangkal->latitude && $lastMangkal->longitude) {
             $distance = $this->haversine($lastMangkal->latitude, $lastMangkal->longitude, $newLat, $newLng);
 
-            if ($request->status === 'MANGKAL' && $distance < 50) {
+            if ($request->statusLokasi === 'MANGKAL' && $distance < 50) {
                 $finalLat = $lastMangkal->latitude;
                 $finalLng = $lastMangkal->longitude;
                 $msg = 'Kembali ke Jangkar sebelumnya';
@@ -102,7 +101,7 @@ class TrackingController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => $msg . ' (' . $request->status . ')',
+            'message' => $msg . ' (' . $request->statusLokasi . ')',
             'distance' => isset($distance) ? round($distance, 2) . ' m' : '0 m'
         ]);
     }
@@ -128,14 +127,14 @@ class TrackingController extends Controller
         if ($lastLocation && $lastLocation->is_active) {
             return response()->json([
                 'statusToko' => $umkm->status,
-                'statusLokasi' => $location?->status ?? 'TUTUP',
+                'statusLokasi' => $lastLocation?->status ?? 'TUTUP',
                 'latitude' => $lastLocation->latitude,
                 'longitude' => $lastLocation->longitude
             ]);
         }
 
         // Kalau nggak ada atau is_active false, berarti TUTUP
-        return response()->json(['status' => 'TUTUP']);
+        return response()->json(['statusToko' => 'TUTUP', 'statusLokasi' => 'TUTUP']);
     }
 
     /**

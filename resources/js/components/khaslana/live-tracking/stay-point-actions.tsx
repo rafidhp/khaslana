@@ -17,10 +17,10 @@ export default function StayPointActions({
 
     return (
         <div className="mt-4 shrink-0">
-            {statusToko === 'BUKA' || statusLokasi === 'KELILING' ? (
+            {statusLokasi === 'TUTUP' || statusLokasi === 'KELILING' ? (
                 <button 
                     onClick={onMangkal} 
-                    disabled={isLoading} 
+                    disabled={isLoading}
                     className="w-full bg-[#99FF33] text-black py-4 rounded-[16px] font-bold text-lg hover:bg-[#8ae62e] transition disabled:opacity-50 shadow-[0_4px_20px_rgba(153,255,51,0.2)]"
                 >
                     {isLoading ? 'Menyimpan...' : 'Mangkal'}

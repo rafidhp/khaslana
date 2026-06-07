@@ -18,6 +18,7 @@ export interface Order {
         | 'DIBAYAR'
         | 'DALAM PROSES'
         | 'DIKIRIM'
+        | 'SIAP DIAMBIL'
         | 'SELESAI'
         | 'DIBATALKAN';
 

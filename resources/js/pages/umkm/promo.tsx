@@ -68,6 +68,7 @@ export default function PromoManagement({ promos }: Props) {
             ...prevData,
             start_date: newStart,
             end_date: newEnd,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             status: calculateStatus(newStart, newEnd) as any
         }));
     };
@@ -77,6 +78,7 @@ export default function PromoManagement({ promos }: Props) {
         setData(prevData => ({
             ...prevData,
             end_date: newEnd,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             status: calculateStatus(prevData.start_date, newEnd) as any
         }));
     };
@@ -111,6 +113,7 @@ export default function PromoManagement({ promos }: Props) {
 
         transform((currentData) => ({
             ...currentData,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             status: calculateStatus(currentData.start_date, currentData.end_date) as any
         }));
 

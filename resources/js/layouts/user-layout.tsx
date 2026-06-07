@@ -56,7 +56,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
             <div className="min-h-screen h-auto">
                 {children}
             </div>
-            <Footer />
+            {!isChatbotPage && (
+                <Footer />
+            )}
         </div>
     )
 }

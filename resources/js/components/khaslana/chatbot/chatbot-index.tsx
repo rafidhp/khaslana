@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Send, Sparkles } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
@@ -20,20 +20,19 @@ export default function ChatbotIndex() {
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
     const suggestions = [
-        "Bagaimana cara mendaftarkan UMKM?",
+        "Bagaimana cara mendaftar menjadi UMKM?",
         "Apa itu Stay Point?",
         "Bagaimana cara menambahkan produk?",
-        "Bagaimana cara mengubah lokasi UMKM?",
+        "Apa itu Komunitas yang ada di Khaslana?",
         "Bagaimana cara mengaktifkan status mangkal?",
         "Bagaimana cara mengunggah foto toko?",
     ];
 
-    // sebenernya ini bagus, tapi jadi jelek karna ada footer
-    // useEffect(() => {
-    //     bottomRef.current?.scrollIntoView({
-    //         behavior: "smooth",
-    //     });
-    // }, [messages, loading]);
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({
+            behavior: "smooth",
+        });
+    }, [messages, loading]);
 
     const sendMessage = async (
         question?: string
@@ -89,43 +88,51 @@ export default function ChatbotIndex() {
     };
 
     return (
-        <div className="flex flex-col w-full px-6 pt-32 lg:px-17.5 mx-auto min-h-screen mb-12">
+        <div className="flex flex-col w-full px-6 pt-32 lg:px-17.5 mx-auto min-h-screen">
             {messages.length === 0 ? (
                 <div className="flex flex-1 flex-col items-center justify-center">
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#99FF33]/10">
-                        <Sparkles
-                            size={30}
-                            className="text-[#99FF33]"
-                        />
-                    </div>
-                    <h1 className="text-center text-4xl font-bold">
-                        Asisten UMKM
-                    </h1>
-                    <p className="mt-3max-w-xl text-center text-zinc-400">
-                        Tanyakan apa saja tentang penggunaan aplikasi, Stay Point, produk, lokasi UMKM, dan fitur lainnya.
-                    </p>
-                    <div className="mt-10 flex flex-wrap justify-center gap-3">
-                        {suggestions.map(
-                            (item) => (
-                                <button
-                                    key={item}
-                                    onClick={() => sendMessage(item)}
-                                    className="
-                                        rounded-full
-                                        border
-                                        border-zinc-700
-                                        px-4 py-2
-                                        text-sm
-                                        transition-all cursor-pointer
-                                        hover:border-[#99FF33]
-                                        hover:text-[#99FF33]
-                                    "
-                                >
-                                    {item}
-                                </button>
-                            )
-                        )}
-                    </div>
+                    {!loading ? (
+                        <>
+                            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#99FF33]/10">
+                                <Sparkles
+                                    size={30}
+                                    className="text-[#99FF33]"
+                                />
+                            </div>
+                            <h1 className="text-center text-4xl font-bold">
+                                Asisten UMKM
+                            </h1>
+                            <p className="mt-3max-w-xl text-center text-zinc-400">
+                                Tanyakan apa saja tentang penggunaan aplikasi, Stay Point, produk, lokasi UMKM, dan fitur lainnya.
+                            </p>
+                            <div className="mt-10 flex flex-wrap justify-center gap-3">
+                                {suggestions.map(
+                                    (item) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => sendMessage(item)}
+                                            className="
+                                                rounded-full
+                                                border
+                                                border-zinc-700
+                                                px-4 py-2
+                                                text-sm
+                                                transition-all cursor-pointer
+                                                hover:border-[#99FF33]
+                                                hover:text-[#99FF33]
+                                            "
+                                        >
+                                            {item}
+                                        </button>
+                                    )
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="animate-pulse text-zinc-400">
+                            Sedang mencari jawaban...
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="flex-1 overflow-y-auto pr-2">

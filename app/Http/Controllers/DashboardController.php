@@ -81,19 +81,36 @@ class DashboardController extends Controller
     }
 
     public function storeStatus(Request $request) {
-    $request->validate([
-        'status' => 'required|in:BUKA,TUTUP',
-    ]);
-    
-    $user = Auth::user();
+        $request->validate([
+            'statusLokasi' => 'nullable|in:TUTUP,MANGKAL,KELILING',
+        ]);
 
-    $umkm = $user->umkm;
-    
-    $umkm->status = $request->status;
-    
-    $umkm->save();
+        $umkm = $request->user()->umkm;
 
-    return back();
+        if ($request->has('status')) {
+            $isOpen = $umkm->status === 'BUKA';
+            $umkm->update([
+                'status' => $isOpen ? 'TUTUP' : 'BUKA',
+            ]);
+            // $umkm->umkmLocations()
+            //     ->latest('id')
+            //     ->first()
+            //     ?->update([
+            //         'is_active' => true,
+            //         'status' => $isOpen ? 'TUTUP' : 'MANGKAL',
+            //     ]);
+        }
+
+        if ($request->filled('statusLokasi')) {
+            $umkm->umkmLocations()
+                ->latest('id')
+                ->first()
+                ?->update([
+                    'status' => $request->statusLokasi,
+                ]);
+        }
+
+        return back();
     }
 
     public function order() {

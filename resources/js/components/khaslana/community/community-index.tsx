@@ -111,7 +111,11 @@ export default function CommunityIndex({
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex items-center ps-2 gap-4">
                                                 <img
-                                                    src={user.profile_photo ?? ProfileIcon}
+                                                    src={
+                                                        post.user.profile?.profile_photo ?
+                                                        `storage/${post.user.profile?.profile_photo}` :
+                                                        ProfileIcon
+                                                    }
                                                     alt="Profile"
                                                     className="w-11 h-11 border border-white/10 rounded-full object-cover"
                                                 />

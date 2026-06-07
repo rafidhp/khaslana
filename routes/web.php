@@ -14,8 +14,6 @@ use App\Http\Controllers\MappingController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -98,6 +96,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(CartController::class)->group(function () {
         Route::get('/cart', 'index')->name('cart');
     });
+
+    Route::controller(CatalogController::class)->group(function() {
+        Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
+        Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
+    });
 });
 
 Route::get('/community', [CommunityController::class, 'index'])->name('community');
@@ -106,8 +109,6 @@ Route::get('/community', [CommunityController::class, 'index'])->name('community
 Route::controller(CatalogController::class)->group(function() {
     Route::get('/catalog', 'index')->name('catalog');
     Route::get('/catalog/{id}', 'show')->name('catalog.show');
-    Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
-    Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
 });
 
 Route::controller(UmkmController::class)->group(function() {

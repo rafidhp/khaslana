@@ -1,10 +1,19 @@
-import type { Order } from "@/types/order"
+import { router } from "@inertiajs/react";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
+import type { Order } from "@/types/order";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ShowIndexProps {
     order: Order;
 }
 
-export default function ShowIndex({
+export default function ShowDashoardOrder({
     order,
 }: ShowIndexProps) {
     const formatRupiah = (value: number | undefined) =>
@@ -14,45 +23,6 @@ export default function ShowIndex({
             maximumFractionDigits: 0,
         }
     ).format(value ?? 0);
-
-    console.log(order);
-
-    const renderStatusBubble = (status: string) => {
-        switch (status) {
-            case 'TERTUNDA':
-                return (
-                    <div className="px-4 py-1.5 border border-orange-500 text-orange-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">TERTUNDA</div>
-                )
-            case 'MENUNGGU PEMBAYARAN':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">MENUNGGU PEMBAYARAN</div>
-                )
-            case 'DIBAYAR':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">DIBAYAR</div>
-                )
-            case 'DALAM PROSES':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">DALAM PROSES</div>
-                )
-            case 'SIAP DIAMBIL':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">SIAP DIAMBIL</div>
-                )
-            case 'DIKIRIM':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">DIKIRIM</div>
-                )
-            case 'SELESAI':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">SELESAI</div>
-                )
-            default:
-                return (
-                    <div className="px-4 py-1.5 border border-red-500 text-red-400 bg-orange-500/10 rounded-full font-bold text-md max-md:text-xs max-md:mt-2">DIBATALKAN</div>
-                )
-        }
-    }
 
     const renderPaymentBubble = (status: string) => {
         switch (status) {
@@ -78,11 +48,25 @@ export default function ShowIndex({
                 )
         }
     }
-    
+
+    const handleStatusChange = (orderId: number, newStatus: string) => {
+            router.patch(`/dashboard/order/change-status/${orderId}`, {
+                status: newStatus
+            }, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    showSuccessToast('Status order berhasil diubah!')
+                },
+                onError: () => {
+                    showErrorToast('Terjadi kesalahan, mohon coba lagi.')
+                }
+            });
+        };
+
     return (
         <div className="flex flex-col gap-6 mb-8">
-            <div className="flex max-md:flex-col justify-between max-md:items-start items-end mb-8">
-                <div className="flex max-md:flex-col max-md:items-start items-end gap-2">
+            <div className="flex max-md:flex-col justify-between max-md:items-start items-end mb-8 max-md:mb-3">
+                <div className="flex max-md:flex-col max-md:items-start items-end gap-2 max-md:mb-3">
                     <span className="text-4xl font-semibold flex gap-2">Detail 
                     <span className="text-[#99ff33]">Pesanan</span>
                     </span>
@@ -90,7 +74,38 @@ export default function ShowIndex({
                 </div>
 
                 <div>
-                    {renderStatusBubble(order.status)}
+                    <Select
+                        value={order.status}
+                        onValueChange={(value) => handleStatusChange(order.id, value)}
+                        disabled={['SELESAI', 'DIBATALKAN'].includes(order.status)}
+                    >
+                        <SelectTrigger 
+                            className={`w-45 bg-[#131313] rounded-[999px] text-sm cursor-pointer font-semibold uppercase tracking-wide transition-all flex justify-betweem text-start px-4 py-5 duration-200 focus:ring-0 focus:ring-offset-0 ${
+                                order.status === 'TERTUNDA' || order.status === 'MENUNGGU PEMBAYARAN' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
+                                order.status === 'DIBAYAR' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
+                                order.status === 'DIKIRIM' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
+                                order.status === 'SIAP DIAMBIL' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' : // <-- Selipkan di sini
+                                order.status === 'SELESAI' ? 'border-[#99FF33]/80 text-[#99FF33] focus:border-[#99FF33]' :
+                                'border-red-500/50 text-red-400 focus:border-red-500'
+                            }`}
+                        >
+                            <SelectValue placeholder="Pilih Status" />
+                        </SelectTrigger>
+                        
+                        <SelectContent className="bg-[#1E1B26] border-white/10 text-sm cursor-pointer font-bold uppercase">
+                            <SelectItem value="TERTUNDA" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">TERTUNDA</SelectItem>
+                            <SelectItem value="MENUNGGU PEMBAYARAN" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">MENUNGGU PEMBAYARAN</SelectItem>
+                            <SelectItem value="DIBAYAR" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">DIBAYAR</SelectItem>
+                            <SelectItem value="DALAM PROSES" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DALAM PROSES</SelectItem>
+                            {order.type == 'DIANTAR' && (
+                                <SelectItem value="DIKIRIM" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DIKIRIM</SelectItem>
+                            )}
+                            {order.type == 'DIAMBIL' && (
+                                <SelectItem value="SIAP DIAMBIL" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">SIAP DIAMBIL</SelectItem>
+                            )}
+                            <SelectItem value="SELESAI" className="text-[#99FF33] focus:bg-white/5 focus:text-[#99FF33] cursor-pointer hidden">SELESAI</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
@@ -182,7 +197,6 @@ export default function ShowIndex({
                     </div>
                 </div>
             </div>
-            
         </div>
     )
 }

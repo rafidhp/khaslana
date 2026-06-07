@@ -34,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::post('/dashboard/store-status', 'storeStatus')->name('dashboard.storeStatusRoute');
         Route::get('/dashboard/order', 'order')->name('dashboard.order');
+        Route::get('/dashboard/order/{order}', 'showOrder')->name('dashboard.order.show');
+        Route::patch('/dashboard/order/change-status/{order}', 'changeOrderStatus')->name('dashboard.order.changeStatus');
     });
 
     // product routes

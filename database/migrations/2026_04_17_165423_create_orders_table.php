@@ -24,6 +24,7 @@ return new class extends Migration
                 'DIBAYAR',
                 'DALAM PROSES',
                 'DIKIRIM',
+                'SIAP DIAMBIL',
                 'SELESAI',
                 'DIBATALKAN',
             ])->default('MENUNGGU PEMBAYARAN');

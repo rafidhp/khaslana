@@ -81,16 +81,19 @@ class DashboardController extends Controller
     }
 
     public function storeStatus(Request $request) {
-        $request->validate([
-            'status' => 'required|in:BUKA,TUTUP',
-        ]);
-        $user = Auth::user();
+    $request->validate([
+        'status' => 'required|in:BUKA,TUTUP',
+    ]);
+    
+    $user = Auth::user();
 
-        $user->umkm->update([
-            'status' => $request->status,
-        ]);
+    $umkm = $user->umkm;
+    
+    $umkm->status = $request->status;
+    
+    $umkm->save();
 
-        return back();
+    return back();
     }
 
     public function order() {

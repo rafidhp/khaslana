@@ -2,6 +2,8 @@ import { Head, router } from '@inertiajs/react';
 import { ShoppingBag, DollarSign, Package, Star } from 'lucide-react';
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import SwitchOff from '@/assets/images/dashboard/switch-off.svg';
+import SwitchOn from '@/assets/images/dashboard/switch-on.svg';
 
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
 // import StatisticCard from '@/components/khaslana/dashboard/statistic-card';
@@ -96,7 +98,12 @@ export default function Dashboard({
 
         router.post(storeStatusRoute(), {
             status: newStatus,
-        });
+        },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            });
+
         setStoreStatus(newStatus);
     };
 
@@ -128,43 +135,35 @@ export default function Dashboard({
                 <CtaCard />
             ) : (
                 <>
-                    <div className='flex'>
-                        <div className='flex flex-col gap-3 mb-4 justify-between'>
-                            <span className='font-semibold text-4xl'>Ringkasan Toko Anda.</span>
-                            <span className='text-[#adaaaa]'>Pantau kinerja toko Anda secara real-time</span>
+                    <div className="flex justify-between items-center mb-8">
+                        <div className="flex flex-col gap-2">
+                            <h1 className="font-semibold text-4xl">Ringkasan Toko Anda.</h1>
+                            <p className="text-[#adaaaa]">Pantau kinerja toko Anda secara real-time</p>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
-                            <h2 className="text-xl font-bold">
-                                Status Toko
-                            </h2>
 
-                            <p className="mt-2 text-sm text-muted-foreground">Atur status operasional toko Anda</p>
+                        <div className="flex items-center gap-3 bg-[#191720] px-4 py-2 rounded-2xl">
+                            <span className="text-xl font-medium text-white">
+                                Status Toko :
+                            </span>
 
-                            <div className="mt-6 flex items-center justify-between">
-                                <span
-                                    className={`font-semibold ${storeStatus === 'BUKA'
-                                        ? 'text-green-500'
-                                        : 'text-red-500'
-                                        }`}
-                                >
-                                    {storeStatus}
-                                </span>
+                            <span
+                                className={`text-xl font-bold ${storeStatus === 'BUKA' ? 'text-[#99FF33]' : 'text-red-500'
+                                    }`}
+                            >
+                                {storeStatus === 'BUKA' ? 'Buka' : 'Tutup'}
+                            </span>
 
-                                <button
-                                    onClick={handleToggleStore}
-                                    className={`rounded-lg px-4 py-2 text-white ${storeStatus === 'BUKA'
-                                            ? 'bg-green-500'
-                                            : 'bg-red-500'
-                                        }`}
-                                >
-                                    {storeStatus === 'BUKA'
-                                        ? 'Tutup Toko'
-                                        : 'Buka Toko'}
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={handleToggleStore}
+                                className="focus:outline-none transition-transform active:scale-95 ml-2"
+                            >
+                                <img
+                                    src={storeStatus === 'BUKA' ? SwitchOn : SwitchOff}
+                                    alt={storeStatus === 'BUKA' ? "Switch is On" : "Switch is Off"}
+                                    className="w-[65px] h-[40px] cursor-pointer"
+                                />
+                            </button>
                         </div>
                     </div>
 
@@ -191,13 +190,13 @@ export default function Dashboard({
                                 <AreaChart data={sales_chart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorPenjualan" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#7fff1a" stopOpacity={0.2}/>
-                                            <stop offset="95%" stopColor="#7fff1a" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="#7fff1a" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#7fff1a" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <XAxis dataKey="label" stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
                                     <YAxis hide />
-                                    <Tooltip 
+                                    <Tooltip
                                         contentStyle={{ backgroundColor: '#18181c', borderColor: '#27272a', borderRadius: '12px' }}
                                         itemStyle={{ color: '#7fff1a' }}
                                         formatter={(value) => [`${value} Transaksi`, 'Total Penjualan']}
@@ -212,7 +211,7 @@ export default function Dashboard({
                             {top_products.map((item) => (
                                 <div className='flex justify-between gap-3' key={item.id}>
                                     <div className='flex gap-4'>
-                                        <img src={`storage/${item.product_images}`} alt="tes" className='size-13 bg-white rounded-[999px]'/>
+                                        <img src={`storage/${item.product_images}`} alt="tes" className='size-13 bg-white rounded-[999px]' />
 
                                         <div className='flex flex-col justify-center'>
                                             <span className='text-lg font-medium'>{item.name}</span>
@@ -243,7 +242,7 @@ export default function Dashboard({
                                         </span>
                                     ))}
                                 </div>
-                                
+
                                 <div className='flex flex-col gap-3'>
                                     <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PRODUK</span>
                                     {latest_orders.map((item) => (

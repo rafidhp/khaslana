@@ -120,7 +120,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
     // Empty State Layout
     if (groupedMerchantItems.length === 0) {
         return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 text-center">
+            <div className="flex flex-col items-center justify-center px-4 text-center">
                 <div className="w-16 h-16 bg-[#1a1a1e] border border-[#202024] rounded-2xl flex items-center justify-center mb-4 text-[#7c7c8a]">
                     <ShoppingCart className="w-8 h-8" />
                 </div>
@@ -143,10 +143,10 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
 
     // Active State Layout
     return (
-        <div className="w-full max-w-6xl mx-auto px-6 pt-6 pb-32 space-y-6">
+        <div className="mb-12">
             
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="mb-8 flex items-center justify-between">
                 <div className="space-y-1">
                     <h1 className="text-2xl font-bold text-white">
                         Keranjang Belanja

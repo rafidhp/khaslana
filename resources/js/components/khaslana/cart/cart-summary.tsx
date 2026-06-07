@@ -53,7 +53,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
             )}
 
             {/* MAIN */}
-            <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-end gap-6">
+            <div className="max-w-8xl mx-auto px-6 py-4 flex items-center justify-end gap-6">
 
                 {/* LEFT - TOTAL */}
                 <div className="flex items-center gap-3">

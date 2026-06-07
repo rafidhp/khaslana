@@ -50,7 +50,7 @@ export default function OrderIndex({
                                 No
                             </th>
                             <th className="p-4 text-left">
-                                Invoice
+                                Produk
                             </th>
                             <th className="p-4 text-left">
                                 Nama Pembeli
@@ -95,7 +95,7 @@ export default function OrderIndex({
                                         {(orders.from ?? 1) + index}
                                     </td>
                                     <td className="p-4">
-                                        {order.invoice_number}
+                                        {order.order_items?.[0].product_name}
                                     </td>
                                     <td className="p-4 font-medium text-sm md:text-base">
                                         {order.user?.name}
@@ -118,6 +118,7 @@ export default function OrderIndex({
                                                         order.status === 'TERTUNDA' || order.status === 'MENUNGGU PEMBAYARAN' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
                                                         order.status === 'DIBAYAR' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
                                                         order.status === 'DIKIRIM' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
+                                                        order.status === 'SIAP DIAMBIL' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' : 
                                                         order.status === 'SELESAI' ? 'border-[#99FF33]/80 text-[#99FF33] focus:border-[#99FF33]' :
                                                         'border-red-500/50 text-red-400 focus:border-red-500'
                                                     }`}
@@ -130,9 +131,13 @@ export default function OrderIndex({
                                                     <SelectItem value="MENUNGGU PEMBAYARAN" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">MENUNGGU PEMBAYARAN</SelectItem>
                                                     <SelectItem value="DIBAYAR" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">DIBAYAR</SelectItem>
                                                     <SelectItem value="DALAM PROSES" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DALAM PROSES</SelectItem>
-                                                    <SelectItem value="DIKIRIM" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DIKIRIM</SelectItem>
+                                                    {order.type == 'DIANTAR' && (
+                                                        <SelectItem value="DIKIRIM" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DIKIRIM</SelectItem>
+                                                    )}
+                                                    {order.type == 'DIAMBIL' && (
+                                                        <SelectItem value="SIAP DIAMBIL" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">SIAP DIAMBIL</SelectItem>
+                                                    )}
                                                     <SelectItem value="SELESAI" className="text-[#99FF33] focus:bg-white/5 focus:text-[#99FF33] cursor-pointer hidden">SELESAI</SelectItem>
-                                                    <SelectItem value="DIBATALKAN" className="text-red-400 focus:bg-white/5 focus:text-red-400 cursor-pointer">DIBATALKAN</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>

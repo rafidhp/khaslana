@@ -109,11 +109,17 @@ class DashboardController extends Controller
             'status' => 'required'
         ]);
 
-        $order->update([
-            'status' => $request->status,
-        ]);
+        $updateData = ['status' => $request->status];
 
-        return redirect()->route('dashboard.order')->with('success', 'Status order berhasil diubah!');
+        if ($request->status === 'DIKIRIM') {
+            $updateData['shipped_at'] = now();
+        } elseif ($request->status === 'SELESAI') {
+            $updateData['completed_at'] = now();
+        }
+
+        $order->update($updateData);
+
+        return back()->with('success', 'Status order berhasil diubah!');
     }
 
     public function showOrder(Order $order) {

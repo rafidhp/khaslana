@@ -56,10 +56,6 @@ class ProductController extends Controller
     }
 
     public function store(Request $request) {
-        dd([
-            'hasFile' => $request->hasFile('images'),
-            'files' => $request->file('images'),
-        ]);
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string'],

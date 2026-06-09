@@ -210,6 +210,10 @@ class OrderController extends Controller
     }
 
     public function callback(Request $request) {
+        return response()->json([
+            'payload' => $request->all(),
+            'method' => $request->method(),
+        ]);
         try {
             Config::$serverKey = config('services.midtrans.server_key');
             Config::$isProduction = config('services.midtrans.is_production');

@@ -5,6 +5,7 @@ import { CartGroup } from '@/components/khaslana/cart/cart-group';
 import { CartSummary } from '@/components/khaslana/cart/cart-summary';
 import type { Cart, CartItem, SelectedCartItemsMap } from '@/types/cart';
 
+
 interface CartIndexProps {
     cart: Cart | null;
 }
@@ -14,6 +15,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
     const [selectedItemsMap, setSelectedItemsMap] = useState<SelectedCartItemsMap>({});
     const [editModeMap, setEditModeMap] = useState<Record<number, boolean>>({});
     const [isCheckoutLoading, setIsCheckoutLoading] = useState<boolean>(false);
+
     
     // Grouping Cart-Item
     const groupedMerchantItems = useMemo(() => {
@@ -143,7 +145,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
 
     // Active State Layout
     return (
-        <div className="mb-12">
+        <div className="mb-12 min-h-screen flex flex-col">
             
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">

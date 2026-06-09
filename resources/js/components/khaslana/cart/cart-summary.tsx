@@ -6,6 +6,7 @@ interface CartSummaryProps {
     selectedItems: CartItemType[];
     onCheckout: () => void;
     isLoading: boolean;
+    
 }
 
 export const CartSummary: React.FC<CartSummaryProps> = ({
@@ -29,7 +30,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
     const isMultipleMerchantSelected = uniqueUmkmIds.length > 1;
     const isNoItemSelected = selectedCount === 0;
-    const isCheckoutDisabled = isNoItemSelected || isMultipleMerchantSelected || isLoading;
+    const isMultipleItemSelected = selectedCount > 1;
+    const isCheckoutDisabled = isNoItemSelected || isMultipleMerchantSelected || isMultipleItemSelected || isLoading;
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -42,12 +44,21 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1E1B26] border-t border-[#2E2A39]">
 
-            {/* WARNING */}
+            {/* Disable */}
             {isMultipleMerchantSelected && (
                 <div className="bg-[#2a1a1a] border-b border-[#4d1f1f] px-6 py-2.5 flex items-center gap-2.5">
                     <AlertTriangle className="w-4 h-4 text-[#ff4444]" />
                     <p className="text-xs text-[#ff8888]">
                         Checkout hanya bisa dari satu UMKM. Lepaskan item lain untuk lanjut.
+                    </p>
+                </div>
+            )}
+
+            {isMultipleItemSelected && !isMultipleMerchantSelected && (
+                <div className="bg-[#2a1a1a] border-b border-[#4d1f1f] px-6 py-2.5 flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-[#ff4444]" />
+                    <p className="text-xs text-[#ff8888]">
+                        Hanya bisa checkout satu item
                     </p>
                 </div>
             )}

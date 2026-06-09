@@ -94,7 +94,7 @@ class UmkmController extends Controller
     {
         $userLat = $request->lat;
         $userLng = $request->lng;
-        $radius = 2;
+        $radius = 200;
         $activeMerchants = Umkm::where('type', 'KELILING')
             ->whereHas('umkmLocations', function ($q) {
                 $q->where('is_active', true);

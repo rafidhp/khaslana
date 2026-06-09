@@ -34,10 +34,6 @@ export default function OrderIndex({
 }: OrderPageProps) {
     useMidtrans();
     const { user } = useAuth();
-    // const item = order.order_items?.[0];
-    // const product = item?.product;
-    // const variant = item?.variant;
-    // const quantity = item?.quantity ?? 1;
     const items = order.order_items ?? [];
     const address = user.location?.address ?? "";
     const [notes, setNotes] = useState(order.notes ?? '');
@@ -327,25 +323,6 @@ export default function OrderIndex({
                             </div>
                         </div>
                     </div>
-
-                    {/* <div className="flex flex-col bg-[#131313] rounded-2xl p-8 gap-8">
-                        <span className="flex text-base gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">
-                            <Wallet className="text-[#99ff33]"/> METODE PEMBAYARAN
-                        </span>
-                        <div className="flex w-full justify-between gap-4 max-md:flex-col">
-                            {paymentOptions.map((payment) => (
-                                <div
-                                    key={payment.label}
-                                    className="flex flex-col justify-center w-full items-center bg-[#262626] rounded-xl py-6 gap-3"
-                                >
-                                    {payment.icon}
-                                    <span className="font-semibold text-lg">
-                                        {payment.label}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div> */}
                 </div>
 
                 <div className="flex flex-col gap-5 flex-2 bg-[#222] rounded-2xl p-8 h-fit max-lg:mb-10">

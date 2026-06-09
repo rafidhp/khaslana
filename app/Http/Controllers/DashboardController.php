@@ -114,12 +114,16 @@ class DashboardController extends Controller
     }
 
     public function order() {
-        $orders = Order::where('umkm_id', Auth::user()->umkm->id)->with([
-            'umkm',
-            'orderItems',
-            'user'
-        ])->orderBy('created_at', 'desc')
-          ->paginate(20);
+        $orders = collect();
+
+        if (Auth::user()->umkm) {
+            $orders = Order::where('umkm_id', Auth::user()->umkm->id)->with([
+                'umkm',
+                'orderItems',
+                'user'
+            ])->orderBy('created_at', 'desc')
+              ->paginate(20);
+        }
 
         return Inertia::render('umkm/order/index', ['orders' => $orders]);
     }

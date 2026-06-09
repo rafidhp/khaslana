@@ -1,8 +1,9 @@
 import L from 'leaflet';
 import { MapPin } from 'lucide-react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { renderToString } from 'react-dom/server';
 import { MapContainer, TileLayer, Marker, Polyline, useMap, ZoomControl } from 'react-leaflet';
+import DefaultStore from '@/assets/images/umkm-user/default-store.png';
 import 'leaflet/dist/leaflet.css';
 
 export interface MerchantMapData {
@@ -10,7 +11,7 @@ export interface MerchantMapData {
     latitude: number;
     longitude: number;
     storeName: string;
-    logoUrl: string | null;
+    logo: string | null;
     isActive: boolean;
 }
 
@@ -41,8 +42,8 @@ interface Props {
 }
 
 // ICON 
-const createStoreProfileIcon = (logoUrl: string | null, storeName: string, isActive: boolean) => {
-    const finalLogo = logoUrl ? `/storage/${logoUrl}` : '/images/default-store.png';
+const createStoreProfileIcon = (logo: string | null, storeName: string, isActive: boolean) => {
+    const finalLogo = logo ? `/storage/${logo}` : DefaultStore;
     const borderColor = isActive ? '#99FF33' : '#8B8B8B';
 
     return L.divIcon({
@@ -200,7 +201,7 @@ export default function UserMapViewer({
                     <Marker 
                         key={merchant.id} 
                         position={[merchant.latitude, merchant.longitude]} 
-                        icon={createStoreProfileIcon(merchant.logoUrl, merchant.storeName, merchant.isActive)}
+                        icon={createStoreProfileIcon(merchant.logo, merchant.storeName, merchant.isActive)}
                         eventHandlers={{
                             click: () => {
                                 if (onMerchantClick) onMerchantClick(merchant.id);

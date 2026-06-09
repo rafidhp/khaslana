@@ -1,10 +1,11 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight, Star, X } from 'lucide-react';
-import React from 'react';
+import DefaultStore from '@/assets/images/umkm-user/default-store.png';
+
 export interface SelectedMerchantData {
     id: number;
     storeName: string;
-    logoUrl: string | null;
+    logo: string | null;
     rating: number;
 }
 
@@ -23,10 +24,9 @@ export default function SelectedMerchantCard({
     onCancelClick, 
     onClose 
 }: Props) {
-    
     if (!merchant) return null;
 
-    const finalLogo = merchant.logoUrl ? `/storage/${merchant.logoUrl}` : '/images/default-store.png';
+    const finalLogo = merchant.logo ? `/storage/${merchant.logo}` : DefaultStore;
 
     return (
         <div className="w-full shrink-0 bg-[#2A2A2A]/90 backdrop-blur-xl rounded-[24px] border border-white/5 shadow-2xl p-5 animate-in slide-in-from-bottom-6 fade-in duration-300 relative">
@@ -38,10 +38,10 @@ export default function SelectedMerchantCard({
                 <X className="w-4 h-4" />
             </button>
 
-            {/* Area Konten Utama Card */}
+            {/* card */}
             <div className="flex items-center gap-[15px] mb-5 mt-1">
                 
-                {/* Sisi Kiri: Thumbnail Foto Toko */}
+                {/* left section */}
                 <div className="w-16 h-16 rounded-[16px] overflow-hidden shrink-0 border border-white/5 bg-[#161616]">
                     <img 
                         src={finalLogo} 
@@ -51,10 +51,8 @@ export default function SelectedMerchantCard({
                     />
                 </div>
                 
-                {/* Sisi Kanan: Informasi Detail Toko */}
+                {/* right section */}
                 <div className="flex flex-col flex-1 min-w-0">
-                    
-                    {/* Baris Atas: Label Konten & Link Detail */}
                     <div className="flex items-center justify-between w-full">
                         <span className="text-white text-[13px] font-medium opacity-90">Toko Dipilih</span>
                         <Link 
@@ -64,14 +62,10 @@ export default function SelectedMerchantCard({
                             Detail <ChevronRight className="w-4 h-4 ml-0.5" />
                         </Link>
                     </div>
-                    
-                    {/* Baris Bawah: Nama Toko & Rating */}
                     <div className="flex items-end justify-between w-full mt-1">
                         <h3 className="text-[#99FF33] font-bold text-[18px] truncate max-w-[140px] leading-tight">
                             {merchant.storeName}
                         </h3>
-                        
-                        {/* Blok Rating */}
                         <div className="flex items-center gap-2 pr-5">
                             <span className="text-[#99FF33] text-[22px] font-black leading-none">
                                 {merchant.rating.toFixed(1)}
@@ -99,7 +93,6 @@ export default function SelectedMerchantCard({
                 </div>
             </div>
 
-            {/* Condotional Action Button */}
             {isTracking ? (
                 <button 
                     onClick={onCancelClick}
@@ -115,7 +108,6 @@ export default function SelectedMerchantCard({
                     Lacak Toko
                 </button>
             )}
-            
         </div>
     );
 }

@@ -7,7 +7,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import KhaslanaLogo from "@/assets/icons/khaslana-logo-green.png";
 import MerchantSidebar from '@/components/khaslana/live-tracking/merchant-sidebar';
 import SelectedMerchantCard from '@/components/khaslana/live-tracking/selected-merchant-card';
-import UserMapViewer from '@/components/khaslana/live-tracking/user-map-viewer';
+import UserMapViewer, { MerchantMapData } from '@/components/khaslana/live-tracking/user-map-viewer';
 import { showErrorToast } from "@/lib/toast";
 
 
@@ -18,10 +18,22 @@ interface IncomingActiveMerchant {
     locationText: string;
     rating: number;
     status: 'MANGKAL' | 'KELILING' | 'TUTUP';
-    logoUrl: string | null;
     latitude: number;
     longitude: number;
     isActive: boolean;
+
+    user?: {
+        id: number;
+        name: string;
+        username: string;
+        email: string;
+
+        profile?: {
+            user_id: number;
+            profile_photo: string | null;
+            logo: string | null;
+        };
+    };
 }
 
 interface Props {
@@ -127,9 +139,6 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
         }
     }, [initialSelectedId, userLoc, selectedMerchant, isTracking, handleFetchRoute]);
 
-    // RESET LOGIC
-    
-    // reset route SAJA 
     const resetRouteOnly = () => {
         setRoutePath([]);
         setIsTracking(false);
@@ -139,7 +148,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
     const handleCancelTracking = () => {
         setRoutePath([]);
         setIsTracking(false);
-        setSelectedId(null); // 🔥 penting
+        setSelectedId(null);
     };
 
     // close card
@@ -159,16 +168,15 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
         status: m.status
     }));
 
-    const mapMerchantsData = activeMerchants.map(m => ({
-        id: m.id,
-        latitude: m.latitude,
-        longitude: m.longitude,
-        storeName: m.storeName,
-        logoUrl: m.logoUrl,
-        isActive: m.isActive
+    const mapMerchantsData: MerchantMapData[] = activeMerchants.map((merchant) => ({
+        id: merchant.id,
+        latitude: merchant.latitude,
+        longitude: merchant.longitude,
+        storeName: merchant.storeName,
+        logo: merchant.user?.profile?.logo ?? null,
+        isActive: merchant.isActive
     }));
 
-    // RENDER
     return (
         <div className="w-full h-screen overflow-hidden relative bg-[#242424]">
             <Head title="Live Tracking - Pedagang Keliling" />
@@ -263,7 +271,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                             merchant={{
                                 id: selectedMerchant.id,
                                 storeName: selectedMerchant.storeName,
-                                logoUrl: selectedMerchant.logoUrl,
+                                logo: selectedMerchant.user?.profile?.logo ?? null,
                                 rating: selectedMerchant.rating
                             }}
                             isTracking={isTracking}

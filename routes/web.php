@@ -23,6 +23,10 @@ Route::get('/about', function() {
     return Inertia::render('user/about');
 })->name('about');
 
+Route::get('/dev-page', function() {
+    return view('dev-page');
+})->name('devPage');
+
 Route::controller(GoogleController::class)->group(function() {
     Route::get('/auth/google', 'redirect')->name('google-auth');
     Route::get('/auth/google/callback', 'callback')->name('google-auth.callback');
@@ -128,15 +132,14 @@ Route::controller(CatalogController::class)->group(function() {
 Route::controller(UmkmController::class)->group(function() {
     Route::get('/umkm', 'index')->name('umkm');
     Route::get('/umkm/detail/{umkm_id}', 'detail')->name('umkm.detail');
-    Route::get('/umkm/products', 'umkmProducts')->name('umkm.products');
+    Route::get('/umkm/products/{umkm_id}', 'umkmProducts')->name('umkm.products');
     Route::get('/umkm/navigasi/{umkm_id}', 'navigasi')->name('umkm.navigasi');
     Route::get('/umkm/tracking/{umkm_id?}', 'tracking')->name('umkm.tracking');
     Route::get('/umkm/rute/{umkm_id}', 'rute')->name('umkm.rute');
 });
 
 Route::get('/promo/{id}', [PromoController::class, 'show'])->name('promo.show');
-
-Route::get('/umkm/{id}/promo', [\App\Http\Controllers\UmkmController::class, 'showPromo'])->name('umkm.promo');
+Route::get('/umkm/{id}/promo', [UmkmController::class, 'showPromo'])->name('umkm.promo');
 
 Route::controller(ChatbotController::class)->group(function () {
     Route::get('/help', 'index')->name('chatbot');

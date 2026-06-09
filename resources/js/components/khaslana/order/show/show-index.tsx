@@ -15,8 +15,6 @@ export default function ShowIndex({
         }
     ).format(value ?? 0);
 
-    console.log(order);
-
     const renderStatusBubble = (status: string) => {
         switch (status) {
             case 'TERTUNDA':

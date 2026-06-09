@@ -1,10 +1,10 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
-
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
-import type { Order } from "@/types/order"
-
+import type { Order } from "@/types/order";
 import ConfirmationDialog from "../../confirmation-dialog";
+import { order as orderRoute } from "@/routes";
+import { show } from "@/routes/order";
 
 interface ListIndexProps {
     orders: Order[];
@@ -92,11 +92,15 @@ export default function ListIndex({
                     Riwayat <span className="text-[#99ff33]">Pesanan</span>
                 </span>
             </div>
-
             <div className="flex flex-col gap-4 mb-20">
                 {orders.map((order) => (
-                    <a href={`/order/show/${order.id}`}
-                        className="flex max-md:flex-col gap-6 bg-[#131313] p-8 rounded-3xl justify-between duration-200 transition-all hover:bg-[#222] hover:-translate-y-1">
+                    <a
+                        href={order.status === 'TERTUNDA'
+                            ? orderRoute(order.id).url
+                            : show(order.id).url
+                        }
+                        className="flex max-md:flex-col gap-6 bg-[#131313] p-8 rounded-3xl justify-between duration-200 transition-all hover:bg-[#222] hover:-translate-y-1"
+                    >
                         <div className="flex gap-5">
                             <div className="flex">
                                 <img
@@ -106,15 +110,15 @@ export default function ListIndex({
                                             : '/images/placeholder.png'
                                     }
                                     alt={order.order_items?.[0].product_name}
-                                    className="h-30 w-30 max-md:h-15 max-md:w-15 object-cover bg-white rounded-xl"
+                                    className="h-35 w-50 aspect-square max-md:h-15 max-md:w-15 object-cover bg-white rounded-xl"
                                 />
                             </div>
                             <div className="flex flex-col gap-2 justify-between">
-                                <div className="flex flex-col">
+                                <div className="flex flex-col gap-1">
                                     <h5 className="font-semibold text-2xl max-md:text-lg">{order.order_items?.[0].product_name}</h5>
-                                    <span className="flex flex-col max-md:text-sm text-[#adaaaa]">
+                                    <span className="flex flex-col gap-0.5 max-md:text-sm text-[#adaaaa] whitespace-nowrap">
                                         {order.order_items?.[0].variant_detail}
-                                        <span className="text-white">Kuantitas: {order.order_items?.[0].quantity} unit</span>
+                                        <span className="text-white whitespace-nowrap">Kuantitas: {order.order_items?.[0].quantity} unit</span>
                                     </span>
                                 </div>
                                 <div className="w-fit">
@@ -132,7 +136,11 @@ export default function ListIndex({
                                 </span>
                             </div>
                             <div className="flex gap-2">
-                                <a href={`/order/show/${order.id}`}
+                                <a
+                                    href={order.status === 'TERTUNDA'
+                                        ? orderRoute(order.id).url
+                                        : show(order.id).url
+                                    }
                                     className="flex border border-[#99ff33] justify-center text-[#99ff33] px-4.5 font-semibold py-2 rounded-[999px] text-sm hover:text-black hover:bg-[#99ff33] duration-200 transition-all">
                                     Lihat Detail
                                 </a>

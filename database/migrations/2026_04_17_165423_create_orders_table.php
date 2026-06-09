@@ -66,7 +66,7 @@ return new class extends Migration
             $table->string('midtrans_order_id')->unique();
             $table->string('payment_type');
             $table->string('transaction_status');
-            $table->string('fraud_status')->nullable(); // hanya untuk credit card
+            $table->string('fraud_status')->nullable();
             $table->decimal('gross_amount', 12);
             $table->text('snap_token')->nullable();
             $table->json('raw_response')->nullable();

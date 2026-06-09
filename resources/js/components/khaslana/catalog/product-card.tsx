@@ -15,27 +15,21 @@ interface ProductCardProps {
     products: Product[];
 }
 
-export function ProductCard({ products }: ProductCardProps) {
-
-
+export function ProductCard({
+    products
+}: ProductCardProps) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
 
     const handleCardClicked = (id: number) => {
         router.visit(show(id).url);
     };
 
-    const handleAddToCart = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        product: Product
-    ) => {
+    const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, product: Product) => {
         e.stopPropagation();
-
         setSelectedProduct(product);
         setIsDialogOpen(true);
     };
-
 
     if (products.length === 0) {
         return (
@@ -72,7 +66,6 @@ export function ProductCard({ products }: ProductCardProps) {
                                 cursor-pointer
                             "
                         >
-                            {/* IMAGE */}
                             <div className="relative h-64 overflow-hidden">
                                 <img
                                     src={`/storage/${product.product_images?.[0]?.image}`}
@@ -83,10 +76,7 @@ export function ProductCard({ products }: ProductCardProps) {
                                         group-hover:scale-105
                                     "
                                 />
-
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-
-                                {/* PROMO */}
                                 {product.promo?.discount_percent && (
                                     <div className="absolute top-4 left-4">
                                         <span className="
@@ -102,8 +92,6 @@ export function ProductCard({ products }: ProductCardProps) {
                                         </span>
                                     </div>
                                 )}
-
-                                {/* ADD TO CART BUTTON */}
                                 <button
                                     onClick={(e) => handleAddToCart(e, product)}
                                     className="
@@ -125,12 +113,10 @@ export function ProductCard({ products }: ProductCardProps) {
                                 </button>
                             </div>
 
-                            {/* CONTENT */}
                             <div className="flex flex-col flex-1 p-5">
                                 <h4 className="text-white text-lg font-bold line-clamp-1 mb-2">
                                     {product.name}
                                 </h4>
-
                                 <div className="flex items-center justify-between mt-1">
                                     <span className="text-[#99FF33] font-bold">
                                         Rp {Number(product.product_variants?.[0]?.price ?? 0).toLocaleString('id-ID')}
@@ -141,7 +127,6 @@ export function ProductCard({ products }: ProductCardProps) {
                                         {product.umkm?.average_rating ?? 0}
                                     </div>
                                 </div>
-
                                 <div className="flex items-center justify-between mt-5 text-xs text-[#B7B7B7]">
                                     <span className="flex items-center gap-1">
                                         <img src={locationIcon} className="w-3.5 h-3.5 opacity-60" />

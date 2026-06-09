@@ -8,7 +8,7 @@ import Phone from '@/assets/icons/footer/phone_icon.png';
 import Youtube from '@/assets/icons/footer/yt.png';
 import Khaslana from '@/assets/images/landing-page/Khaslana.svg';
 import Mail from '@/assets/images/landing-page/Vector.svg';
-import { catalog, umkm, community, about } from '@/routes';
+import { catalog, umkm, community, about, devPage } from '@/routes';
 
 const socials = [
     {
@@ -38,6 +38,10 @@ export default function Footer() {
                 : [...prev, item]
         );
     };
+
+    const handleDevPage = () => {
+        window.location.pathname = devPage().url;
+    }
 
     return (
         <footer className="bg-[#262626] border-t pt-15 max-md:flex-col md:gap-7.5">
@@ -342,15 +346,16 @@ export default function Footer() {
                             <ul className="flex flex-col gap-3">
                                 <li>
                                     <a
-                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
-                                        href="#">
+                                        className="text-white cursor-pointer decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        onClick={handleDevPage}
+                                    >
                                         Kebijakan Privasi
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        className="text-white decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
-                                        href="#"
+                                        className="text-white cursor-pointer decoration-0 text-[15px] transition-colors duration-200 ease-in hover:text-[#99FF33]"
+                                        onClick={handleDevPage}
                                     >
                                         Syarat dan Ketentuan
                                     </a>
@@ -409,8 +414,8 @@ export default function Footer() {
                             Tentang Kami
                         </a>
                         <a
-                            className="text-white decoration-0 text-[14px] transition-colors duration-200 ease-in hover:text-[#989898]"
-                            href="#"
+                            className="text-white cursor-pointer decoration-0 text-[14px] transition-colors duration-200 ease-in hover:text-[#989898]"
+                            onClick={handleDevPage}
                         >
                             Kebijakan Privasi
                         </a>

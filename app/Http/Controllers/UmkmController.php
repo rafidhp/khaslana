@@ -46,14 +46,14 @@ class UmkmController extends Controller
             'reviewLikes',
         )->get();
         $products = Product::where('umkm_id', $umkm_id)
-        ->where('is_archived', false)
-        ->with(
-            'productImages',
-            'productVariants',
-            'promo',
-            'category',
-        )->take(4)
-        ->get();
+            ->where('is_archived', false)
+            ->with(
+                'productImages',
+                'productVariants.attributeValues.attribute',
+                'promo',
+                'category',
+            )->take(4)
+            ->get();
 
         $latestLocation = $umkm->umkmLocations->sortByDesc('id')->first();
         
@@ -66,8 +66,38 @@ class UmkmController extends Controller
 
     }
 
-    public function umkmProducts() {
-        return Inertia::render('user/umkm-user/umkm-products/index');
+    public function umkmProducts($umkm_id) {
+        $umkm = Umkm::where('id', $umkm_id)->with(
+            'province',
+            'city',
+            'district',
+            'village',
+            'user',
+            'user.profile',
+            'umkmData',
+            'umkmImages',
+            'umkmLocations',
+            'promos',
+        )->firstOrFail();
+        $reviews = Review::where('umkm_id', $umkm_id)->with(
+            'reviewLikes',
+        )->get();
+        $products = Product::where('umkm_id', $umkm_id)
+            ->where('is_archived', false)
+            ->with(
+                'productImages',
+                'productVariants.attributeValues.attribute',
+                'promo',
+                'category',
+            )
+            ->get();
+
+        return Inertia::render('user/umkm-user/umkm-products/index', [
+            'umkmData' => $umkm,
+            'reviews' => $reviews,
+            'products' => $products,
+            'pageType' => 'umkmProducts',
+        ]);
     }
 
     /**
@@ -75,7 +105,6 @@ class UmkmController extends Controller
      */
     public function navigasi($umkm_id)
     {
-
         $umkm = Umkm::where('type', 'TETAP')
             ->with(['user.profile', 'umkmLocations' => function ($q) {
                 $q->latest('id');
@@ -94,7 +123,7 @@ class UmkmController extends Controller
     {
         $userLat = $request->lat;
         $userLng = $request->lng;
-        $radius = 200;
+        $radius = 3;
         $activeMerchants = Umkm::where('type', 'KELILING')
             ->whereHas('umkmLocations', function ($q) {
                 $q->where('is_active', true);
@@ -138,7 +167,6 @@ class UmkmController extends Controller
             ->sortBy('distance')
             ->values();
             
-
         return Inertia::render('user/navigation/user-stay-point', [
             'activeMerchants' => $activeMerchants,
             'initialSelectedId' => $umkm_id ? (int) $umkm_id : null,

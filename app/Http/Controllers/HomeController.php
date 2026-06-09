@@ -10,12 +10,20 @@ use Laravel\Fortify\Features;
 class HomeController extends Controller
 {
     public function index(Request $request) {
-        $data = [];
-        $products = Product::all();
+        $products = Product::with([
+            'category',
+            'promo',
+            'productImages',
+            'productVariants.attributeValues.attribute',
+        ])
+        ->take(4)
+        ->get();
 
-        if ($request->user()) {
-            $data['products'] = $products;
-        } else {
+        $data = [
+            'products' => $products,
+        ];
+
+        if (! $request->user()) {
             $data['canRegister'] = Features::enabled(
                 Features::registration()
             );

@@ -1,33 +1,44 @@
-import AntingPerak from '@/assets/images/landing-page/umkm-section/anting-perak.png';
-import KopiGayo from '@/assets/images/landing-page/umkm-section/kopi-gayo.png';
-import SendalGarut from '@/assets/images/landing-page/umkm-section/sendal-garut.png';
-import VasKeramik from '@/assets/images/landing-page/umkm-section/vas-keramik.png';
-import { umkm } from '@/routes';
+// import AntingPerak from '@/assets/images/landing-page/umkm-section/anting-perak.png';
+// import KopiGayo from '@/assets/images/landing-page/umkm-section/kopi-gayo.png';
+// import SendalGarut from '@/assets/images/landing-page/umkm-section/sendal-garut.png';
+// import VasKeramik from '@/assets/images/landing-page/umkm-section/vas-keramik.png';
+import type { Product } from '@/types/product';
+import { umkm, devPage } from '@/routes';
 
-const products = [
-    {
-        name: "Vas Keramik Kasongan",
-        price: "Rp 185.000",
-        image: VasKeramik,
-    },
-    {
-        name: "Sandalias Kulit Garut",
-        price: "Rp 320.000",
-        image: SendalGarut,
-    },
-    {
-        name: "Kopi Arabica Gayo",
-        price: "Rp 85.000",
-        image: KopiGayo,
-    },
-    {
-        name: "Anting Perak Kotagede",
-        price: "Rp 450.000",
-        image: AntingPerak,
-    },
-];
+interface UmkmSectionProps {
+    products: Product[];
+}
 
-export default function UmkmSection() {
+// const products = [
+//     {
+//         name: "Vas Keramik Kasongan",
+//         price: "Rp 185.000",
+//         image: VasKeramik,
+//     },
+//     {
+//         name: "Sandalias Kulit Garut",
+//         price: "Rp 320.000",
+//         image: SendalGarut,
+//     },
+//     {
+//         name: "Kopi Arabica Gayo",
+//         price: "Rp 85.000",
+//         image: KopiGayo,
+//     },
+//     {
+//         name: "Anting Perak Kotagede",
+//         price: "Rp 450.000",
+//         image: AntingPerak,
+//     },
+// ];
+
+export default function UmkmSection({
+    products,
+}: UmkmSectionProps) {
+    const handleDevPage = () => {
+        window.location.pathname = devPage().url;
+    }
+
     return (
         <section className="flex flex-col items-center justify-center min-h-screen h-auto py-5 mb-10 px-13.75 gap-7.5">
             <h2 className='font-medium text-3xl sm:text-4xl md:text-5xl text-center mt-8 mb-12 px-4 text-white'>
@@ -37,25 +48,32 @@ export default function UmkmSection() {
                 </span>
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 w-full max-w-7xl mb-8 px-6">
-                {products.map((item, index) => (
+                {products?.map((item, index) => (
                     <div
                         key={index}
                         className="flex flex-col bg-[#3d3c3b] rounded-lg overflow-hidden"
                     >
-                        <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-52 sm:h-56 md:h-64 object-cover"
-                        />
+                        <div className='relative overflow-hidden'>
+                            <img
+                                src={
+                                    item.product_images?.[0]?.image
+                                    ? `/storage/${item.product_images?.[0].image}`
+                                    : 'ilang'
+                                }
+                                alt={item.name}
+                                className="w-full h-52 sm:h-56 md:h-64 object-cover bg-white"
+                            />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
+                        </div>
                         <div className="flex flex-col gap-2 p-5">
                             <h4 className="font-semibold text-[15px] md:text-base text-white">
                                 {item.name}
                             </h4>
                             <h4 className="text-[#99ff33] text-sm md:text-base">
-                                {item.price}
+                                {item.product_variants?.[0].price}
                             </h4>
                             <div className="flex items-center justify-center text-center border border-[#494847] py-2.5 w-full rounded-lg mt-2 text-white hover:border-[#99ff33] hover:cursor-pointer transition">
-                                <p className="w-full text-[13px] md:text-sm">
+                                <p onClick={handleDevPage} className="w-full text-[13px] md:text-sm">
                                     + Add to Cart
                                 </p>
                             </div>

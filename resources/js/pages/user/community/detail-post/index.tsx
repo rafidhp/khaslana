@@ -103,7 +103,7 @@ export default function DetailPost({
         if (confirm('Yakin ingin menghapus komentar ini?')) {
             router.delete(`/community/${postId}/comment/${commentId}`);
         }
-    } 
+    }
 
     const handleLikeComment = (postId: number, commentId: number) => {
         router.post(`/community/${postId}/comment/${commentId}/like`, {}, {
@@ -133,13 +133,17 @@ export default function DetailPost({
             </Head>
             <div className='flex flex-col gap-10 justify-between mb-20 lg:mx-20 md:mx-14'>
 
-                {/* detail comment section */}
+                {/* detail post section */}
                 <div key={post.id} className="post-card w-full flex flex-3 flex-col gap-4 bg-[#222] p-6 rounded-[15px]">
                     <div className="flex flex-col gap-4">
                         <div className="post-profile flex items-center justify-between gap-4">
                             <div className="flex items-center ps-2 gap-4">
                                 <img
-                                    src={user.profile_photo ?? ProfileIcon}
+                                    src={
+                                        post.user.profile?.profile_photo
+                                        ? `/storage/${post.user.profile?.profile_photo}`
+                                        : ProfileIcon
+                                    }
                                     alt="Profile"
                                     className="w-11 h-11 border border-white/10 rounded-full object-cover"
                                 />

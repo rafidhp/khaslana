@@ -49,6 +49,7 @@ class CatalogController extends Controller
 
         return Inertia::render('user/catalog/detail', [
             'product' => $product,
+            'pageType' => 'catalogDetail',
         ]);
     }
 

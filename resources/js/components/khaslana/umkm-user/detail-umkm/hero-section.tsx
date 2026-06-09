@@ -3,9 +3,9 @@ import {
     MapPin,
     Star,
 } from "lucide-react";
-
 import DefaultStore from "@/assets/images/umkm-user/default-store.png";
 import type { Umkm } from "@/types/umkm";
+import { devPage } from "@/routes";
 
 interface Review {
     id: number;
@@ -25,6 +25,10 @@ export default function HeroSection({
 }: HeroSectionProps) {
     const status = umkmData.status === 'BUKA';
     const totalReviews = reviews.length;
+
+    const handleDevPage = () => {
+        window.location.pathname = devPage().url;        
+    }
 
     return (
         <section className="flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-between gap-10 lg:gap-16 w-full">
@@ -68,7 +72,7 @@ export default function HeroSection({
                     </span>
                 </div>
                 <div className="mt-8">
-                    <button className="btn-primary-khaslana text-sm md:text-base hover:cursor-pointer gap-2">
+                    <button onClick={handleDevPage} className="btn-primary-khaslana text-sm md:text-base hover:cursor-pointer gap-2">
                         <MessageCircle className="pb-0.5 w-5 md:w-6 h-5 md:h-6" />
                         Hubungi Sekarang
                     </button>
@@ -76,7 +80,7 @@ export default function HeroSection({
             </div>
 
             <div className="relative w-full max-w-[500px]">
-                <div className="overflow-hidden rounded-[32px] border border-white/10">
+                <div className="overflow-hidden rounded-3xl border border-white/10">
                     <img
                         src={
                             umkmData.umkm_images?.[0]?.image
@@ -93,7 +97,7 @@ export default function HeroSection({
                             from-black/80
                             via-black/20
                             to-transparent
-                            rounded-[32px]
+                            rounded-3xl
                         "
                     />
                 </div>
@@ -101,7 +105,7 @@ export default function HeroSection({
                     <div
                         className="
                             flex items-center gap-2
-                            w-fit items-center
+                            w-fit
                             rounded-full
                             bg-[#2F3E1F]/90
                             px-3 py-1.5

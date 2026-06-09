@@ -27,11 +27,6 @@ interface UmkmStat {
     total_pembeli: number;
 }
 
-interface ActiveProduct {
-    umkm_id: number;
-    total_produk: number;
-}
-
 interface ProductWithRating {
     id: number;
     name: string;
@@ -66,8 +61,8 @@ interface TopProducts {
 
 interface DashboardProps {
     status: 'BUKA' | 'TUTUP';
-    umkm_stat: UmkmStat[];
-    active_product: ActiveProduct[];
+    umkm_stat: UmkmStat;
+    active_product: number;
     store_rating: StoreRating[];
     top_products: TopProducts[];
     sales_chart: ChartItem[];
@@ -108,14 +103,14 @@ export default function Dashboard({
         }
     ).format(value ?? 0);
 
-    const stat = umkm_stat?.[0] || {total_pembeli: 0, total_pendapatan: 0};
-    const product = active_product?.[0] || {total_produk: 0};
+    const stat = umkm_stat || {total_pembeli: 0, total_pendapatan: 0};
+    const product = active_product ?? 0;
     const storeProduct = store_rating?.[0]?.products?.[0];
 
     const storeStatistics = [
-        {id: 1, title: 'Pesanan', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8'/>},
+        {id: 1, title: 'Total Pembeli', 'value': stat.total_pembeli, 'icon': <ShoppingBag className='size-8'/>},
         {id: 2, title: 'Pendapatan', 'value': formatRupiah(Number(stat.total_pendapatan)), 'icon': <DollarSign className='size-8'/>},
-        {id: 3, title: 'Produk aktif', 'value': product.total_produk, 'icon': <Package className='size-8'/>},
+        {id: 3, title: 'Produk aktif', 'value': product, 'icon': <Package className='size-8'/>},
         {id: 4, title: 'Rating toko', 'value': storeProduct?.reviews_avg_rating
             ? `${Number(storeProduct.reviews_avg_rating).toFixed(1)}/5.0`
             : '0.0/5.0', 'icon': <Star className='size-8'/>},
@@ -171,7 +166,11 @@ export default function Dashboard({
                                 </div>
                                 <div className='flex flex-col'>
                                     <span className='text-[#adaaaa]'>{item.title}</span>
-                                    <span className='font-semibold text-3xl'>{item.value}</span>
+                                    <div className='flex items-end gap-1'>
+                                        <span className='font-semibold text-3xl'>{item.value}</span>
+                                        <span className='text-muted-foreground'>{item.id === 1 && 'Orang'}</span>
+                                        <span className='text-muted-foreground'>{item.id === 3 && 'Produk'}</span>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -223,6 +222,11 @@ export default function Dashboard({
                                     </div>
                                 </div>
                             ))}
+                            {top_products.length <= 0 && (
+                                <div className='w-full flex justify-center items-center'>
+                                    <span className='text-muted-foreground'>Belum ada produk terjual</span>
+                                </div>
+                            )}
                             <a href="/product" className='flex text-[#99ff33] font-semibold w-full justify-center mt-6'>Lihat Semua Produk</a>
                         </div>
                     </div>
@@ -232,7 +236,7 @@ export default function Dashboard({
                             <span className='text-2xl font-semibold'>Pesanan Terbaru</span>
                             <div className='flex justify-between w-full md:px-10 '>
                                 <div className='flex flex-col gap-3'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PELANGGAN</span>
+                                    <span className='font-semibold text-sm tracking-[1px] text-white/90 mb-4'>PELANGGAN</span>
                                     {latest_orders.map((item) => (
                                         <span key={item.id}
                                             className='font-semibold'>
@@ -242,7 +246,7 @@ export default function Dashboard({
                                 </div>
 
                                 <div className='flex flex-col gap-3'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>PRODUK</span>
+                                    <span className='font-semibold text-sm tracking-[1px] text-white/90 mb-4'>PRODUK</span>
                                     {latest_orders.map((item) => (
                                         <span key={item.id}
                                             className='font-normal text-[#adaaaa]'>
@@ -252,7 +256,7 @@ export default function Dashboard({
                                 </div>
 
                                 <div className='flex flex-col gap-3 max-md:hidden'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4 '>STATUS</span>
+                                    <span className='font-semibold text-sm tracking-[1px] text-white/90 mb-4 '>STATUS</span>
                                     {latest_orders.map((item) => (
                                         <span key={item.id}
                                             className='font-medium text-yellow-200'>
@@ -262,15 +266,21 @@ export default function Dashboard({
                                 </div>
 
                                 <div className='flex flex-col gap-3'>
-                                    <span className='font-semibold text-sm tracking-[1px] text-[#BFCBAF] mb-4'>TOTAL</span>
+                                    <span className='font-semibold text-sm tracking-[1px] text-white/90 mb-4'>TOTAL</span>
                                     {latest_orders.map((item) => (
                                         <span key={item.id}
-                                            className='font-semibold'>
-                                            Rp {item.total_price}
+                                            className='font-semibold'
+                                        >
+                                            {formatRupiah(item.total_price)}
                                         </span>
                                     ))}
                                 </div>
                             </div>
+                            {latest_orders.length <= 0 && (
+                                <div className='flex justify-center items-center'>
+                                    <span className='text-muted-foreground'>Belum ada pesanan terbaru</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </>

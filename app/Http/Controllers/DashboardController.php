@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order\Order;
+use App\Models\Order\OrderItem;
 use App\Models\Product\Product;
-use App\Models\UMKM\Umkm;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
@@ -16,21 +16,39 @@ class DashboardController extends Controller
         $user = Auth::user();
         $umkmId = $user->umkm?->id;
 
-        $umkmStat = Order::selectRaw('umkm_id, SUM(total_price) as total_pendapatan, COUNT(user_id) as total_pembeli')
-            ->groupBy('umkm_id')
-            ->get();
+        $umkmStat = Order::query()
+            ->where('umkm_id', $umkmId)
+            ->where('payment_status', 'DIBAYAR')
+            ->selectRaw('
+                COUNT(*) as total_pesanan,
+                SUM(total_price) as total_pendapatan,
+                COUNT(DISTINCT user_id) as total_pembeli
+            ')
+            ->first();
 
-        $activeProduct = Product::selectRaw('umkm_id, COUNT(id) as total_produk')
-            ->groupBy('umkm_id')
-            ->get();
+        $activeProduct = Product::query()
+            ->where('umkm_id', $umkmId)
+            ->where('is_archived', false)
+            ->count();
         
-        $storeRating = Umkm::with(['products' => function($query) {
-            $query->withAvg('reviews', 'rating');
-        }])->get();
+        $storeRating = Product::query()
+            ->where('umkm_id', $umkmId)
+            ->withAvg('reviews', 'rating')
+            ->get();
 
-        $topProducts = Product::where('umkm_id', $umkmId)
-            ->with(['category', 'productImages'])
-            ->withSum('orderItems as total_terjual', 'quantity')
+        $topProducts = Product::query()
+            ->where('umkm_id', $umkmId)
+            ->with([
+                'category',
+                'productImages',
+            ])
+            ->withSum([
+                'orderItems as total_terjual' => function ($query) {
+                    $query->whereHas('order', function ($order) {
+                        $order->where('payment_status', 'DIBAYAR');
+                    });
+                }
+            ], 'quantity')
             ->orderByDesc('total_terjual')
             ->limit(3)
             ->get();
@@ -38,9 +56,21 @@ class DashboardController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-        $salesData = Order::where('umkm_id', $umkmId)
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->selectRaw('DAYOFWEEK(created_at) as day_num, COUNT(id)as total_terjual')
+        $salesData = OrderItem::query()
+            ->whereHas('order', function ($query) use ($umkmId) {
+                $query
+                    ->where('umkm_id', $umkmId)
+                    ->where('payment_status', 'DIBAYAR');
+            })
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereBetween(
+                'orders.created_at',
+                [$startOfWeek, $endOfWeek]
+            )
+            ->selectRaw('
+                DAYOFWEEK(orders.created_at) as day_num,
+                SUM(order_items.quantity) as total_terjual
+            ')
             ->groupBy('day_num')
             ->get();
 
@@ -64,8 +94,13 @@ class DashboardController extends Controller
             ];
         }
 
-        $latestOrders = Order::with(['user', 'orderItems'])
-            ->orderBy('created_at', 'desc')
+        $latestOrders = Order::query()
+            ->where('umkm_id', $umkmId)
+            ->with([
+                'user',
+                'orderItems',
+            ])
+            ->latest()
             ->take(3)
             ->get();
 

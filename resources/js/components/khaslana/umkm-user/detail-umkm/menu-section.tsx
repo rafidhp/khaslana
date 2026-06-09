@@ -1,32 +1,50 @@
-import { Link, router } from "@inertiajs/react"
-import { ChevronRight, Plus, PackageOpen } from "lucide-react"
-
+import { Link, router, usePage } from "@inertiajs/react"
+import { useState } from "react";
+import { ChevronRight, ShoppingCart, PackageOpen } from "lucide-react"
+import VariantDialog from '@/components/khaslana/catalog/detail/variant-dialog';
+import { products as productsRoute } from "@/routes/umkm";
 import { show } from "@/routes/catalog";
 import type { Product } from "@/types/product";
+import type { Umkm } from "@/types/umkm";
 
 interface MenuSectionProps {
     products: Product[];
+    umkmData: Umkm;
 }
 
 export default function MenuSection({
     products,
+    umkmData,
 }: MenuSectionProps) {
+    const { pageType } = usePage().props;
+    const isUmkmProducts = pageType === 'umkmProducts';
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const handleCardClicked = (productId: number) => {
         router.visit(show(productId));
     }
+
+    const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, product: Product) => {
+        e.stopPropagation();
+        setSelectedProduct(product);
+        setIsDialogOpen(true);
+    };
+
     return (
-        <div className="flex flex-col items-center w-full mt-18">
+        <div className="flex flex-col items-center w-full mt-18 mb-12">
             <div className="flex flex-col w-full gap-2">
                 <h2 className="text-xl md:text-2xl font-bold">Menu Unggulan</h2>
                 <div className="flex justify-between items-center w-full">
                     <h3 className="text-muted-foreground text-sm md:text-base">Koleksi produk produk unggulan dari toko kami.</h3>
-                    <Link
-                        href=""
-                        className="flex gap-1 text-sm md:text-base text-[#99FF33] group transition-all duration-300"
-                    >
-                        Lihat semua menu
-                        <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2 font-semibold" />
-                    </Link>
+                    {!isUmkmProducts && (
+                        <Link
+                            href={productsRoute(umkmData.id)}
+                            className="flex gap-1 text-sm md:text-base text-[#99FF33] group transition-all duration-300"
+                        >
+                            Lihat semua menu
+                            <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2 font-semibold" />
+                        </Link>
+                    )}
                 </div>
             </div>
             {products.length === 0 ? (
@@ -44,7 +62,7 @@ export default function MenuSection({
                             className="
                                 bg-[#262626]
                                 rounded-3xl
-                                overflow-hidden w-full
+                                overflow-hidden w-full h-full
                                 border
                                 transition-all
                                 duration-300
@@ -78,7 +96,7 @@ export default function MenuSection({
                                 )}
                             </div>
 
-                            <div className="p-4 my-4 flex flex-col gap-2">
+                            <div className="p-4 my-4 flex flex-1 flex-col gap-2">
                                 <h4 className="text-white text-base md:text-xl font-semibold">
                                     {product.name}
                                 </h4>
@@ -99,6 +117,7 @@ export default function MenuSection({
                                         ).toLocaleString("id-ID")}
                                     </span>
                                     <button
+                                        onClick={(e) => handleAddToCart(e, product)}
                                         className="
                                             w-10 h-10
                                             rounded-full
@@ -110,13 +129,23 @@ export default function MenuSection({
                                             transition-colors duration-300
                                         "
                                     >
-                                        <Plus size={18} />
+                                        <ShoppingCart size={18} />
                                     </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* varoant dialog */}
+            {selectedProduct && (
+                <VariantDialog
+                    product={selectedProduct}
+                    open={isDialogOpen}
+                    onClose={() => setIsDialogOpen(false)}
+                    actionType="add-cart"
+                />
             )}
         </div>
     )

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { MapPin } from 'lucide-react';
+import { MapPin, Navigation, MapPinCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import {
@@ -17,14 +17,31 @@ import {
 
 import type { RouteNode } from '@/pages/umkm/stay-point';
 
-// Lucide MapPin Custom
-const LucidePinIcon = L.divIcon({
+const MangkalPinIcon = L.divIcon({
     className: 'bg-transparent',
     html: renderToString(
         <MapPin size={42} color="maroon" fill="#EA4335" strokeWidth={2} />
     ),
     iconSize: [42, 42],
-    iconAnchor: [21, 42],
+    iconAnchor: [21, 42], 
+});
+
+const KelilingPinIcon = L.divIcon({
+    className: 'bg-transparent',
+    html: renderToString(
+        <Navigation size={42} color="#325E00" fill="#99FF33" strokeWidth={2} />
+    ),
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
+});
+
+const PrevLocationPinIcon = L.divIcon({
+    className: 'bg-transparent',
+    html: renderToString(
+        <MapPinCheck size={42} color="#4a4a4a" fill="#8B8B8B" strokeWidth={2} />
+    ),
+    iconSize: [42, 42],
+    iconAnchor: [21, 42], 
 });
 
 // Icon Rute
@@ -34,7 +51,7 @@ const createRoutePinIcon = (isActive: boolean) => L.divIcon({
         <MapPin 
             size={isActive ? 42 : 38} 
             color={isActive ? "#325E00" : "maroon"} 
-            fill={isActive ? "#96FC30" : "#EA4335"}
+            fill={isActive ? "#99FF33" : "#EA4335"}
             strokeWidth={isActive ? 2 : 1.5} 
         />
     ),
@@ -157,19 +174,29 @@ export default function StayPointMap({
             {!showRouteLayer && (
                 <>
                     {statusLokasi === 'MANGKAL' && (
-                        <Marker position={position} icon={LucidePinIcon}>
+                        <Marker position={position} icon={MangkalPinIcon}>
                             <Popup>Lokasi Mangkal Saat Ini</Popup>
                         </Marker>
                     )}
                     
+                    {statusLokasi === 'KELILING' && (
+                        <Marker position={position} icon={KelilingPinIcon}>
+                            <Popup>Anda Sedang Keliling</Popup>
+                        </Marker>
+                    )}
+
                     {showLastPin && prevPosition && (
-                        <Marker position={prevPosition} icon={LucidePinIcon}>
+                        <Marker position={prevPosition} icon={PrevLocationPinIcon}>
                             <Popup>Lokasi Mangkal Sebelumnya</Popup>
                         </Marker>
                     )}
                     
-                    {statusToko === 'BUKA' && (
-                        <CircleMarker center={position} pathOptions={{ color: '#99FF33', fillColor: '#99FF33', fillOpacity: 0.2 }} radius={30}>
+                    {statusToko === 'BUKA' && statusLokasi !== 'MANGKAL' && statusLokasi !== 'KELILING' && (
+                        <CircleMarker 
+                            center={position} 
+                            pathOptions={{ color: '#99FF33', fillColor: '#99FF33', fillOpacity: 0.2 }} 
+                            radius={30}
+                        >
                             <Popup>Lokasi GPS Anda</Popup>
                         </CircleMarker>
                     )}

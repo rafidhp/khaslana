@@ -2,8 +2,15 @@ import { Head } from '@inertiajs/react';
 
 import WelcomeIndex from '@/components/khaslana/welcome/welcome-index';
 import UserLayout from '@/layouts/user-layout';
+import type { Product } from '@/types/product';
 
-export default function Welcome() {
+interface WelcomeProps {
+    products: Product[];
+}
+
+export default function Welcome({
+    products,
+}: WelcomeProps) {
     return (
         <UserLayout>
             <Head>
@@ -13,7 +20,7 @@ export default function Welcome() {
                     rel="stylesheet"
                 />
             </Head>
-            <WelcomeIndex />
+            <WelcomeIndex products={products} />
         </UserLayout>
     );
 }

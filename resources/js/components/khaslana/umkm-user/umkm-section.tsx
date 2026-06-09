@@ -1,7 +1,7 @@
 import { router } from '@inertiajs/react';
 import {
     ChevronRight,
-    Heart,
+    // Heart,
     MapPin,
     Star,
 } from 'lucide-react';
@@ -21,10 +21,11 @@ export default function UmkmSection({
     const handleCardClicked = (umkm: Umkm) => {
         router.visit(detail(umkm.id));
     }
-    const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>, umkm: Umkm) => {
-        e.stopPropagation();
-        console.log('Favorite', umkm.id);
-    }
+    // TODO: FAVORITE UMKM!!!!
+    // const handleFavorite = (e: React.MouseEvent<HTMLButtonElement>, umkm: Umkm) => {
+    //     e.stopPropagation();
+    //     console.log('Favorite', umkm.id);
+    // }
     const [distances, setDistances] = useState<
         Record<number, string>
     >({});
@@ -165,7 +166,7 @@ export default function UmkmSection({
                         </div>
 
                         {/* favorite */}
-                        <button
+                        {/* <button
                             className="
                                 absolute top-4 right-4 z-10
                                 flex items-center justify-center
@@ -181,7 +182,7 @@ export default function UmkmSection({
                             onClick={(e) => handleFavorite(e, umkm)}
                         >
                             <Heart className="w-4 h-4 lg:w-5 lg:h-5" />
-                        </button>
+                        </button> */}
                     </div>
 
                     {/* content */}

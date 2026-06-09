@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import {
     Truck
@@ -92,6 +92,7 @@ export default function OrderIndex({
                 onSuccess() {
                     setOpeningPayment(false);
                     setSuccessOrder(true);
+                    router.visit(window.location.pathname);
                 },
                 onPending() {
                     setOpeningPayment(false);

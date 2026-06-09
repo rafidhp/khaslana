@@ -32,7 +32,7 @@ export default function Index({
             <HeroSection umkmData={umkmData} reviews={reviews} />
             <PromoSection umkmData={umkmData} />
             <AboutLocation umkmData={umkmData} />
-            <MenuSection products={products} />
+            <MenuSection umkmData={umkmData} products={products} />
             <GallerySection umkmData={umkmData} />
             <ReviewSection umkmData={umkmData} reviews={reviews} />
         </UnusedNavLayout>

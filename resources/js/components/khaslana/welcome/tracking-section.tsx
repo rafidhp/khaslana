@@ -2,6 +2,7 @@ import ArrowKananAtasHover from '@/assets/images/landing-page/tracking-section/a
 import ArrowKananAtas from '@/assets/images/landing-page/tracking-section/arrow-kanan-atas.png';
 import BilungNaruto from '@/assets/images/landing-page/tracking-section/bilung-naruto.png';
 import Map from '@/assets/images/landing-page/tracking-section/map.png';
+import { tracking } from '@/routes/umkm';
 
 export default function TrackkingSection() {
     return (
@@ -22,7 +23,7 @@ export default function TrackkingSection() {
                         aplikasi — kapan saja, di mana saja.
                     </p>
                     <a
-                        href="#"
+                        href={tracking().url}
                         className="btn-secondary-khaslana flex items-center gap-2 w-full md:w-fit py-4 px-24 text-sm group"
                     >
                         Selengkapnya

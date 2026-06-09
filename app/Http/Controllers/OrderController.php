@@ -213,11 +213,6 @@ class OrderController extends Controller
         try {
             Config::$serverKey = config('services.midtrans.server_key');
             Config::$isProduction = config('services.midtrans.is_production');
-
-            return response()->json([
-                'payload' => $request->all(),
-                'method' => $request->method(),
-            ]);
     
             try {
                 $notification = new Notification();
@@ -226,9 +221,7 @@ class OrderController extends Controller
                     'message' => $e->getMessage(),
                 ]);
     
-                return response()->json([
-                    'payload' => $request->all(),
-                ]);
+                dd('test');
             }
     
             $orderId = $notification->order_id;
@@ -236,6 +229,11 @@ class OrderController extends Controller
             $paymentType = $notification->payment_type;
             $fraudStatus = $notification->fraud_status;
             $grossAmount = $notification->gross_amount;
+
+            return response()->json([
+                'payload' => $request->all(),
+                'method' => $request->method(),
+            ]);
     
             $order = Order::where('invoice_number', $orderId)->first();
             $payment = Payment::where('midtrans_order_id', $orderId)->first();

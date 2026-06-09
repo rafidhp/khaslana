@@ -210,13 +210,14 @@ class OrderController extends Controller
     }
 
     public function callback(Request $request) {
-        return response()->json([
-            'payload' => $request->all(),
-            'method' => $request->method(),
-        ]);
         try {
             Config::$serverKey = config('services.midtrans.server_key');
             Config::$isProduction = config('services.midtrans.is_production');
+
+            return response()->json([
+                'payload' => $request->all(),
+                'method' => $request->method(),
+            ]);
     
             try {
                 $notification = new Notification();
@@ -225,7 +226,9 @@ class OrderController extends Controller
                     'message' => $e->getMessage(),
                 ]);
     
-                throw $e;
+                return response()->json([
+                    'payload' => $request->all(),
+                ]);
             }
     
             $orderId = $notification->order_id;

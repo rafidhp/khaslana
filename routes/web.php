@@ -44,6 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/product', 'index')->name('product');
         Route::get('/product/create', 'create')->name('product.create');
         Route::post('/product/store', 'store')->name('product.store');
+        Route::get('/product/edit/{product}', 'edit')->name('product.edit');
+        Route::put('/product/update/{product_id}', 'update')->name('product.update');
         Route::delete('/product/destroy/{product_id}', 'destroy')->name('product.destroy');
     });
 

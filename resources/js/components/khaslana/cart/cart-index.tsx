@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import { ShoppingCart } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { CartGroup } from '@/components/khaslana/cart/cart-group';
 import { CartSummary } from '@/components/khaslana/cart/cart-summary';
 import type { Cart, CartItem, SelectedCartItemsMap } from '@/types/cart';
@@ -15,6 +15,24 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
     const [selectedItemsMap, setSelectedItemsMap] = useState<SelectedCartItemsMap>({});
     const [editModeMap, setEditModeMap] = useState<Record<number, boolean>>({});
     const [isCheckoutLoading, setIsCheckoutLoading] = useState<boolean>(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isAtBottom, setIsAtBottom] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            if (rect.bottom <= window.innerHeight) {
+                setIsAtBottom(true);
+            } else {
+                setIsAtBottom(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     
     // Grouping Cart-Item
@@ -145,7 +163,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
 
     // Active State Layout
     return (
-        <div className="mb-12 min-h-screen flex flex-col">
+        <div ref={containerRef} className="min-h-screen relative pb-32 flex flex-col">
             
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
@@ -161,7 +179,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
             </div>
 
             {/* LOOPING Group UMKM */}
-            <div className="space-y-5">
+            <div className="space-y-5 px-6 flex-1">
             {groupedMerchantItems.map((group) => (
                 <CartGroup
                     key={group.umkmId}
@@ -189,6 +207,7 @@ export const CartIndex: React.FC<CartIndexProps> = ({ cart }) => {
                 selectedItems={selectedItemsArray}
                 onCheckout={handleCheckoutExecute}
                 isLoading={isCheckoutLoading}
+                isAbsolute={isAtBottom}
             />
 
         </div>

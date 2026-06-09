@@ -6,13 +6,14 @@ interface CartSummaryProps {
     selectedItems: CartItemType[];
     onCheckout: () => void;
     isLoading: boolean;
-    
+    isAbsolute?: boolean;
 }
 
 export const CartSummary: React.FC<CartSummaryProps> = ({
     selectedItems,
     onCheckout,
     isLoading,
+    isAbsolute = false,
 }) => {
     // Total item terpilih
     const selectedCount = selectedItems.length;
@@ -42,8 +43,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1E1B26] border-t border-[#2E2A39]">
-
+        <div className={`z-50 w-full bg-[#1E1B26] border-t border-[#2E2A39] ${isAbsolute ? 'absolute bottom-6' : 'fixed bottom-0 left-0 right-0'}`}>
             {/* Disable */}
             {isMultipleMerchantSelected && (
                 <div className="bg-[#2a1a1a] border-b border-[#4d1f1f] px-6 py-2.5 flex items-center gap-2.5">

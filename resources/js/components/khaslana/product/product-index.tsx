@@ -2,7 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { Eye, Pencil, Trash2, PackageOpen } from 'lucide-react';
 
 import DeleteDialog from '@/components/khaslana/product/delete-dialog';
-import { create, destroy } from '@/routes/product';
+import { create, destroy, edit } from '@/routes/product';
 import type { PaginatedProducts } from "@/types/paginated-product";
 
 interface ProductIndexProps {
@@ -111,7 +111,7 @@ export default function ProductIndex({
                                                 <Eye size={16} className='group-hover:text-[#99FF33]' />
                                             </Link>
                                             <Link
-                                                href={`/products/${product.id}/edit`}
+                                                href={edit(product.id).url}
                                                 className="p-2 rounded-md group hover:bg-[#99FF33]/20 transition-colors duration-200"
                                             >
                                                 <Pencil size={16} className='group-hover:text-[#99FF33]' />

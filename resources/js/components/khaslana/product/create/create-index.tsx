@@ -17,25 +17,41 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from "@/components/ui/textarea";
-import { store } from "@/routes/product";
+import { showErrorToast } from "@/lib/toast";
+import { store, update } from "@/routes/product";
+import { Product } from "@/types/product";
 
 interface CreateIndexProps {
     categories: {
         id: number;
         name: string;
     }[];
+    product?: Product;
 }
 
 export default function CreateIndex({
     categories,
+    product,
 }: CreateIndexProps) {
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<
+        (
+            | File
+            | {
+                  id: number;
+                  image: string;
+              }
+        )[]
+    >(product?.product_images ?? []);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const form = useForm({
-        category_id: "",
-        name: "",
-        description: "",
+        category_id: product?.category_id ? String(product.category_id) : '',
+        name: product?.name ?? '',
+        description: product?.description ?? '',
         images: [] as File[],
+        existing_images:
+            product?.product_images?.map(
+                image => image.id
+            ) ?? [],
         attributes: [] as {
             name: string;
             values: string[];
@@ -49,22 +65,77 @@ export default function CreateIndex({
             stock: number;
         }[],
     });
-    const [attributes, setAttributes] = useState([
-        {
-            name: "",
-            values: [""],
-        },
-    ]);
-    const [variantData, setVariantData] =
-        useState<
-            Record<
-                string,
+    const initialAttributes = (() => {
+        if (!product) {
+            return [
                 {
-                    price: string;
-                    stock: string;
-                }
-            >
-        >({});
+                    name: '',
+                    values: [''],
+                },
+            ];
+        }
+        const attributeMap = new Map<string, Set<string>>();
+
+        product.product_variants?.forEach(
+            (variant) => {
+                variant.attribute_values?.forEach(
+                    (attributeValue) => {
+                        const attributeName = attributeValue.attribute?.name;
+
+                        if (!attributeName) return;
+
+                        if (
+                            !attributeMap.has(attributeName)
+                        ) {
+                            attributeMap.set(attributeName, new Set());
+                        }
+
+                        attributeMap
+                            .get(attributeName)
+                            ?.add(attributeValue.value);
+                    }
+                );
+            }
+        );
+
+        return Array.from(
+            attributeMap.entries()
+        ).map(([name, values]) => ({
+            name,
+            values: [
+                ...Array.from(values),
+                '',
+            ],
+        }));
+    })();
+    const [attributes, setAttributes] = useState(initialAttributes);
+
+    const initialVariantData = (() => {
+        if (!product) return {};
+
+        const variantState: Record<
+            string,
+            {
+                price: string;
+                stock: string;
+            }
+        > = {};
+
+        product.product_variants?.forEach(
+            (variant) => {
+                const key = variant.attribute_values
+                    ?.map((value) => `${value.attribute?.name}:${value.value}`)
+                    .join('|') ?? '';
+
+                variantState[key] = {
+                    price: String(variant.price),
+                    stock: String(variant.stock),
+                };
+            }
+        );
+        return variantState;
+    })();
+    const [variantData, setVariantData] = useState(initialVariantData);
 
     const addAttribute = () => {
         setAttributes((prev) => [
@@ -133,19 +204,16 @@ export default function CreateIndex({
     const generateVariantCombinations = () => {
         const validAttributes = attributes
             .filter(
-                (attribute) =>
-                    attribute.name.trim() !== ""
+                (attribute) => attribute.name.trim() !== ""
             )
             .map((attribute) => ({
                 name: attribute.name,
                 values: attribute.values.filter(
-                    (value) =>
-                        value.trim() !== ""
+                    (value) => value.trim() !== ""
                 ),
             }))
             .filter(
-                (attribute) =>
-                    attribute.values.length > 0
+                (attribute) => attribute.values.length > 0
             );
 
         if (
@@ -157,9 +225,7 @@ export default function CreateIndex({
         let combinations = validAttributes[0].values.map(
             (value) => [
                 {
-                    attribute:
-                        validAttributes[0]
-                            .name,
+                    attribute:validAttributes[0].name,
                     value,
                 },
             ]
@@ -233,9 +299,18 @@ export default function CreateIndex({
         );
         if (!files.length) return;
 
-        const validFiles = files.filter(
-            (file) => file.size <= 10 * 1024 * 1024
+        const oversizedFiles = files.filter(
+            (file) => file.size > 1 * 1024 * 1024
         );
+
+        if (oversizedFiles.length > 0) {
+            showErrorToast(`${oversizedFiles[0].name} melebihi batas 1 MB`);
+        }
+
+        const validFiles = files.filter(
+            (file) => file.size <= 1 * 1024 * 1024
+        );
+        if (!validFiles.length) return;
         setImages((prev) => [
             ...prev,
             ...validFiles,
@@ -250,12 +325,24 @@ export default function CreateIndex({
     };
 
     const removeImage = (index: number) => {
+        const removedImage = images[index];
         const updatedImages = images.filter((_, i) => i !== index);
         setImages(updatedImages);
         form.setData(
             "images",
-            updatedImages
+            updatedImages.filter(
+                (image): image is File => image instanceof File
+            )
         );
+
+        if (!(removedImage instanceof File)) {
+            form.setData(
+                "existing_images",
+                form.data.existing_images.filter(
+                    id => id !== removedImage.id
+                )
+            );
+        }
     };
 
     const formatRupiah = (value: string) => {
@@ -299,10 +386,23 @@ export default function CreateIndex({
             variants: formattedVariants,
         }));
 
-        form.post(store().url, {
-            forceFormData: true,
-            preserveScroll: true,
-        });
+        const submitUrl = product? update(product.id).url : store().url;
+
+        if (product) {
+            form.put(submitUrl,
+                {
+                    forceFormData: true,
+                    preserveScroll: true,
+                }
+            );
+        } else {
+            form.post(submitUrl,
+                {
+                    forceFormData: true,
+                    preserveScroll: true,
+                }
+            );
+        }
     };
     
     return (
@@ -311,7 +411,10 @@ export default function CreateIndex({
                 <CardContent className="space-y-2">
                     <div>
                         <h2 className="text-lg font-semibold text-[#99FF33]">
-                            Tambah Produk
+                            {product
+                                ? "Edit Produk"
+                                : "Tambah Produk"
+                            }
                         </h2>
                         <p className="text-sm text-muted-foreground">
                             Kelola produk yang akan dijual
@@ -373,6 +476,7 @@ export default function CreateIndex({
                             Kategori <span className="text-red-400"> *</span>
                         </Label>
                         <Select
+                            value={form.data.category_id}
                             onValueChange={(value) =>
                                 form.setData("category_id", value)
                             }
@@ -449,7 +553,7 @@ export default function CreateIndex({
                                         Klik untuk upload foto
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        PNG, JPG, JPEG • Maks 10MB
+                                        PNG, JPG, JPEG • Maks 1MB per foto
                                     </p>
                                 </div>
                             </div>
@@ -478,8 +582,11 @@ export default function CreateIndex({
                                         "
                                     >
                                         <img
-                                            src={URL.createObjectURL(image)}
-                                            alt={image.name}
+                                            src={image instanceof File
+                                                    ? URL.createObjectURL(image)
+                                                    : `/storage/${image.image}`
+                                                }
+                                            alt={image instanceof File ? image.name : "product-image"}
                                             className="h-40 w-full object-cover" />
 
                                         <button
@@ -748,7 +855,10 @@ export default function CreateIndex({
                             cursor-pointer
                         "
                     >
-                        {form.processing ? "Menyimpan..." : "Simpan Produk"}
+                        {form.processing
+                            ? "Menyimpan..." : product
+                            ? "Update Produk" : "Simpan Produk"
+                        }
                     </Button>
                 </CardContent>
             </Card>

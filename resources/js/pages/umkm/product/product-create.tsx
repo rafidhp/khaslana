@@ -5,7 +5,7 @@ import CtaCard from '@/components/khaslana/dashboard/cta-card';
 import CreateIndex from '@/components/khaslana/product/create/create-index';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
-import { product } from '@/routes';
+import { product as productRoute } from '@/routes';
 import { create } from '@/routes/product';
 import type { BreadcrumbItem } from '@/types';
 import type { Product } from '@/types/product';
@@ -13,7 +13,7 @@ import type { Product } from '@/types/product';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Product',
-        href: product().url,
+        href: productRoute().url,
     },
     {
         title: 'Create',
@@ -27,10 +27,12 @@ interface CreateProductProps {
         id: number;
         name: string;
     }[];
+    product?: Product;
 }
 
 export default function CreateProduct({
     categories,
+    product,
 }: CreateProductProps) {
     const { user } = useAuth();
 
@@ -44,7 +46,7 @@ export default function CreateProduct({
                     {/* header */}
                     <div className="flex flex-col align-items-center gap-3">
                         <Link
-                            href={product()}
+                            href={productRoute()}
                             className='flex items-center gap-1 group w-fit'
                         >
                             <ChevronLeft className='h-5 w-5 text-[#99FF33] group-hover:text-white transition-colors duration-200' />
@@ -56,7 +58,10 @@ export default function CreateProduct({
                     </div>
         
                     {/* content */}
-                    <CreateIndex categories={categories} />
+                    <CreateIndex
+                        categories={categories}
+                        product={product}
+                    />
                 </>
             )}
         </AppLayout>

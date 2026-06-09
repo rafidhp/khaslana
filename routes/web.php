@@ -142,7 +142,7 @@ Route::controller(ChatbotController::class)->group(function () {
 });
 
 // midtrans callback, https needs, use ngrok if local dev
-Route::match(['GET', 'POST'], '/midtrans/callback', [OrderController::class, 'callback']);
+Route::post('/midtrans/callback', [OrderController::class, 'callback']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/api.php';

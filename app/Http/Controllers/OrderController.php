@@ -210,8 +210,6 @@ class OrderController extends Controller
     }
 
     public function callback(Request $request) {
-        Log::info('MIDTRANS CALLBACK', $request->all());
-
         try {
             Config::$serverKey = config('services.midtrans.server_key');
             Config::$isProduction = config('services.midtrans.is_production');

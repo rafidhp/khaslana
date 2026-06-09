@@ -91,7 +91,7 @@ export default function Dashboard({
     const { user } = useAuth();
     const handleToggleStore = () => {
         router.post(storeStatusRoute(), {
-            status: true,
+            status: status === 'TUTUP' ? true : false,
         }, {
             preserveScroll: true,
             onSuccess: () => {

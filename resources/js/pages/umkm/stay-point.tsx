@@ -57,9 +57,9 @@ export default function StayPoint({
     
     const { user } = useAuth();
 
-    const handleToggleStoreStatus = () => {
+    const handleToggleStoreStatus = (newStatus: boolean) => {
         router.post(storeStatusRoute(), {
-            status: true,
+            status: newStatus,
         }, {
             preserveScroll: true,
             onSuccess: () => {
@@ -95,7 +95,7 @@ export default function StayPoint({
                 setPosition([pos.coords.latitude, pos.coords.longitude]);
                 setPrevPosition(null);
                 setPrevAddress('');
-                handleToggleStoreStatus();
+                handleToggleStoreStatus(true);
                 setIsLoading(false);
             },
             (err) => {
@@ -220,7 +220,7 @@ export default function StayPoint({
             statusToko: 'TUTUP',
             statusLokasi: 'TUTUP',
         }).then(() => {
-            handleToggleStoreStatus();
+            handleToggleStoreStatus(false);
             setPosition(null);
             setAddress('-');
             setPrevPosition(null);
@@ -284,6 +284,27 @@ export default function StayPoint({
 
         checkInitialStatus();
     }, []);
+
+    useEffect(() => {
+        if (statusToko === 'BUKA' && !position) {
+            setIsLoading(true);
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    setPosition([lat, lng]);
+                    fetchAddress(lat, lng);
+                    setIsLoading(false);
+                },
+                (err) => {
+                    console.error('Gagal auto-fetch GPS', err);
+                    showErrorToast('Izinkan akses lokasi GPS Anda!');
+                    setIsLoading(false);
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    }, [statusToko, position]);
 
     // 3. RENDER UI
     return (

@@ -178,7 +178,7 @@ class DashboardController extends Controller
 
         $order->update($updateData);
 
-        return back()->with('success', 'Status order berhasil diubah!');
+        return redirect()->back()->with('success', 'Status order berhasil diubah!');
     }
 
     public function showOrder(Order $order) {

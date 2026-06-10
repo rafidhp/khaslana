@@ -9,6 +9,7 @@ export interface Product {
     name: string;
     description: string;
     is_archived: boolean;
+    sold_count: number;
     created_at: string;
     updated_at: string;
 

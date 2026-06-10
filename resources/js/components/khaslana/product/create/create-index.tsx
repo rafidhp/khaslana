@@ -33,6 +33,8 @@ export default function CreateIndex({
     categories,
     product,
 }: CreateIndexProps) {
+    const [isAttributeValueDuplicate, setIsAttributeValueDuplicate] = useState(false)
+    const [isAttributeNameDuplicate, setIsAttributeNameDuplicate] = useState(false)
     const [images, setImages] = useState<
         (
             | File
@@ -158,12 +160,29 @@ export default function CreateIndex({
     };
 
     const updateAttributeName = (
-        index: number,
-        value: string
+        valueIndex: number,
+        value: string,
     ) => {
+        const targetAttribute = attributes[valueIndex]
+
+        const isDuplicate = targetAttribute.values.some((attribute, index) => {
+            return (
+                value.trim().toLowerCase() !== "" && 
+                attribute.toLowerCase().trim() === value.toLowerCase().trim() &&
+                valueIndex !== index
+            )
+        })
+
+        if (isDuplicate) {
+            showErrorToast(`Nilai ${value} sudah digunakan, coba nama lain`)
+            setIsAttributeNameDuplicate(true);
+        } else {
+            setIsAttributeNameDuplicate(false);
+        }
+
         setAttributes((prev) =>
             prev.map((attr, i) =>
-                i === index
+                i === valueIndex
                     ? {
                         ...attr,
                         name: value,
@@ -178,6 +197,23 @@ export default function CreateIndex({
         valueIndex: number,
         value: string
     ) => {
+        const targetAttribute = attributes[attributeIndex]
+        
+        const isDuplicate = targetAttribute.values.some((attribute, index) => {
+            return (
+                value.trim().toLowerCase() !== "" && 
+                attribute.toLowerCase().trim() === value.toLowerCase().trim() &&
+                index !== valueIndex
+            )
+        })
+
+        if (isDuplicate) {
+            showErrorToast(`Nilai ${value} sudah digunakan, coba nama lain`)
+            setIsAttributeValueDuplicate(true);
+        } else {
+            setIsAttributeValueDuplicate(false);
+        }
+        
         setAttributes((prev) =>
             prev.map((attr, i) => {
                 if (i !== attributeIndex) return attr;
@@ -378,6 +414,8 @@ export default function CreateIndex({
 
         console.log(form.data);
         console.log(form.errors);
+        console.log(formattedAttributes);
+        console.log(formattedVariants);
         form.transform(data => ({
             ...data,
             attributes: formattedAttributes,
@@ -519,7 +557,7 @@ export default function CreateIndex({
                             </p>
                         )}
                     </div>
-                   <div className="space-y-3">
+                   <div className="space-y-3 flex flex-col mt-5">
                         <Label>
                             Foto Produk <span className="text-red-400"> *</span>
                         </Label>
@@ -662,7 +700,8 @@ export default function CreateIndex({
                                             onChange={(e) =>
                                                 updateAttributeName(
                                                     attributeIndex,
-                                                    e.target.value
+                                                    e.target.value,
+                                                    
                                                 )
                                             }
                                             placeholder="Contoh: Warna"
@@ -692,7 +731,6 @@ export default function CreateIndex({
                                             (value, valueIndex) => (
                                                 <div key={valueIndex} className="flex flex-col gap-1">
                                                     <Input
-                                                        key={valueIndex}
                                                         value={value}
                                                         onChange={(e) =>
                                                             updateAttributeValue(attributeIndex, valueIndex, e.target.value)
@@ -713,6 +751,7 @@ export default function CreateIndex({
                                                                 1
                                                         }
                                                     />
+
                                                     {form.errors[
                                                         `attributes.${attributeIndex}.values.${valueIndex}`
                                                     ] && (
@@ -841,8 +880,8 @@ export default function CreateIndex({
                     </div>
                     <Button
                         onClick={handleSubmit}
-                        disabled={form.processing}
-                        className="
+                        disabled={form.processing || isAttributeValueDuplicate || isAttributeNameDuplicate}
+                        className={`
                             mt-4
                             bg-[#99FF33]
                             border border-[#99FF33]
@@ -851,7 +890,7 @@ export default function CreateIndex({
                             hover:text-[#99FF33]
                             transition-colors duration-200
                             cursor-pointer
-                        "
+                        `}
                     >
                         {form.processing
                             ? "Menyimpan..." : product

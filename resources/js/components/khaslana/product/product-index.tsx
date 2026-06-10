@@ -47,6 +47,9 @@ export default function ProductIndex({
                             <th className="p-4 text-left">
                                 Kategori
                             </th>
+                            <th className="p-4 text-lef">
+                                Stok
+                            </th>
                             <th className="p-4 text-center">
                                 Aksi
                             </th>
@@ -101,7 +104,9 @@ export default function ProductIndex({
                                     <td className="p-4 text-sm md:text-base">
                                         {product.category?.name}
                                     </td>
-
+                                    <td className="p-4 text-sm md:text-base item-center justify-center flex translate-y-5">
+                                        {product.product_variants?.[0].stock}
+                                    </td>
                                     <td className="p-4">
                                         <div className="flex justify-center gap-2">
                                             <Link
@@ -121,9 +126,15 @@ export default function ProductIndex({
                                                 onDelete={() => handleDelete(product.id)}
                                             >
                                                 <button
+                                                    disabled={product.sold_count != 0}
                                                     type="button"
-                                                    className="p-2 rounded-md hover:bg-red-500/20 cursor-pointer transition-colors duration-200">
-                                                    <Trash2 size={16} className="text-red-500" />
+                                                    className="p-2 rounded-md hover:bg-red-500/20 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed transition-colors duration-200"
+                                                >
+                                                    {product.sold_count != 0 ? (
+                                                        <Trash2 size={16} className="text-red-500/20" />
+                                                    ) : (
+                                                        <Trash2 size={16} className="text-red-500" />
+                                                    )}
                                                 </button>
                                             </DeleteDialog>
                                         </div>

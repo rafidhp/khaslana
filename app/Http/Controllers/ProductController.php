@@ -37,6 +37,7 @@ class ProductController extends Controller
                 'umkm',
                 'umkm.city',
             ])
+            ->withSum('orderItems as sold_count', 'quantity')
             ->latest()
             ->paginate(20);
             $categories = Category::all();
@@ -119,6 +120,7 @@ class ProductController extends Controller
 
             foreach ($validated['attributes'] as $attributeData) {
                 $attribute = Attribute::create([
+                    'product_id' => $product->id,
                     'name' => trim($attributeData['name']),
                 ]);
 
@@ -237,13 +239,13 @@ class ProductController extends Controller
             }
 
             $variantIds = ProductVariant::where('product_id', $product->id)->pluck('id');
+
+            $attributeValueIds = VariantAttribute::whereIn('variant_id', $variantIds)->pluck('attribute_value_id');
+
+            $attributeIds = AttributeValue::whereIn('id', $attributeValueIds)->pluck('attribute_id');
+
             VariantAttribute::whereIn('variant_id', $variantIds)->delete();
             ProductVariant::where('product_id', $product->id)->delete();
-
-            $attributeIds = AttributeValue::whereIn('id',
-                VariantAttribute::query()->pluck('attribute_value_id')
-            )
-            ->pluck('attribute_id');
 
             AttributeValue::whereIn('attribute_id', $attributeIds)->delete();
             Attribute::whereIn('id', $attributeIds)->delete();
@@ -281,6 +283,7 @@ class ProductController extends Controller
                 as $attributeData
             ) {
                 $attribute = Attribute::create([
+                    'product_id' => $product->id,
                     'name' => trim($attributeData['name']),
                 ]);
 

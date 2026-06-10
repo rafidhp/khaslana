@@ -50,8 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/product/store', 'store')->name('product.store');
         Route::get('/product/show/{product}', 'show')->name('product.show');
         Route::get('/product/edit/{product}', 'edit')->name('product.edit');
-        Route::put('/product/update/{product_id}', 'update')->name('product.update');
-        Route::delete('/product/destroy/{product_id}', 'destroy')->name('product.destroy');
+        Route::put('/product/update/{product}', 'update')->name('product.update');
+        Route::delete('/product/destroy/{product}', 'destroy')->name('product.destroy');
     });
 
     // tracking routes

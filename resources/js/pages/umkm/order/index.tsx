@@ -1,11 +1,9 @@
-import { Head, usePage } from '@inertiajs/react';
-import { useEffect, useRef } from 'react';
+import { Head } from '@inertiajs/react';
 
 import CtaCard from '@/components/khaslana/dashboard/cta-card';
 import OrderIndex from '@/components/khaslana/dashboard/order/order-index';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
-import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import { order } from '@/routes/dashboard';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginatedOrders } from '@/types/paginated-order';
@@ -25,34 +23,6 @@ export default function Order({
     orders,
 }: OrderProps) {
     const { user } = useAuth();
-    const { props } = usePage<{
-        flash: {
-            success?: string;
-            error?: string;
-        };
-    }>();
-    const hasShownToast = useRef(false);
-
-    useEffect(() => {
-        if (hasShownToast.current) return;
-
-        if (props.flash?.success) {
-            hasShownToast.current = true;
-
-            showSuccessToast(
-                'Berhasil',
-                props.flash.success,
-            );
-        }
-        if (props.flash?.error) {
-            hasShownToast.current = true;
-
-            showErrorToast(
-                'Gagal',
-                props.flash.error,
-            );
-        }
-    }, [props.flash]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

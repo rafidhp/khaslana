@@ -1,16 +1,12 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { useEffect, useRef } from 'react';
 import { Eye, PackageOpen } from 'lucide-react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { create } from '@/routes/product';
 import type { PaginatedOrders } from "@/types/paginated-order";
+import type { Order } from '@/types/order';
 
 interface OrderIndexProps {
     orders: PaginatedOrders;
@@ -19,6 +15,14 @@ interface OrderIndexProps {
 export default function OrderIndex({
     orders,
 }: OrderIndexProps) {
+    const { props } = usePage<{
+        flash: {
+            success?: string;
+            error?: string;
+        };
+    }>();
+    const hasShownToast = useRef(false);
+
     const formatRupiah = (value: number) =>
         new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -26,19 +30,45 @@ export default function OrderIndex({
             maximumFractionDigits: 0,
         }).format(value);
 
+    const getNextStatus = (order: Order) => {
+        switch (order.status) {
+            case 'DIBAYAR': return 'DALAM PROSES';
+            case 'DALAM PROSES': return order.type === 'DIANTAR' ? 'DIKIRIM' : 'SIAP DIAMBIL';
+            case 'DIKIRIM': return 'SELESAI';
+            case 'SIAP DIAMBIL': return 'SELESAI';
+
+            default: return null;
+        }
+    };
+
     const handleStatusChange = (orderId: number, newStatus: string) => {
         router.patch(`/dashboard/order/change-status/${orderId}`, {
             status: newStatus
         }, {
             preserveScroll: true,
-            onSuccess: () => {
-                showSuccessToast('Status order berhasil diubah!')
-            },
-            onError: () => {
-                showErrorToast('Terjadi kesalahan, mohon coba lagi.')
-            }
         });
     };
+
+    useEffect(() => {
+        if (hasShownToast.current) return;
+
+        if (props.flash?.success) {
+            hasShownToast.current = true;
+
+            showSuccessToast(
+                'Berhasil',
+                props.flash.success,
+            );
+        }
+        if (props.flash?.error) {
+            hasShownToast.current = true;
+
+            showErrorToast(
+                'Gagal',
+                props.flash.error,
+            );
+        }
+    }, [props.flash]);
 
     return (
         <div className="rounded-xl border border-[#99FF33]/50 bg-[#1E1B26] overflow-hidden mt-4">
@@ -61,8 +91,11 @@ export default function OrderIndex({
                             <th className="p-4 text-left">
                                 Total Harga
                             </th>
-                            <th className="p-4 text-left">
-                                Status
+                            <th className="p-4 text-lef">
+                                Status saat ini
+                            </th>
+                            <th className="p-4 text-lef">
+                                Ubah status menjadi
                             </th>
                             <th className="p-4 text-center">
                                 Aksi
@@ -106,40 +139,53 @@ export default function OrderIndex({
                                     <td className="p-4 text-xs md:text-sm text-muted-foreground max-w-xs">
                                         {formatRupiah(order.total_price)}
                                     </td>
-                                    <td className="p-4 text-sm md:text-base">
-                                        <div onClick={(e) => e.stopPropagation()}> 
-                                            <Select
-                                                value={order.status}
-                                                onValueChange={(value) => handleStatusChange(order.id, value)}
-                                                disabled={['SELESAI', 'DIBATALKAN'].includes(order.status)}
+                                    <td className="py-4 text-sm md:text-base">
+                                        <div className="flex justify-center">
+                                            <Badge
+                                                className={`uppercase ${
+                                                    order.status === 'SELESAI'
+                                                        ? 'bg-[#99FF33] text-black'
+                                                        : order.status === 'DIBATALKAN'
+                                                        ? 'bg-red-500 text-white'
+                                                        : 'bg-yellow-500 text-black'
+                                                }`}
                                             >
-                                                <SelectTrigger 
-                                                    className={`w-45 bg-[#131313] rounded-[999px] text-xs font-semibold uppercase tracking-wide transition-all flex justify-betweem text-start px-4 py-5 duration-200 focus:ring-0 focus:ring-offset-0 ${
-                                                        order.status === 'TERTUNDA' || order.status === 'MENUNGGU PEMBAYARAN' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                                        order.status === 'DIBAYAR' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                                        order.status === 'DIKIRIM' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                                        order.status === 'SIAP DIAMBIL' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' : 
-                                                        order.status === 'SELESAI' ? 'border-[#99FF33]/80 text-[#99FF33] focus:border-[#99FF33]' :
-                                                        'border-red-500/50 text-red-400 focus:border-red-500'
-                                                    }`}
-                                                >
-                                                    <SelectValue placeholder="Pilih Status" />
-                                                </SelectTrigger>
-                                                
-                                                <SelectContent className="bg-[#1E1B26] border-white/10 text-xs font-bold uppercase">
-                                                    <SelectItem value="TERTUNDA" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">TERTUNDA</SelectItem>
-                                                    <SelectItem value="MENUNGGU PEMBAYARAN" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">MENUNGGU PEMBAYARAN</SelectItem>
-                                                    <SelectItem value="DIBAYAR" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">DIBAYAR</SelectItem>
-                                                    <SelectItem value="DALAM PROSES" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DALAM PROSES</SelectItem>
-                                                    {order.type == 'DIANTAR' && (
-                                                        <SelectItem value="DIKIRIM" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DIKIRIM</SelectItem>
-                                                    )}
-                                                    {order.type == 'DIAMBIL' && (
-                                                        <SelectItem value="SIAP DIAMBIL" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">SIAP DIAMBIL</SelectItem>
-                                                    )}
-                                                    <SelectItem value="SELESAI" className="text-[#99FF33] focus:bg-white/5 focus:text-[#99FF33] cursor-pointer hidden">SELESAI</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                                {order.status}
+                                            </Badge>
+                                        </div>
+                                    </td>
+                                    <td className="p-4 text-sm md:text-base">
+                                        <div className='flex justify-center' onClick={(e) => e.stopPropagation()}> 
+                                            {(() => {
+                                                const nextStatus = getNextStatus(order);
+
+                                                if (!nextStatus) {
+                                                    return (
+                                                        <span className="text-xs text-muted-foreground">
+                                                            -
+                                                        </span>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <Button
+                                                        size="sm"
+                                                        className="
+                                                            bg-[#99FF33]
+                                                            border border-[#99FF33]
+                                                            hover:bg-[#1E1B26]
+                                                            hover:text-[#99FF33]
+                                                            transition-colors duration-200
+                                                            hover:cursor-pointer
+                                                        "
+                                                        onClick={() =>
+                                                            handleStatusChange(order.id, nextStatus)
+                                                        }
+                                                    >
+                                                        {nextStatus}
+                                                    </Button>
+                                                );
+                                            })()}
                                         </div>
                                     </td>
 

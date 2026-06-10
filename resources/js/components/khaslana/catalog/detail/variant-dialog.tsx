@@ -391,9 +391,24 @@ export default function VariantDialog({
                             >
                                 <Minus size={18} />
                             </button>
-                            <span className="w-14 text-center text-white font-semibold">
-                                {quantity}
-                            </span>
+                            <input value={quantity}
+                                    onChange={(e) => {
+                                        const value = parseInt(e.target.value)
+
+                                        if (isNaN(value)) {
+                                            setQuantity(0)
+                                            return;
+                                        }
+
+                                        if (value >= 1 && value <= stock) {
+                                            setQuantity(value)
+                                        } else if (value > stock) {
+                                            setQuantity(stock)
+                                        }
+                                    }}
+                                    className="w-14 text-center text-white font-semibold">
+                                
+                            </input>
                             <button
                                 onClick={() =>
                                     setQuantity((prev) => Math.min(stock, prev + 1))

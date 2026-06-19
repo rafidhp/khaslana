@@ -17,6 +17,9 @@ export default function Register() {
         'name' | 'username' | null
     >('name');
 
+    const [passwordValue, setPasswordValue] = React.useState('');
+    const [fePasswordErrors, setFePasswordErrors] = React.useState<string[]>([]);
+
     const handleGoogleRegis = () => {
         window.location.href = googleAuth().url;
     }
@@ -149,6 +152,10 @@ export default function Register() {
                                             placeholder="Password"
                                             tabIndex={4}
                                             className="flex-1 bg-transparent outline-none text-white text-[16px] placeholder:text-[#A3A3A3]"
+                                            onKeyUp={(e) => {
+                                                setPasswordValue(e.currentTarget.value);
+                                                setFePasswordErrors([]);
+                                            }}
                                         />
                                         <button
                                             type="button"
@@ -158,7 +165,14 @@ export default function Register() {
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                         </button>
                                     </div>
-                                    <InputError message={errors.password} />
+                                    {/* TAMPILKAN ERROR FE SATU BARIS */}
+                                    {fePasswordErrors.length > 0 ? (
+                                        <p className="text-[#ef4444] text-[13px] mt-1 px-3">
+                                            {fePasswordErrors.join(', ')}
+                                        </p>
+                                    ) : (
+                                        <InputError message={errors.password} />
+                                    )}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <div className="flex items-center gap-3 bg-[#322F39] border border-[#3A3845] rounded-full px-5 py-3 focus-within:border-[#99FF33] transition">
@@ -201,6 +215,23 @@ export default function Register() {
                                     type="submit"
                                     disabled={processing}
                                     tabIndex={7}
+                                    onClick={(e) => {
+                                        const reqs = [
+                                            { label: 'Password minimal 8 karakter', isValid: passwordValue.length >= 8 },
+                                            { label: 'Perlu Kombinasi huruf besar & kecil', isValid: /[a-z]/.test(passwordValue) && /[A-Z]/.test(passwordValue) },
+                                            { label: 'Password minimal terdiri dari 1 angka', isValid: /\d/.test(passwordValue) },
+                                            { label: 'Password minimal terdiri dari 1 simbol', isValid: /[^A-Za-z0-9]/.test(passwordValue) },
+                                        ];
+
+                                        const failedLabels = reqs.filter(r => !r.isValid).map(r => r.label);
+
+                                        if (failedLabels.length > 0) {
+                                            e.preventDefault(); // Cegah form dikirim ke backend
+                                            setFePasswordErrors(failedLabels); // Tampilkan gabungan error di layar
+                                        } else {
+                                            setFePasswordErrors([]); // Lolos, form dilanjutkan
+                                        }
+                                    }}
                                     className="btn-primary-khaslana hover:cursor-pointer w-full mt-4 py-4 rounded-full text-black hover:text-[#99FF33] font-bold"
                                 >
                                     {processing && <Spinner />}

@@ -11,6 +11,12 @@ import StoreLogo from "@/components/khaslana/settings/store/sections/store-logo"
 import type { StoreFormData } from "@/components/khaslana/settings/store/types";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@/components/ui/tabs';
 import { useAuth } from "@/hooks/use-auth";
 import { showErrorToast, showSuccessToast } from "@/lib/toast";
 import { store, update } from "@/routes/storeManagement";
@@ -67,6 +73,7 @@ export default function StoreIndex({
         };
     }>();
     const [isValidImages, setIsValidImages] = useState(true);
+    const [activeTab, setActiveTab] = useState('informasi');
 
     const umkm = props.umkm;
     const form = useForm<StoreFormData>({
@@ -99,8 +106,66 @@ export default function StoreIndex({
         latitude: umkm?.latitude ?? null,
         longitude: umkm?.longitude ?? null,
     });
+
+    const requiredTabs = [
+        {
+            tab: 'Informasi',
+            isValid: () =>
+                !!form.data.store_name &&
+                !!form.data.description &&
+                !!form.data.type &&
+                !!form.data.phone_number,
+        },
+        {
+            tab: 'Alamat',
+            isValid: () =>
+                !!form.data.province_id &&
+                !!form.data.city_id &&
+                !!form.data.district_id &&
+                !!form.data.village_id &&
+                !!form.data.address,
+        },
+        {
+            tab: 'Operasional',
+            isValid: () =>
+                !!form.data.open_days &&
+                !!form.data.open_time &&
+                !!form.data.close_time,
+        },
+        {
+            tab: 'Foto',
+            isValid: () =>
+                form.data.images.length > 0 ||
+                form.data.existing_images.length > 0,
+        },
+    ];
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const tabMap = {
+            Informasi: 'informasi',
+            Alamat: 'alamat',
+            Operasional: 'operasional',
+            Foto: 'foto',
+        } as const;
+        type TabLabel = keyof typeof tabMap;
+
+        const invalidTabs = requiredTabs
+            .filter(tab => !tab.isValid())
+            .map(tab => tab.tab as TabLabel);
+
+        if (invalidTabs.length > 0) {
+            setActiveTab(tabMap[invalidTabs[0]]);
+
+            showErrorToast(
+                'Data belum lengkap',
+                `Data di dalam Tab ${invalidTabs.join(', ')} harus dilengkapi!`
+            );
+
+            return;
+        }
+
         if (!isValidImages) {
             showErrorToast('Foto toko wajib diisi');
             return;
@@ -110,28 +175,6 @@ export default function StoreIndex({
         } else {
             form.post(store().url);
         }
-        // const handleError = (
-        //     errors: Record<string, string>
-        // ) => {
-        //     const uniqueErrors = [...new Set(Object.values(errors))];
-
-        //     uniqueErrors.forEach((message) => {
-        //         showErrorToast(
-        //             'Validasi gagal',
-        //             message
-        //         );
-        //     });
-        // };
-
-        // if (user.is_umkm) {
-        //     form.put(update().url, {
-        //         onError: handleError,
-        //     });
-        // } else {
-        //     form.post(store().url, {
-        //         onError: handleError,
-        //     });
-        // }
     };
 
     useEffect(() => {
@@ -162,70 +205,199 @@ export default function StoreIndex({
                 description={
                     user.is_umkm
                         ? 'Kelola informasi toko anda'
-                        : 'Lengkapi data UMKM anda terlebih dahulu untuk membuka fitur!'
+                        : 'Lengkapi data UMKM anda terlebih dahulu untuk membuka fitur! Tab Informasi, Alamat, Operasional dan Foto wajib di isi!'
                 }
             />
-            <Card className="bg-transparent border-2 border-[#99FF33]/50">
-                <CardContent>
-                    <StoreLogo />
-                    <form
-                        onSubmit={handleSubmit}
-                        className="space-y-4"
+            <Tabs
+                className="w-full"
+                value={activeTab}
+                onValueChange={setActiveTab}
+            >
+                <div className="w-full overflow-x-auto scrollbar-none [-ms-overflow-style:none] [scrollbar-width:1px]">
+                    <TabsList
+                        className="
+                            w-max
+                            min-w-full
+                            flex-nowrap
+                            gap-2
+                            bg-[#1E1B26]
+                            p-1
+                        "
                     >
-                        <StoreInfo
-                            data={form.data}
-                            setData={form.setData}
-                            errors={form.errors}
-                        />
-
-                        <Address
-                            data={form.data}
-                            setData={form.setData}
-                            errors={form.errors}
-                            provinces={provinces}
-                        />
-
-                        <OperationalHour
-                            data={form.data}
-                            setData={form.setData}
-                            errors={form.errors}
-                        />
-
-                        <StoreImages
-                            data={form.data}
-                            setData={form.setData}
-                            errors={form.errors}
-                            setIsValidImages={setIsValidImages}
-                        />
-
-                        <AdditionalFeatures
-                            data={form.data}
-                            setData={form.setData}
-                        />
-
-                        <Button
-                            type="submit"
-                            disabled={form.processing}
-                            className={`
-                                mt-2
-                                bg-[#99FF33]
-                                border border-[#99FF33]
-                                hover:bg-[#1E1B26]
-                                hover:text-[#99FF33]
-                                transition-colors duration-200
-                                hover:cursor-pointer
-                                ${!user.is_umkm && 'w-full'}
-                            `}
+                        <TabsTrigger
+                            value="informasi"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
                         >
-                            {form.processing
-                                ? 'Menyimpan...'
-                                : user.is_umkm
-                                    ? 'Simpan Perubahan'
-                                    : 'Simpan Data UMKM'}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                            Informasi
+                            <span className="text-red-400"> *</span>
+                        </TabsTrigger>
+
+                        <TabsTrigger
+                            value="logo"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Logo
+                        </TabsTrigger>
+
+                        <TabsTrigger
+                            value="alamat"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Alamat
+                            <span className="text-red-400"> *</span>
+                        </TabsTrigger>
+
+                        <TabsTrigger
+                            value="operasional"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Operasional
+                            <span className="text-red-400"> *</span>
+                        </TabsTrigger>
+
+                        <TabsTrigger
+                            value="foto"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Foto
+                            <span className="text-red-400"> *</span>
+                        </TabsTrigger>
+
+                        <TabsTrigger
+                            value="fitur"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Fitur
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
+
+                <Card className="bg-transparent border-2 border-[#99FF33]/50">
+                    <CardContent>
+                        {/* <StoreLogo /> */}
+                        <form
+                            onSubmit={handleSubmit}
+                            className="space-y-4"
+                        >
+                            <TabsContent value="informasi">
+                                <StoreInfo
+                                    data={form.data}
+                                    setData={form.setData}
+                                    errors={form.errors}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="logo">
+                                <StoreLogo />
+                            </TabsContent>
+
+                            <TabsContent value="alamat">
+                                <Address
+                                    data={form.data}
+                                    setData={form.setData}
+                                    errors={form.errors}
+                                    provinces={provinces}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="operasional">
+                                <OperationalHour
+                                    data={form.data}
+                                    setData={form.setData}
+                                    errors={form.errors}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="foto">
+                                <StoreImages
+                                    data={form.data}
+                                    setData={form.setData}
+                                    errors={form.errors}
+                                    setIsValidImages={setIsValidImages}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="fitur">
+                                <AdditionalFeatures
+                                    data={form.data}
+                                    setData={form.setData}
+                                />
+                            </TabsContent>
+
+                            {activeTab != 'logo' && (
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                    className={`
+                                        mt-2
+                                        bg-[#99FF33]
+                                        border border-[#99FF33]
+                                        hover:bg-[#1E1B26]
+                                        hover:text-[#99FF33]
+                                        transition-colors duration-200
+                                        hover:cursor-pointer
+                                        ${!user.is_umkm && 'w-full'}
+                                    `}
+                                >
+                                    {form.processing
+                                        ? 'Menyimpan...'
+                                        : user.is_umkm
+                                            ? 'Simpan Perubahan'
+                                            : 'Simpan Data UMKM'}
+                                </Button>
+                            )}
+                        </form>
+                    </CardContent>
+                </Card>
+            </Tabs>
         </div>
     )
 }

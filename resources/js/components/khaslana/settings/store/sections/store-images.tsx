@@ -29,7 +29,7 @@ export default function StoreImages({
 
         const validFiles = files.filter((file) => {
             return (
-                file.size <= 10 * 1024 * 1024 &&
+                file.size <= 1024 * 1024 &&
                 file.name.length <= 100
             );
         });
@@ -106,7 +106,7 @@ export default function StoreImages({
                                 Klik untuk upload foto
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                PNG, JPG, JPEG • Maks 10MB
+                                PNG, JPG, JPEG • Maks 1MB
                             </p>
                         </div>
                     </div>

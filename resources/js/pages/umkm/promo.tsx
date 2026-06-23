@@ -153,7 +153,7 @@ export default function PromoManagement({
         }
     };
 
-    const inputStyle = "w-full bg-[#1e1b26] border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#99ff33] focus:ring-1 focus:ring-[#99ff33] transition-all";
+    const inputStyle = "w-full bg-[#1e1b26] border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#99ff33]/70 focus:ring-1 focus:ring-[#99ff33]/70 transition-all";
 
     return (
         <AppLayout breadcrumbs={[{ title: 'Manajemen Promo', href: '/store-management/promo' }]}>
@@ -170,17 +170,30 @@ export default function PromoManagement({
                         </div>
                         <button
                             onClick={handleOpenCreate}
-                            className="flex items-center gap-2 bg-[#99ff33] text-black font-semibold px-5 py-2.5 rounded-xl hover:bg-[#88ee22] transition active:scale-95 cursor-pointer"
+                            className="
+                                flex items-center justify-center gap-2
+                                bg-[#99FF33]
+                                border border-[#99FF33]
+                                py-2 px-4 rounded-md
+                                text-[#1E1B26] text-sm font-medium
+                                hover:bg-[#1E1B26]
+                                hover:text-[#99FF33]
+                                transition-colors duration-200
+                                cursor-pointer
+                            "
                         >
                             <Plus className="size-5" /> Tambah Promo
                         </button>
                     </div>
         
                     {promos.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 bg-[#191720] border border-zinc-800 rounded-2xl border-dashed">
+                        <div className="flex flex-col items-center justify-center py-20 bg-[#191720] border border-[#99FF33]/70 rounded-2xl border-dashed">
                             <Ticket className="size-16 text-zinc-700 mb-4" />
                             <h3 className="text-xl font-medium text-white mb-1">Belum Ada Promo</h3>
-                            <p className="text-zinc-500">Mulai buat promo pertama Anda untuk menarik pelanggan.</p>
+                            <span className='flex gap-1 text-muted-foreground'>
+                                Mulai buat promo pertama Anda untuk menarik pelanggan
+                                <span onClick={handleOpenCreate} className='text-[#99FF33] underline cursor-pointer'>disini</span>.
+                            </span>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -222,7 +235,7 @@ export default function PromoManagement({
                             <div className="bg-[#191720] border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
                                 <div className="flex justify-between items-center p-6 border-b border-zinc-800 shrink-0 bg-[#1e1b26]">
                                     <h2 className="text-xl font-bold text-white">{isEditing ? 'Edit Promo' : 'Buat Promo Baru'}</h2>
-                                    <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-[#99ff33] transition">
+                                    <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 transition cursor-pointer">
                                         <X className="size-6" />
                                     </button>
                                 </div>
@@ -230,19 +243,32 @@ export default function PromoManagement({
                                 <div className="p-6 overflow-y-auto custom-scrollbar bg-[#191720]">
                                     <form id="promoForm" onSubmit={handleSubmit} className="space-y-5">
                                         <div>
-                                            <label className="block text-sm text-zinc-400 mb-2">Nama Promo</label>
-                                            <input type="text" required value={data.name} onChange={e => setData('name', e.target.value)} className={inputStyle} placeholder="Cth: Promo Kemerdekaan" />
-                                            {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name}</span>}
+                                            <label className="block text-sm text-zinc-400 mb-2">
+                                                Nama Promo <span className="text-red-400"> *</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={data.name}
+                                                onChange={e => setData('name', e.target.value)}
+                                                className={inputStyle}
+                                                placeholder="Cth: Promo Kemerdekaan"
+                                                required
+                                            />
+                                            {errors.name && <span className="text-red-500 text-xs mt-1">
+                                                {errors.name}
+                                            </span>}
                                         </div>
         
                                         <div className="grid grid-cols-2 gap-4 cursor-pointer">
                                             <div>
-                                                <label className="block text-sm text-zinc-400 mb-2">Tipe Penawaran</label>
+                                                <label className="block text-sm text-zinc-400 mb-2">
+                                                    Tipe Penawaran <span className="text-red-400"> *</span>
+                                                </label>
                                                 <Select
                                                     value={data.type}
                                                     onValueChange={(value) => setData('type', value as 'DISKON' | 'PROMO')}
                                                 >
-                                                    <SelectTrigger className="w-full bg-[#1e1b26] border-zinc-700 text-white h-[50px] rounded-xl focus:ring-[#99ff33] px-4 cursor-pointer">
+                                                    <SelectTrigger className="w-full bg-[#1e1b26] border-zinc-700 text-white rounded-xl focus:ring-[#99ff33] px-4 cursor-pointer h-12.5">
                                                         <SelectValue placeholder="Pilih Tipe" />
                                                     </SelectTrigger>
                                                     <SelectContent className="bg-[#1e1b26] border-zinc-700 text-white rounded-xl">
@@ -253,32 +279,56 @@ export default function PromoManagement({
                                             </div>
                                             {data.type === 'DISKON' && (
                                                 <div>
-                                                    <label className="block text-sm text-zinc-400 mb-2">Nilai Diskon (%)</label>
-                                                    <input type="number" required min="1" max="100" value={data.discount_percent} onChange={e => setData('discount_percent', e.target.value)} className={inputStyle} placeholder="1 - 100" />
+                                                    <label className="block text-sm text-zinc-400 mb-2">
+                                                        Nilai Diskon (%) <span className="text-red-400"> *</span>
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        min="1"
+                                                        max="100"
+                                                        value={data.discount_percent}
+                                                        onChange={e => setData('discount_percent', e.target.value)}
+                                                        className={inputStyle}
+                                                        placeholder="1 - 100"
+                                                        required
+                                                    />
                                                 </div>
                                             )}
                                         </div>
         
                                         <div>
-                                            <label className="block text-sm text-zinc-400 mb-2">Deskripsi & Syarat</label>
-                                            <textarea required rows={3} value={data.description} onChange={e => setData('description', e.target.value)} className={`${inputStyle} resize-none`} placeholder="Masukkan syarat dan ketentuan..."></textarea>
+                                            <label className="block text-sm text-zinc-400 mb-2">
+                                                Deskripsi & Syarat <span className="text-red-400"> *</span>
+                                            </label>
+                                            <textarea
+                                                rows={3}
+                                                value={data.description}
+                                                onChange={e => setData('description', e.target.value)}
+                                                className={`${inputStyle} resize-none`}
+                                                placeholder="Masukkan syarat dan ketentuan..."
+                                                required
+                                            ></textarea>
                                         </div>
         
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm text-zinc-400 mb-2">Tanggal Mulai</label>
+                                                <label className="block text-sm text-zinc-400 mb-2">
+                                                    Tanggal Mulai <span className="text-red-400"> *</span>
+                                                </label>
                                                 <input
                                                     type="date"
-                                                    required
                                                     min={today}
                                                     value={data.start_date}
                                                     onChange={handleStartDateChange}
                                                     style={{ colorScheme: 'dark' }}
                                                     className={`${inputStyle} cursor-pointer [&::-webkit-calendar-picker-indicator]:filter-none`}
+                                                    required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm text-zinc-400 mb-2">Tanggal Berakhir</label>
+                                                <label className="block text-sm text-zinc-400 mb-2">
+                                                    Tanggal Berakhir <span className="text-red-400"> *</span>
+                                                </label>
                                                 <input
                                                     type="date"
                                                     required

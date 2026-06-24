@@ -1,10 +1,9 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
-import { Eye, PackageOpen } from 'lucide-react';
+import { Eye, ClipboardList } from 'lucide-react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create } from '@/routes/product';
 import type { PaginatedOrders } from "@/types/paginated-order";
 import type { Order } from '@/types/order';
 
@@ -106,14 +105,13 @@ export default function OrderIndex({
                         {orders.data.length === 0 ? (
                             <tr>
                                 <td
-                                    colSpan={6}
+                                    colSpan={8}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     <div className='flex flex-col items-center'>
-                                        <PackageOpen className='h-32 w-32 text-center text-[#99FF33] mb-4' />
+                                        <ClipboardList className='h-32 w-32 text-center text-[#99FF33] mb-4' />
                                         <span className='flex gap-1'>
-                                            Belum data ada produk. Ayo tambahkan produk Anda
-                                            <a href={create().url} className='text-[#99FF33] underline'>disini</a>.
+                                            Belum data order yang masuk ke toko Anda.
                                         </span>
                                     </div>
                                 </td>

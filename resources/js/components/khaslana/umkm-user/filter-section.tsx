@@ -1,10 +1,17 @@
 import { ChevronDown, Search } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
-export default function FilterSection() {
+interface FilterSectionProps {
+    search: string;
+    onSearchChange: (value: string) => void;
+    selectedSort: string;
+    onSortChange: (value: string) => void;
+}
+
+export default function FilterSection({
+    search, onSearchChange, selectedSort, onSortChange
+}: FilterSectionProps) {
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState('Terdekat');
-    const [search, setSearch] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const options = [
@@ -55,7 +62,7 @@ export default function FilterSection() {
                             Urutkan:
                         </span>
                         <span className="text-[#99FF33] transition-opacity group-hover:opacity-80">
-                            {selected}
+                            {selectedSort}
                         </span>
                         <ChevronDown
                             className={`
@@ -65,11 +72,12 @@ export default function FilterSection() {
                             `}
                         />
                     </button>
+
                     {open && (
                         <div
                             className="
                                 absolute right-0 mt-3
-                                min-w-[180px]
+                                min-w-45
                                 rounded-2xl
                                 bg-[#1F1D2B]/95
                                 backdrop-blur-xl
@@ -82,7 +90,7 @@ export default function FilterSection() {
                                 <button
                                     key={option}
                                     onClick={() => {
-                                        setSelected(option);
+                                        onSortChange(option);
                                         setOpen(false);
                                     }}
                                     className={`
@@ -95,7 +103,7 @@ export default function FilterSection() {
                                                 ? 'border-b border-b-gray-700'
                                                 : ''
                                         }
-                                        ${selected === option
+                                        ${selectedSort === option
                                             ? 'text-[#99FF33]'
                                             : 'text-white'
                                         }
@@ -109,7 +117,6 @@ export default function FilterSection() {
                 </div>
             </div>
 
-            {/* search bar */}
             <div className="w-full mt-6 mb-8">
                 <div
                     className="
@@ -128,7 +135,7 @@ export default function FilterSection() {
                     <input
                         type="text"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => onSearchChange(e.target.value)}
                         placeholder="Apa yang anda cari?"
                         className="
                             w-full

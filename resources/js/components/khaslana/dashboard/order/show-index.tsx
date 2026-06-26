@@ -1,13 +1,9 @@
-import { router } from "@inertiajs/react";
+import { router, Link } from "@inertiajs/react";
+import { ChevronLeft } from "lucide-react";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
 import type { Order } from "@/types/order";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { order as orderRoute } from '@/routes/dashboard';
 import { show } from "@/routes/product";
 
 interface ShowIndexProps {
@@ -26,30 +22,53 @@ export default function ShowDashoardOrder({
         }
     ).format(value ?? 0);
 
-    const renderPaymentBubble = (status: string) => {
+    const renderOrderStatus = (status: string) => {
         switch (status) {
-            case 'BELUM DIBAYAR':
-                return (
-                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-orange-500/10 rounded-full font-bold text-sm max-md:text-xs max-md:mt-2">BELUM DIBAYAR</div>
-                )
+            case 'TERTUNDA':
+            case 'MENUNGGU PEMBAYARAN':
             case 'DIBAYAR':
+            case 'DALAM PROSES':
+            case 'DIKIRIM':
+            case 'SIAP DIAMBIL':
                 return (
-                    <div className="px-4 py-1.5 border border-green-500 text-green-400 bg-orange-500/10 rounded-full font-bold text-sm max-md:text-xs max-md:mt-2">DIBAYAR</div>
-                )
-            case 'GAGAL':
+                    <div className="px-4 py-1.5 border border-yellow-500 text-yellow-400 bg-yellow-500/10 rounded-full font-bold text-sm uppercase">
+                        {status}
+                    </div>
+                );
+
+            case 'SELESAI':
                 return (
-                    <div className="px-4 py-1.5 border border-red-500 text-red-400 bg-orange-500/10 rounded-full font-bold text-sm max-md:text-xs max-md:mt-2">GAGAL</div>
-                )
-            case 'KADALUWARSA':
+                    <div className="px-4 py-1.5 border border-[#99FF33] text-[#99FF33] bg-[#99FF33]/10 rounded-full font-bold text-sm uppercase">
+                        {status}
+                    </div>
+                );
+
+            case 'DIBATALKAN':
                 return (
-                    <div className="px-4 py-1.5 border border-red-500 text-red-400 bg-orange-500/10 rounded-full font-bold text-sm max-md:text-xs max-md:mt-2">KADALUWARSA</div>
-                )
+                    <div className="px-4 py-1.5 border border-red-500 text-red-400 bg-red-500/10 rounded-full font-bold text-sm uppercase">
+                        {status}
+                    </div>
+                );
+
             default:
                 return (
-                    <div className="px-4 py-1.5 border border-gray-500 text-gray-400 bg-orange-500/10 rounded-full font-bold text-sm max-md:text-xs max-md:mt-2">N/A</div>
-                )
+                    <div className="px-4 py-1.5 border border-gray-500 text-gray-400 bg-gray-500/10 rounded-full font-bold text-sm uppercase">
+                        {status}
+                    </div>
+                );
         }
-    }
+    };
+
+    const getNextStatus = (order: Order) => {
+        switch (order.status) {
+            case 'DIBAYAR': return 'DALAM PROSES';
+            case 'DALAM PROSES': return order.type === 'DIANTAR' ? 'DIKIRIM' : 'SIAP DIAMBIL';
+            case 'DIKIRIM': return 'SELESAI';
+            case 'SIAP DIAMBIL': return 'SELESAI';
+
+            default: return null;
+        }
+    };
 
     const handleStatusChange = (orderId: number, newStatus: string) => {
         router.patch(`/dashboard/order/change-status/${orderId}`, {
@@ -68,46 +87,47 @@ export default function ShowDashoardOrder({
     return (
         <div className="flex flex-col gap-6 mb-8">
             <div className="flex max-md:flex-col justify-between max-md:items-start items-end mb-8 max-md:mb-3">
-                <div className="flex max-md:flex-col max-md:items-start items-end gap-2 max-md:mb-3">
-                    <span className="text-4xl font-semibold flex gap-2">Detail 
-                    <span className="text-[#99ff33]">Pesanan</span>
-                    </span>
-                    <span className="mb-1 font-semibold text-sm text-[#adaaaa]">{order.invoice_number}</span>
+                <div className="flex flex-col gap-4">
+                    <Link
+                        href={orderRoute()}
+                        className='flex items-center gap-1 group w-fit'
+                    >
+                        <ChevronLeft className='h-5 w-5 text-[#99FF33] group-hover:text-white transition-colors duration-200' />
+                        <span className='text-base text-[#99FF33] group-hover:text-white transition-colors duration-200'>Kembali</span>
+                    </Link>
+                    <div className="flex max-md:flex-col max-md:items-start items-end gap-2 max-md:mb-3">
+                        <span className="text-4xl font-semibold flex gap-2">Detail 
+                        <span className="text-[#99ff33]">Pesanan</span>
+                        </span>
+                        <span className="mb-1 font-semibold text-sm text-[#adaaaa]">{order.invoice_number}</span>
+                    </div>
                 </div>
 
-                <div>
-                    <Select
-                        value={order.status}
-                        onValueChange={(value) => handleStatusChange(order.id, value)}
-                        disabled={['SELESAI', 'DIBATALKAN'].includes(order.status)}
-                    >
-                        <SelectTrigger 
-                            className={`w-45 bg-[#131313] rounded-[999px] text-sm cursor-pointer font-semibold uppercase tracking-wide transition-all flex justify-betweem text-start px-4 py-5 duration-200 focus:ring-0 focus:ring-offset-0 ${
-                                order.status === 'TERTUNDA' || order.status === 'MENUNGGU PEMBAYARAN' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                order.status === 'DIBAYAR' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                order.status === 'DIKIRIM' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' :
-                                order.status === 'SIAP DIAMBIL' ? 'border-yellow-500/50 text-yellow-400 focus:border-yellow-500' : // <-- Selipkan di sini
-                                order.status === 'SELESAI' ? 'border-[#99FF33]/80 text-[#99FF33] focus:border-[#99FF33]' :
-                                'border-red-500/50 text-red-400 focus:border-red-500'
-                            }`}
-                        >
-                            <SelectValue placeholder="Pilih Status" />
-                        </SelectTrigger>
-                        
-                        <SelectContent className="bg-[#1E1B26] border-white/10 text-sm cursor-pointer font-bold uppercase">
-                            <SelectItem value="TERTUNDA" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">TERTUNDA</SelectItem>
-                            <SelectItem value="MENUNGGU PEMBAYARAN" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">MENUNGGU PEMBAYARAN</SelectItem>
-                            <SelectItem value="DIBAYAR" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer hidden">DIBAYAR</SelectItem>
-                            <SelectItem value="DALAM PROSES" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DALAM PROSES</SelectItem>
-                            {order.type == 'DIANTAR' && (
-                                <SelectItem value="DIKIRIM" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">DIKIRIM</SelectItem>
-                            )}
-                            {order.type == 'DIAMBIL' && (
-                                <SelectItem value="SIAP DIAMBIL" className="text-yellow-400 focus:bg-white/5 focus:text-yellow-400 cursor-pointer">SIAP DIAMBIL</SelectItem>
-                            )}
-                            <SelectItem value="SELESAI" className="text-[#99FF33] focus:bg-white/5 focus:text-[#99FF33] cursor-pointer hidden">SELESAI</SelectItem>
-                        </SelectContent>
-                    </Select>
+                <div className="flex flex-col gap-3 items-start">
+                    {renderOrderStatus(order.status)}
+
+                    {(() => {
+                        const nextStatus = getNextStatus(order);
+
+                        if (!nextStatus) {
+                            return null;
+                        }
+
+                        return (
+                            <Button
+                                size="sm"
+                                className="
+                                    bg-[#99FF33] hover:bg-[#1E1B26]
+                                    text-black hover:text-[#99FF33]
+                                    border border-[#99FF33]
+                                    transition-colors duration-200
+                                "
+                                onClick={() => handleStatusChange(order.id, nextStatus)}
+                            >
+                                {nextStatus}
+                            </Button>
+                        );
+                    })()}
                 </div>
             </div>
 
@@ -169,12 +189,19 @@ export default function ShowDashoardOrder({
                 <div className="flex flex-col gap-6 bg-[#131313] p-8 rounded-3xl w-full">
                     <span className="font-semibold flex max-md:flex-col max-md:w-fit justify-between text-2xl">
                         Rincian Pembayaran
-                        <span className="max-md:w-fit">{renderPaymentBubble(order.payment_status)}</span>
                     </span>
                     <div className="flex flex-col gap-1">
                         <div className="flex justify-between w-full text-lg">
+                            <span>Status Pesanan</span>
+                            {order.status}
+                        </div>
+                        <div className="flex justify-between w-full text-lg">
                             <span>Metode Pembayaran</span>
                             {order.payment?.payment_type}
+                        </div>
+                        <div className="flex justify-between w-full text-lg">
+                            <span>Status Pembayaran</span>
+                            {order.payment_status}
                         </div>
                         <div className="h-0.5 w-full bg-white/20 my-2"></div>
                         <div className="flex justify-between w-full text-lg">

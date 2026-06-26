@@ -25,8 +25,8 @@ export default function HeroSection({
     const [actionType, setActionType] = useState<
         "buy-now" | "add-cart"
     >("buy-now");
-    const isShippingFeature = product.umkm?.is_shipping_feature === 1;
-    const isOrderFeature = product.umkm?.is_order_feature === 1;
+    const isShippingFeature = product.umkm?.is_shipping_feature === true;
+    const isOrderFeature = product.umkm?.is_order_feature === true;
     const canOrder = isOrderFeature || isShippingFeature;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const { user } = useAuth();

@@ -32,7 +32,7 @@ export function AppSidebar() {
             icon: LayoutGrid,
         },
         {
-            title: 'Product',
+            title: 'Produk',
             href: product(),
             icon: Package,
         },

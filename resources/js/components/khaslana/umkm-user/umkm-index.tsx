@@ -108,7 +108,8 @@ export default function UmkmIndex({
                 search={search}
                 onSearchChange={setSearch}
                 selectedSort={selectedSort}
-                onSortChange={setSelectedSort}/>
+                onSortChange={setSelectedSort}
+            />
             <UmkmSection umkms={processedUmkms} />
         </div>
     )

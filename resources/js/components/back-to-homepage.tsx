@@ -4,7 +4,7 @@ import { home } from "@/routes"
 
 export default function BackToHomepage() {
     return (
-        <div className="flex justify-center items-center mb-1 w-full">
+        <div className="flex justify-center items-center mb-1 w-full" onClick={() => sessionStorage.removeItem('has_seen_welcome')}>
             <a
                 href={home().url}
                 className="

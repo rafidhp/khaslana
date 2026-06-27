@@ -48,6 +48,8 @@ export default function Order({
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
     const filteredOrders = useMemo(() => {
+        if (!orders?.data) return orders;
+        
         return {
             ...orders,
             data: orders.data.filter((order) => {

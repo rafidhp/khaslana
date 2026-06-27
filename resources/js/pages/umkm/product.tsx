@@ -74,6 +74,8 @@ export default function Product({
     }, [props.flash]);
 
     const filteredProducts = useMemo(() => {
+        if (!products?.data) return products;
+
         return {
             ...products,
             data: products.data.filter((product) => {
@@ -99,7 +101,7 @@ export default function Product({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Products' />
+            <Head title='Produk' />
             {!user.is_umkm ? (
                 <CtaCard />   
             ) : (

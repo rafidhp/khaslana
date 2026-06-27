@@ -52,8 +52,14 @@ export default function Order({
             ...orders,
             data: orders.data.filter((order) => {
                 const productName = order.order_items?.[0]?.product_name || '';
+                const buyerName = order.user?.name || '';
+                const invoiceNumber = order.invoice_number || '';
                 const matchSearch =
                     productName.toLowerCase()
+                        .includes(search.toLowerCase()) ||
+                    buyerName.toLowerCase()
+                        .includes(search.toLowerCase()) ||
+                    invoiceNumber.toLowerCase()
                         .includes(search.toLowerCase())
 
                 const matchStatus =
@@ -89,7 +95,7 @@ export default function Order({
                         <div className='md:col-span-2'>
                             <Input
                                 type="text"
-                                placeholder="Cari pesanan berdasarkan nama barang..."
+                                placeholder="Cari pesanan berdasarkan nama barang, pembeli, dan invoice..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="

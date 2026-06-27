@@ -110,7 +110,7 @@ export default function Product({
                                 Produk
                             </h1>
                             <p className="text-muted-foreground">
-                                Kelola produk produk Anda
+                                Kelola produk Anda
                             </p>
                         </div>
                         <Link

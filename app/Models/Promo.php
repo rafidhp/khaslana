@@ -29,6 +29,6 @@ class Promo extends Model
 
     // from other table
     public function products() {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'promo_id');
     }
 }

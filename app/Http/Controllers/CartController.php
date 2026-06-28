@@ -40,6 +40,14 @@ class CartController extends Controller
         $variant = ProductVariant::with('product.umkm')->findOrFail($request->product_variant_id);
         $userId = Auth::id();
 
+        if ($variant->product->umkm->status === 'TUTUP') {
+            return redirect()->back()->withErrors([
+                'message' => 'Maaf, toko sedang tutup. Anda tidak dapat menambahkan produk ke keranjang.'
+            ]);
+        }
+
+        $userId = Auth::id();
+
         if ($variant->product->umkm->user_id === $userId) {
             return redirect()->back()->withErrors([
                 'message' => 'Anomali Sistem: Anda tidak dapat menambahkan produk dari UMKM milik Anda sendiri ke keranjang.'
@@ -121,7 +129,7 @@ class CartController extends Controller
         $selectedItems = CartItem::whereHas('cart', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-            ->with('variant.product.umkm', 'variant.attributeValues.attribute')
+            ->with('variant.product.umkm', 'variant.product.promo', 'variant.attributeValues.attribute')
             ->whereIn('id', $request->cart_item_ids)
             ->get();
 
@@ -141,6 +149,13 @@ class CartController extends Controller
 
         $targetUmkmId = $umkmIds->first();
 
+        $targetUmkmId = $selectedItems->first()->variant->product->umkm;
+        if ($targetUmkmId->status === 'TUTUP') {
+            return redirect()->back()->withErrors([
+                'message' => 'Maaf, toko sedang tutup. Anda tidak dapat melakukan checkout saat ini.'
+            ]);
+        }
+
         DB::beginTransaction();
 
         try {
@@ -152,9 +167,18 @@ class CartController extends Controller
                 strtoupper(\Illuminate\Support\Str::random(5));
 
             $totalPrice = 0;
-
             foreach ($selectedItems as $item) {
-                $totalPrice += $item->variant->price * $item->quantity;
+                $itemPrice = $item->variant->price;
+                $productPromo = $item->variant->product->promo;
+
+                if ($productPromo && $productPromo->status === 'BERLANGSUNG') {
+                    if ($productPromo->type === 'DISKON' && $productPromo->discount_percent) {
+                        $itemPrice = $itemPrice - ($itemPrice * ($productPromo->discount_percent / 100));
+                    }
+                    $itemPrice = max(0, $itemPrice);
+                }
+
+                $totalPrice += $itemPrice * $item->quantity;
             }
 
             // 🔥 CREATE ORDER (SYNC DENGAN OrderController)
@@ -173,11 +197,31 @@ class CartController extends Controller
             ]);
 
             foreach ($selectedItems as $item) {
-                $variant = ProductVariant::lockForUpdate()->findOrFail($item->variant_id);
+                // Load variant bersama produk dan promonya
+                $variant = ProductVariant::lockForUpdate()->with('product.promo')->findOrFail($item->variant_id);
 
                 if ($variant->stock < $item->quantity) {
                     throw new \Exception("Stok tidak mencukupi.");
                 }
+
+                // HITUNG KEMBALI HARGA DISKON UNTUK MASING-MASING ITEM
+                $finalItemPrice = $variant->price;
+                $productPromo = $variant->product->promo;
+
+                if ($productPromo) {
+                    if ($productPromo->type === 'PERCENTAGE') {
+                        $finalItemPrice = $finalItemPrice - ($finalItemPrice * ($productPromo->value / 100));
+                    } elseif ($productPromo->type === 'NOMINAL') {
+                        $finalItemPrice = $finalItemPrice - $productPromo->value;
+                    }
+                    $finalItemPrice = max(0, $finalItemPrice);
+                }
+
+                $variantDetail = $variant->attributeValues
+                    ->map(fn($attr) => $attr->attribute->name . ': ' . $attr->value)
+                    ->join(', ');
+
+                $subtotal = $finalItemPrice * $item->quantity;
 
                 // 🔥 VARIANT DETAIL (SAMA FORMAT DENGAN OrderController)
                 $variantDetail = $variant->attributeValues
@@ -186,14 +230,13 @@ class CartController extends Controller
 
                 $subtotal = $variant->price * $item->quantity;
 
-                // 🔥 CREATE ORDER ITEM (100% MATCH UI)
+                // 🔥 SIMPAN HARGA SETELAH DISKON KE ORDER ITEM
                 $order->orderItems()->create([
                     'product_id' => $variant->product->id,
                     'variant_id' => $variant->id,
-
                     'product_name' => $variant->product->name,
                     'variant_detail' => $variantDetail,
-                    'price' => $variant->price,
+                    'price' => $finalItemPrice, // Menyimpan harga promo
                     'quantity' => $item->quantity,
                     'subtotal' => $subtotal,
                 ]);

@@ -223,4 +223,24 @@ class UmkmController extends Controller
 
         return $earthRadius * $c;
     }
+
+    public function showPromo($umkm_id) {
+        $umkm = Umkm::where('id', $umkm_id)->with(
+            'province',
+            'city',
+            'district',
+            'village',
+            'user',
+            'user.profile',
+            'umkmData',
+            'umkmImages',
+            'umkmLocations',
+            'promos'
+        )->firstOrFail();
+
+        // direct ke page promo umkm tsb.
+        return Inertia::render('user/umkm-user/detail-umkm/promo', [
+            'umkmData' => $umkm,
+        ]);
+    }
 }

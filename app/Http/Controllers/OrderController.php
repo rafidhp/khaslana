@@ -69,39 +69,50 @@ class OrderController extends Controller
             'variant_id' => ['required', 'exists:product_variants,id'],
             'quantity' => ['required', 'integer', 'min:1'],
         ]);
+
         $product = Product::with([
             'productVariants.attributeValues.attribute',
             'umkm',
+            'promo' 
         ])->findOrFail($product_id);
+
         $variant = ProductVariant::with([
             'attributeValues.attribute',
         ])
         ->where('product_id', $product->id)
         ->findOrFail($request->variant_id);
 
-        if ($variant->stock < $request->quantity) {
+        if ($product->umkm->status === 'TUTUP') {
             return back()->with(
                 'error',
-                'Stok tidak mencukupi.'
+                "Maaf, toko sedang tutup. Anda tidak dapat membuat pesanan untuk saat ini."
             );
         }
+
+        if ($variant->stock < $request->quantity) {
+            return back()->with('error', 'Stok tidak mencukupi.');
+        }
         if ($product->umkm_id === Auth::user()->umkm?->id) {
-            return back()->withErrors(
-                'error',
-                'Anda tidak dapat membeli produk sendiri.'
-            );
+            return back()->withErrors('error', 'Anda tidak dapat membeli produk sendiri.');
         }
 
         $order = null;
 
         DB::transaction(function () use ($product, $variant, $request, &$order) {
-            $invoiceNumber =
-                'INV-' .
-                now()->format('YmdHis') .
-                '-' .
-                Str::upper(Str::random(5));
+            $invoiceNumber = 'INV-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
 
-            $subtotal = $variant->price * $request->quantity;
+            $finalItemPrice = $variant->price;
+            $productPromo = $product->promo; // Ambil promo dari $product yang sudah di-load
+
+            if ($productPromo && $productPromo->status === 'BERLANGSUNG') {
+                if ($productPromo->type === 'DISKON' && $productPromo->discount_percent) {
+                    $finalItemPrice = $finalItemPrice - ($finalItemPrice * ($productPromo->discount_percent / 100));
+                }
+                $finalItemPrice = max(0, $finalItemPrice);
+            }
+                
+            $subtotal = $finalItemPrice * $request->quantity; // Perbaikan typo $item menjadi $request
+            
             $variantDetail = $variant->attributeValues
                 ->map(function ($attributeValue) {
                     return
@@ -131,7 +142,7 @@ class OrderController extends Controller
 
                 'product_name' => $product->name,
                 'variant_detail' => $variantDetail,
-                'price' => $variant->price,
+                'price' => $finalItemPrice, // Perbaikan typo $finalPrice menjadi $finalItemPrice
                 'quantity' => $request->quantity,
                 'subtotal' => $subtotal,
             ]);
@@ -188,6 +199,13 @@ class OrderController extends Controller
                 'nullable', 'string'
             ],
         ]);
+
+        if ($order->umkm->status === 'TUTUP') {
+            return response()->json([
+                'succes' => false,
+                'message' => 'Maaf, toko sedang tutup. Pesanan tidak dapat dialnjutkan.'
+            ], 403);
+        }
 
         $shippingCost = $request->type === 'DIANTAR'
             ? $order->umkm->shipping_cost

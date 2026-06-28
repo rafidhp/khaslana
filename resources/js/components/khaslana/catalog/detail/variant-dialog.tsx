@@ -91,9 +91,18 @@ export default function VariantDialog({
         selectedAttributes,
     ]);
 
-    const price = selectedVariant?.price ?? 0;
+    // --- LOGIKA PERHITUNGAN HARGA PROMO ---
+    const originalPrice = selectedVariant?.price ?? 0;
     const stock = selectedVariant?.stock ?? 0;
     const isPurchasable = selectedVariant !== undefined && stock > 0;
+    
+    let finalPrice = originalPrice;
+    const isPromoActive = product.promo && product.promo.status === 'BERLANGSUNG';
+    
+    if (isPromoActive && product.promo?.type === 'DISKON' && product.promo?.discount_percent) {
+        finalPrice = originalPrice - (originalPrice * (Number(product.promo.discount_percent) / 100));
+    }
+    // --------------------------------------
 
     const formatPrice = (value: number) => new Intl.NumberFormat("id-ID").format(value);
     const image = product.product_images?.[0]?.image;
@@ -279,15 +288,24 @@ export default function VariantDialog({
                             />
                         </div>
                         <div className="flex flex-col justify-center">
-                            <h3
-                                className="
-                                    text-[#99FF33]
-                                    text-3xl
-                                    font-bold
-                                "
-                            >
-                                Rp {formatPrice(price)}
-                            </h3>
+                            {/* --- UPDATE TAMPILAN HARGA PROMO --- */}
+                            <div className="flex items-end gap-3">
+                                <h3
+                                    className="
+                                        text-[#99FF33]
+                                        text-3xl
+                                        font-bold
+                                    "
+                                >
+                                    Rp {formatPrice(finalPrice)}
+                                </h3>
+                                {isPromoActive && originalPrice > finalPrice && (
+                                    <span className="text-gray-500 line-through text-lg font-medium mb-0.5">
+                                        Rp {formatPrice(originalPrice)}
+                                    </span>
+                                )}
+                            </div>
+                            {/* ----------------------------------- */}
                             <p className="text-white text-xl mt-2 font-medium">
                                 {product.name}
                             </p>

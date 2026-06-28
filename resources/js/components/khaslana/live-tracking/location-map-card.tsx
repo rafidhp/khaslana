@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/use-auth';
 import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import type { Umkm } from '@/types/umkm';
 import { router } from '@inertiajs/react';
-import ConfirmationDialog from '../confirmation-dialog';
+import ConfirmationDialog from '@/components/khaslana/confirmation-dialog';
 
 interface Props {
     umkmData: Umkm;

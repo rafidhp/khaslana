@@ -83,17 +83,14 @@ class OrderController extends Controller
         ->findOrFail($request->variant_id);
 
         if ($product->umkm->status === 'TUTUP') {
-            return back()->with(
-                'error',
-                "Maaf, toko sedang tutup. Anda tidak dapat membuat pesanan untuk saat ini."
-            );
+            return back()->withErrors(["Maaf, toko sedang tutup. Anda tidak dapat membuat pesanan untuk saat ini."]);
         }
 
         if ($variant->stock < $request->quantity) {
-            return back()->with('error', 'Stok tidak mencukupi.');
+            return back()->withErrors(['Stok tidak mencukupi.']);
         }
         if ($product->umkm_id === Auth::user()->umkm?->id) {
-            return back()->withErrors('error', 'Anda tidak dapat membeli produk sendiri.');
+            return back()->withErrors(['Anda tidak dapat membeli produk sendiri.']);
         }
 
         $order = null;

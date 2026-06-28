@@ -40,11 +40,11 @@ class CartController extends Controller
         $variant = ProductVariant::with('product.umkm')->findOrFail($request->product_variant_id);
         $userId = Auth::id();
 
-        if ($variant->product->umkm->status === 'TUTUP') {
-            return redirect()->back()->withErrors([
-                'message' => 'Maaf, toko sedang tutup. Anda tidak dapat menambahkan produk ke keranjang.'
-            ]);
-        }
+        // if ($variant->product->umkm->status === 'TUTUP') {
+        //     return redirect()->back()->withErrors([
+        //         'message' => 'Maaf, toko sedang tutup. Anda tidak dapat menambahkan produk ke keranjang.'
+        //     ]);
+        // }
 
         $userId = Auth::id();
 

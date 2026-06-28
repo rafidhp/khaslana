@@ -162,6 +162,7 @@ export default function OrderIndex({
                         const originalPrice = Number(variant?.price ?? 0);
                         const purchasedPrice = Number(item.price ?? 0);
                         const isDiscounted = originalPrice > purchasedPrice;
+                        const isDiscount = product?.promo?.type === 'DISKON';
 
                         return (
                             <div key={item.id} className="flex gap-6 bg-[#131313] p-8 rounded-3xl justify-between">
@@ -171,7 +172,11 @@ export default function OrderIndex({
                                         {/* Tampilkan Badge Jika Item di Diskon */}
                                         {isDiscounted && (
                                             <div className="absolute top-2 -left-2 bg-[#99ff33] text-black text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md z-10">
-                                                PROMO
+                                                {isDiscount ? (
+                                                    'PROMO'
+                                                ) : (
+                                                    'DISKON'
+                                                )}
                                             </div>
                                         )}
                                         <img

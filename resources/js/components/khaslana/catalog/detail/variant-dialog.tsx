@@ -164,6 +164,9 @@ export default function VariantDialog({
             return;
         }
 
+        console.log(selectedVariant);
+        console.log(selectedAttributes);
+
         console.log({
             actionType,
             product_id: product.id,

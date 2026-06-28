@@ -113,7 +113,7 @@ export function ProductCard({
                                                 text-[#99FF33]
                                                 backdrop-blur-md
                                             ">
-                                                {product.promo.discount_percent}% OFF
+                                                Diskon {product.promo.discount_percent}%
                                             </span>
                                         </div>
                                     )}

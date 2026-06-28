@@ -29,6 +29,14 @@ export default function HeroSection({
     const isShippingFeature = product.umkm?.is_shipping_feature === true;
     const isOrderFeature = product.umkm?.is_order_feature === true;
     const canOrder = isOrderFeature || isShippingFeature;
+
+    let finalPrice = originalPrice;
+    const isPromoActive = product.promo && product.promo.status === 'BERLANGSUNG';
+    
+    if (isPromoActive && product.promo?.type === 'DISKON' && product.promo?.discount_percent) {
+        finalPrice = originalPrice - (originalPrice * (Number(product.promo.discount_percent) / 100));
+    }
+
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const { user } = useAuth();
 
@@ -70,7 +78,7 @@ export default function HeroSection({
                                 shadow-lg
                             "
                         >
-                            {product.promo?.type === 'DISKON' ? `${product.promo.discount_percent}% OFF` : 'PROMO'}
+                            {product.promo?.type === 'DISKON' ? `DISKON ${product.promo.discount_percent}%` : 'PROMO'}
                         </div>
                     )}
                     <div
@@ -121,7 +129,6 @@ export default function HeroSection({
                             </span>
                         </div>
                         
-                        {/* --- UPDATE HARGA --- */}
                         <div className="flex items-end gap-4 mt-6">
                             <h2 className="text-[#99FF33] text-4xl md:text-5xl font-bold">
                                 Rp {formatPrice(finalPrice)}
@@ -132,7 +139,6 @@ export default function HeroSection({
                                 </span>
                             )}
                         </div>
-                        {/* -------------------- */}
 
                         <div className="grid grid-cols-2 gap-4 mt-8">
                             <div className="bg-[#22202C] rounded-2xl p-4 flex items-center gap-3">

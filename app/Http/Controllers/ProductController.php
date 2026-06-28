@@ -24,6 +24,13 @@ class ProductController extends Controller
         $categories = collect();
         $user = Auth::user();
 
+        if (!$user->is_umkm) {
+            return Inertia::render('umkm/product', [
+                'products' => null,
+                'categories' => [],
+            ]);
+        }
+
         if($user->is_umkm) {
             $umkm = $user->umkm;
     

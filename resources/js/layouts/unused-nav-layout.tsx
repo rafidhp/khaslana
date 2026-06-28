@@ -1,8 +1,11 @@
-import { Head, Link, usePage } from "@inertiajs/react"
+import { Head, usePage, router } from "@inertiajs/react"
+import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import Footer from "@/components/khaslana/footer"
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import Back from "@/layouts/components/back";
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { cart } from "@/routes";
@@ -15,7 +18,18 @@ type UnusedNavLayoutProps = {
 
 export default function UnusedNavLayout({ children, backHref, breadcrumbs = [] }: UnusedNavLayoutProps) {
     const { pageType } = usePage().props;
+    const { user } = useAuth();
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
     const isCatalogPage = pageType === 'catalogDetail';
+
+    const handleCartClicked = () => {
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.visit(cart());
+        }
+    }
 
     return (
         <div className="w-full overflow-x-hidden">
@@ -31,9 +45,9 @@ export default function UnusedNavLayout({ children, backHref, breadcrumbs = [] }
                     <div className="flex justify-between">
                         <Back href={backHref} />
                         {isCatalogPage ? (
-                            <Link href={cart()}>
+                            <div className="cursor-pointer" onClick={handleCartClicked}>
                                 <ShoppingCart className="h-6 w-6 hover:text-[#99FF33] transition-colors duration-200 hidden min-[970px]:block" />
-                            </Link>
+                            </div>
                         ) : (
                             <Breadcrumbs breadcrumbs={breadcrumbs} />
                         )}
@@ -42,6 +56,10 @@ export default function UnusedNavLayout({ children, backHref, breadcrumbs = [] }
                 </div>
             </div>
             <Footer />
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </div>
     )
 }

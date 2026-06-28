@@ -1,7 +1,9 @@
 import { Link, router, usePage } from "@inertiajs/react"
 import { useState } from "react";
 import { ChevronRight, ShoppingCart, PackageOpen } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth";
 import VariantDialog from '@/components/khaslana/catalog/detail/variant-dialog';
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import { products as productsRoute } from "@/routes/umkm";
 import { show } from "@/routes/catalog";
 import type { Product } from "@/types/product";
@@ -20,14 +22,23 @@ export default function MenuSection({
     const isUmkmProducts = pageType === 'umkmProducts';
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const { user } = useAuth();
+
     const handleCardClicked = (productId: number) => {
         router.visit(show(productId));
     }
 
     const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, product: Product) => {
         e.stopPropagation();
-        setSelectedProduct(product);
-        setIsDialogOpen(true);
+
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            setSelectedProduct(product);
+            setIsDialogOpen(true);
+        }
     };
 
     return (
@@ -138,7 +149,7 @@ export default function MenuSection({
                 </div>
             )}
 
-            {/* varoant dialog */}
+            {/* dialogs */}
             {selectedProduct && (
                 <VariantDialog
                     product={selectedProduct}
@@ -147,6 +158,11 @@ export default function MenuSection({
                     actionType="add-cart"
                 />
             )}
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </div>
     )
 }

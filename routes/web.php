@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalVerificationController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
@@ -109,7 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/show/{order}', 'show')->name('order.show');
     });
 
-    //Cart Route
+    // cart routes
     Route::controller(CartController::class)->prefix('cart')->group(function () {
         Route::get('/', 'index')->name('cart');
         Route::post('/add', 'store')->name('cart.add');
@@ -122,6 +123,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(CatalogController::class)->group(function() {
         Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
         Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
+    });
+
+    // verification routes
+    Route::controller(AdditionalVerificationController::class)->group(function() {
+        Route::get('/additional/verification', 'index')->name('additionalVerification');
     });
 });
 

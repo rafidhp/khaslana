@@ -1,12 +1,14 @@
 import { router } from '@inertiajs/react';
 import { PackageOpen } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
 
 import addToCartIcon from "@/assets/images/catalog/addtocart.svg";
 import locationIcon from "@/assets/images/catalog/location.svg";
 import starIcon from "@/assets/images/catalog/star.svg";
 
 import VariantDialog from '@/components/khaslana/catalog/detail/variant-dialog';
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import { show } from '@/routes/catalog';
 import type { Product } from '@/types/product';
 
@@ -20,6 +22,8 @@ export function ProductCard({
 }: ProductCardProps) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const { user } = useAuth();
 
     const handleCardClicked = (id: number) => {
         router.visit(show(id).url);
@@ -27,8 +31,14 @@ export function ProductCard({
 
     const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, product: Product) => {
         e.stopPropagation();
-        setSelectedProduct(product);
-        setIsDialogOpen(true);
+
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            setSelectedProduct(product);
+            setIsDialogOpen(true);
+        }
     };
 
     if (products.length === 0) {
@@ -181,6 +191,11 @@ export function ProductCard({
                     actionType="add-cart"
                 />
             )}
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </>
     );
 }

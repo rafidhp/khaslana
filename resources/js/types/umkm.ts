@@ -72,6 +72,7 @@ export interface Umkm {
         nik: string | null;
         image_hash: string | null;
         file_path: string | null;
+        is_verified: boolean;
     };
 
     umkm_images?: {

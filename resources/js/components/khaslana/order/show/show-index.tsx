@@ -172,6 +172,12 @@ export default function ShowIndex({
                         ) : (
                             <div className="hidden"></div>
                         )}
+                        {order.notes && (
+                            <div className="flex justify-between w-full text-lg">
+                                <span>Catatan</span>
+                                {order.notes}
+                            </div>
+                        )}
                         <div className="h-0.5 w-full bg-white/20 my-2"></div>
                         <div className="flex text-[#99ff33] font-medium justify-between w-full text-xl">
                             <span className="">Total Belanja</span>

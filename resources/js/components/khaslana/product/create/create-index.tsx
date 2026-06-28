@@ -115,6 +115,41 @@ export default function CreateIndex({
         }));
     })();
     const [attributes, setAttributes] = useState(initialAttributes);
+    const normalizedNames = attributes
+        .map(attr => attr.name.trim().toLowerCase())
+        .filter(Boolean);
+
+    const duplicateNames = normalizedNames.filter(
+        (name, index) => normalizedNames.indexOf(name) !== index
+    );
+
+    const duplicateAttributeValues = attributes.reduce<
+        Record<number, string[]>
+    >((acc, attribute, attributeIndex) => {
+        const normalizedValues = attribute.values
+            .map(v => v.trim().toLowerCase())
+            .filter(Boolean);
+
+        const duplicates = normalizedValues.filter(
+            (value, index) => normalizedValues.indexOf(value) !== index
+        );
+
+        if (duplicates.length > 0) {
+            acc[attributeIndex] = duplicates;
+        }
+        return acc;
+    }, {});
+
+    const hasDuplicateAttributes = duplicateNames.length > 0;
+    const hasDuplicateAttributeValues = Object.keys(duplicateAttributeValues).length > 0;
+
+    const disableVariants = hasDuplicateAttributes || hasDuplicateAttributeValues;;
+
+    console.log({
+        duplicateNames,
+        hasDuplicateAttributes,
+        attributes,
+    });
 
     const initialVariantData = (() => {
         if (!product) return {};
@@ -362,6 +397,14 @@ export default function CreateIndex({
     };
 
     const handleSubmit = () => {
+        if (hasDuplicateAttributes) {
+            showErrorToast(
+                'Nama atribut duplikat',
+                'Nama atribut harus berbeda satu sama lain'
+            );
+            return;
+        }
+
         const formattedAttributes = attributes
             .filter(attribute => attribute.name.trim() !== "")
             .map(
@@ -737,6 +780,13 @@ export default function CreateIndex({
                                                 transition-colors duration-200
                                             "
                                         />
+                                        {hasDuplicateAttributes && duplicateNames.includes(
+                                            attribute.name.trim().toLowerCase()
+                                        ) && (
+                                            <p className="text-xs text-red-500 mt-1">
+                                                Nama atribut tidak boleh sama dengan atribut sebelumnya
+                                            </p>
+                                        )}
                                         {form.errors[`attributes.${attributeIndex}.name`] && (
                                             <p className="text-xs text-red-500">
                                                 {form.errors[`attributes.${attributeIndex}.name`]}
@@ -775,6 +825,15 @@ export default function CreateIndex({
                                                             1
                                                         }
                                                     />
+                                                    {duplicateAttributeValues[
+                                                        attributeIndex
+                                                    ]?.includes(
+                                                        value.trim().toLowerCase()
+                                                    ) && value.trim() !== '' && (
+                                                        <p className="text-xs text-red-500">
+                                                            Isi atribut tidak boleh sama
+                                                        </p>
+                                                    )}
                                                     {form.errors[
                                                         `attributes.${attributeIndex}.values.${valueIndex}`
                                                     ] && (
@@ -817,7 +876,7 @@ export default function CreateIndex({
                             </p>
                         </div>
 
-                        {generatedVariants.map(
+                        {!disableVariants && generatedVariants.map(
                             (variant, index) => (
                                 <div
                                     key={variant.key}
@@ -880,6 +939,7 @@ export default function CreateIndex({
                                                         e.target.value
                                                     )
                                                 }
+                                                min={0}
                                                 className="
                                                     mt-2
                                                     border-gray-500/30
@@ -900,10 +960,17 @@ export default function CreateIndex({
                                 </div>
                             )
                         )}
+                        {disableVariants && (
+                            <div className="rounded-lg border border-red-500/30 p-4">
+                                <p className="text-sm text-red-500">
+                                    Perbaiki nama atribut yang duplikat terlebih dahulu untuk menghasilkan variant produk.
+                                </p>
+                            </div>
+                        )}
                     </div>
                     <Button
                         onClick={handleSubmit}
-                        disabled={form.processing}
+                        disabled={form.processing || hasDuplicateAttributes}
                         className="
                             mt-4
                             bg-[#99FF33]
@@ -912,7 +979,9 @@ export default function CreateIndex({
                             hover:bg-[#1E1B26]
                             hover:text-[#99FF33]
                             transition-colors duration-200
-                            cursor-pointer
+                            cursor-pointer disabled:cursor-not-allowed!
+                            disabled:pointer-events-auto disabled:bg-[#99FF33]
+                            disabled:text-[#1E1B26]
                         "
                     >
                         {form.processing

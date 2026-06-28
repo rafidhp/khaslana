@@ -62,6 +62,7 @@ class UmkmController extends Controller
             'reviews' => $reviews,
             'products' => $products,
             'locationData' => $latestLocation,
+            'pageType' => 'umkmDetail',
         ]);
 
     }

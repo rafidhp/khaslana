@@ -1,5 +1,6 @@
 import type { ProductVariant } from "@/types/attribute";
 import type { Umkm } from "@/types/umkm";
+import type { Review } from "@/types/review";
 
 export interface Product {
     id: number;
@@ -9,6 +10,7 @@ export interface Product {
     name: string;
     description: string;
     is_archived: boolean;
+    sold_count: number;
     created_at: string;
     updated_at: string;
 
@@ -40,4 +42,5 @@ export interface Product {
     product_variants?: ProductVariant[];
 
     umkm?: Umkm;
+    reviews?: Review[];
 }

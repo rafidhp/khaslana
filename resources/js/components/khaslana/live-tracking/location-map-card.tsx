@@ -1,12 +1,14 @@
-import { Link } from '@inertiajs/react';
 import L from 'leaflet';
 import { MapPin } from 'lucide-react';
-import React from 'react';
+import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
+import { useAuth } from '@/hooks/use-auth';
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import type { Umkm } from '@/types/umkm';
+import { router } from '@inertiajs/react';
 
 interface Props {
     umkmData: Umkm;
@@ -23,6 +25,8 @@ const NeonPinIcon = L.divIcon({
 });
 
 export default function LocationMapCard({ umkmData, locationData }: Props) {
+    const { user } = useAuth();
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
     
     // Get Data Umkm keliling aktif
     const activeLocation = umkmData.umkm_locations?.find(loc => loc.is_active === true);
@@ -60,8 +64,17 @@ export default function LocationMapCard({ umkmData, locationData }: Props) {
         return '#';
     };
 
+    const handleNavigationClicked = () => {
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.visit(getNavUrl());
+        }
+    }
+
     return (
-        <div className="relative w-full h-[300px] md:h-[350px] rounded-3xl overflow-hidden border-2 border-white/5 z-0 group">
+        <div className="relative w-full h-[300px] md:h-[350px] rounded-3xl overflow-hidden border-2 border-white/5 group">
             
             <MapContainer 
                 center={[lat, lng]} 
@@ -79,7 +92,7 @@ export default function LocationMapCard({ umkmData, locationData }: Props) {
                 <Marker position={[lat, lng]} icon={NeonPinIcon} />
             </MapContainer>
 
-            <div className="absolute bottom-4 left-4 right-4 z-[999]">
+            <div className="absolute bottom-4 left-4 right-4 z-[400]">
                 <div className="bg-[#2A2A2A]/95 backdrop-blur-md border border-white/10 p-4 md:px-6 rounded-2xl flex items-center justify-between shadow-2xl">
                     <div className="flex flex-col truncate pr-4">
                         <h3 className="text-white font-bold text-lg truncate">
@@ -90,14 +103,26 @@ export default function LocationMapCard({ umkmData, locationData }: Props) {
                         </p>
                     </div>
 
-                    <Link 
-                        href={getNavUrl()}
-                        className="shrink-0 bg-[#99FF33] text-black font-bold py-2.5 px-6 rounded-[999px] hover:bg-[#8ae62e] transition shadow-[0_4px_15px_rgba(153,255,51,0.2)]"
+                    <div
+                        onClick={handleNavigationClicked}
+                        className="
+                            shrink-0 border border-[#99FF33]
+                            bg-[#99FF33] hover:bg-[#1E1B26]
+                            text-black font-bold
+                            py-2.5 px-6
+                            rounded-[999px] hover:text-[#99FF33]
+                            transition shadow-[0_4px_15px_rgba(153,255,51,0.2)]
+                            cursor-pointer"
                     >
                         Navigasi
-                    </Link>
+                    </div>
                 </div>
             </div>
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </div>
     );
 }

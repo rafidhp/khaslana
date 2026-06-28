@@ -111,10 +111,47 @@ export default function VariantDialog({
         attributeName: string,
         value: string
     ) => {
-        setSelectedAttributes((prev) => ({
-            ...prev,
+        const nextAttributes = {
+            ...selectedAttributes,
             [attributeName]: value,
-        }));
+        };
+
+        setSelectedAttributes(nextAttributes);
+
+        const nextVariant = product.product_variants?.find((variant) =>
+            Object.entries(nextAttributes).every(
+                ([attributeName, selectedValue]) =>
+                    variant.attribute_values?.some(
+                        (attributeValue) =>
+                            attributeValue.attribute?.name === attributeName &&
+                            attributeValue.value === selectedValue
+                    )
+            )
+        );
+
+        const nextStock = nextVariant?.stock ?? 0;
+
+        setQuantity((prev) => Math.min(Math.max(prev, 1), Math.max(nextStock, 1)));
+    };
+
+    const handleQuantityChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        let value = e.target.value;
+
+        value = value.replace(/\D/g, "");
+        value = value.replace(/^0+/, "");
+
+        if (value === "") {
+            setQuantity(1);
+            return;
+        }
+        let qty = Number(value);
+
+        if (qty < 1) qty = 1;
+        if (qty > stock) qty = stock;
+
+        setQuantity(qty);
     };
 
     const handleSubmit = () => {
@@ -279,13 +316,11 @@ export default function VariantDialog({
                                         {stock} pcs
                                     </span>
                                 </p>
-                                {
-                                    !isPurchasable && (
-                                        <p className="mt-3 text-red-400 bg-amber-900/30 px-2 rounded-full text-sm">
-                                            Varian ini sedang habis
-                                        </p>
-                                    )
-                                }
+                                {!isPurchasable && (
+                                    <p className="mt-3 text-red-400 bg-amber-900/30 px-2 rounded-full text-sm">
+                                        Varian ini sedang habis
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -316,20 +351,14 @@ export default function VariantDialog({
                                                     <button
                                                         key={value}
                                                         type="button"
-                                                        onClick={() =>
-                                                            handleAttributeSelect(
-                                                                attributeName,
-                                                                value
-                                                            )
-                                                        }
+                                                        onClick={() => handleAttributeSelect(attributeName, value)}
                                                         className={`
                                                             px-4 py-2
                                                             rounded-xl
                                                             border
                                                             transition
                                                             cursor-pointer
-                                                            ${
-                                                                isSelected
+                                                            ${isSelected
                                                                     ? `
                                                                         border-[#99FF33]
                                                                         bg-[#99FF33]/10
@@ -409,13 +438,28 @@ export default function VariantDialog({
                             >
                                 <Minus size={18} />
                             </button>
-                            <span className="w-14 text-center text-white font-semibold">
-                                {quantity}
-                            </span>
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                disabled={!isPurchasable}
+                                value={quantity}
+                                onChange={handleQuantityChange}
+                                onKeyDown={(e) => {
+                                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className="
+                                    w-16 h-12
+                                    bg-transparent
+                                    text-center text-white
+                                    font-semibold outline-none
+                                    disabled:text-muted-foreground
+                                    disabled:cursor-not-allowed
+                                "
+                            />
                             <button
-                                onClick={() =>
-                                    setQuantity((prev) => Math.min(stock, prev + 1))
-                                }
+                                onClick={() => setQuantity((prev) => Math.min(stock, prev + 1))}
                                 disabled={stock <= 0 || quantity >= stock}
                                 className="
                                     w-12 h-12
@@ -437,10 +481,9 @@ export default function VariantDialog({
                             className={`
                                 w-full
                                 btn-primary-khaslana
-                                ${
-                                    !isPurchasable
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : "cursor-pointer"
+                                ${!isPurchasable
+                                    ? "opacity-50 cursor-not-allowed hover:bg-[#99FF33] hover:text-[#1E1B26]"
+                                    : "cursor-pointer"
                                 }
                             `}
                         >

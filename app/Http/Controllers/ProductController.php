@@ -25,6 +25,13 @@ class ProductController extends Controller
         $categories = collect();
         $user = Auth::user();
 
+        if (!$user->is_umkm) {
+            return Inertia::render('umkm/product', [
+                'products' => null,
+                'categories' => [],
+            ]);
+        }
+
         if($user->is_umkm) {
             $umkm = $user->umkm;
     
@@ -38,6 +45,7 @@ class ProductController extends Controller
                 'umkm',
                 'umkm.city',
             ])
+            ->withSum('orderItems as sold_count', 'quantity')
             ->latest()
             ->paginate(20);
             $categories = Category::all();

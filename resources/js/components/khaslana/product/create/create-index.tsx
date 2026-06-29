@@ -49,7 +49,6 @@ export default function CreateIndex({
     const inputRef = useRef<HTMLInputElement | null>(null);
     const form = useForm({
         category_id: product?.category_id ? String(product.category_id) : '',
-        // Tambahkan promo_id ke state form
         promo_id: product?.promo_id ? String(product.promo_id) : 'none',
         name: product?.name ?? '',
         description: product?.description ?? '',
@@ -425,8 +424,6 @@ export default function CreateIndex({
             ),
         }));
 
-        console.log(form.data);
-        console.log(form.errors);
         form.transform(data => ({
             ...data,
             attributes: formattedAttributes,

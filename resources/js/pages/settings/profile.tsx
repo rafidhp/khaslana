@@ -93,7 +93,7 @@ export default function Profile({
                                             />
 
                                             <p className="text-sm text-muted-foreground">
-                                                JPG, PNG sampai dengan 2MB
+                                                JPG, PNG sampai dengan 1MB
                                             </p>
                                         </div>
                                     </div>

@@ -51,7 +51,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
     const selectedMerchant = activeMerchants.find(m => m.id === selectedId);
     const [dataReady, setDataReady] = useState(false);
 
-    // GPS
+    // GPS Auto-Fetch & Synchronizer
     const [hasFetched, setHasFetched] = useState(false);
     useEffect(() => {
         if (hasFetched) return;
@@ -64,10 +64,20 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                 const lng = pos.coords.longitude;
 
                 setUserLoc([lat, lng]);
-                router.get('/umkm/tracking', {
-                    lat,
-                    lng
-                }, {
+
+                // 1. Kunci URL: Jika ada ID UMKM yang sedang ditarget, tetap gunakan rute spesifiknya
+                const url = initialSelectedId ? `/umkm/tracking/${initialSelectedId}` : '/umkm/tracking';
+                
+                // 2. Kunci Parameter: Pertahankan parameter 'force' agar tidak di-wipe oleh Inertia
+                const queryParams: { lat: number; lng: number; force?: boolean } = { 
+                    lat, 
+                    lng 
+                };
+                if (initialSelectedId) {
+                    queryParams.force = true;
+                }
+
+                router.get(url, queryParams, {
                     preserveState: true,
                     replace: true,
                     preserveScroll: true,
@@ -83,7 +93,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
             },
             { enableHighAccuracy: true }
         );
-    }, [hasFetched]);
+    }, [hasFetched, initialSelectedId]); 
 
     useEffect(() => {
         if (!dataReady) return;
@@ -135,6 +145,10 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                     selectedMerchant.latitude,
                     selectedMerchant.longitude
                 );
+                
+                if (selectedMerchant.status === 'KELILING') {
+                    showErrorToast("UMKM ini sedang berkeliling. Lokasi yang ditampilkan adalah lokasi terkhir UMKM!");
+                }
             })();
         }
     }, [initialSelectedId, userLoc, selectedMerchant, isTracking, handleFetchRoute]);
@@ -243,7 +257,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                 selectedMerchantId={selectedId}
                 onMerchantClick={(id) => {
                     if (id !== selectedId) {
-                        resetRouteOnly();   // 🔥 penting
+                        resetRouteOnly();   
                         setSelectedId(id);
                     }
                 }}
@@ -258,7 +272,7 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                         selectedMerchantId={selectedId}
                         onSelectMerchant={(id) => {
                             if (id !== selectedId) {
-                                resetRouteOnly(); // 🔥 penting
+                                resetRouteOnly(); 
                                 setSelectedId(id);
                             }
                         }}
@@ -275,7 +289,13 @@ export default function UserStayPoint({ activeMerchants, initialSelectedId, hasF
                                 rating: selectedMerchant.rating
                             }}
                             isTracking={isTracking}
-                            onTrackClick={() => handleFetchRoute(selectedMerchant.latitude, selectedMerchant.longitude)}
+                            onTrackClick={() => {
+                                handleFetchRoute(selectedMerchant.latitude, selectedMerchant.longitude);
+                                
+                                if (selectedMerchant.status === 'KELILING') {
+                                    showErrorToast("UMKM ini sedang berkeliling. Lokasi yang ditampilkan adalah lokasi terkhir UMKM!");
+                                }
+                            }}
                             onCancelClick={handleCancelTracking}
                             onClose={handleCloseCard}
                         />

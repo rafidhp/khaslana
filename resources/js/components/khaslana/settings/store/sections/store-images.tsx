@@ -106,7 +106,7 @@ export default function StoreImages({
                                 Klik untuk upload foto
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                PNG, JPG, JPEG • Maks 1MB
+                                PNG, JPG, JPEG • Maks 1MB per foto
                             </p>
                         </div>
                     </div>

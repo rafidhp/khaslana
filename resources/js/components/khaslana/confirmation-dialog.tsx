@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { AlertCircle, Hand } from "lucide-react";
+import { usePage } from '@inertiajs/react';
 
 interface ConfirmationDialogProps {
     open: boolean;
@@ -18,18 +19,20 @@ export default function ConfirmationDialog({
     onCancel,
     confirmText
 }: ConfirmationDialogProps) {
+    const { pageType } = usePage().props;
+    const isUmkmDetailPage = pageType === 'umkmDetail';
     if (!open) return null;
 
     return (
         <div
-            className="
+            className={`
                 fixed inset-0
                 bg-black/80
                 backdrop-blur-sm
-                z-50
                 flex items-center justify-center
                 px-4
-            "
+                ${isUmkmDetailPage ? 'z-[999]' : 'z-50'}
+            `}
         >
             <div
                 className="

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-use App\Models\Promo;
 use App\Http\Requests\StoreRequest;
 use Laravolt\Indonesia\Models\Province;
 use App\Models\UMKM\Umkm;
@@ -211,16 +210,14 @@ class StoreController extends Controller
         $request->validate([
             'logo' => [
                 'required',
-                'image',
-                'mimes:jpg,jpeg,png',
-                'max:2048',
+                'mimetypes:image/jpeg,image/jpg,image/png,image/webp,image/svg+xml',
+                'max:1024',
             ],
         ], [
             'logo' => 'Logo gagal di upload',
             'logo.required' => 'Logo wajib diisi.',
-            'logo.image' => 'Logo harus berupa gambar.',
-            'logo.mimes' => 'Logo harus JPG, JPEG, atau PNG.',
-            'logo.max' => 'Ukuran logo maksimal 2MB.',
+            'logo.mimetypes' => 'Logo harus JPG, JPEG, PNG, WEBP atau SVG.',
+            'logo.max' => 'Ukuran logo maksimal 1MB.',
         ]);
 
         $user = $request->user();
@@ -417,138 +414,5 @@ class StoreController extends Controller
                     'message' => $th->getMessage(),
                 ]);
         }
-    }
-
-    public function promoIndex()
-    {
-        $umkm = Auth::user()->umkm;
-        $promos = $umkm ? $umkm->promos()->orderBy('created_at', 'desc')->get() : [];
-
-        return Inertia::render('umkm/promo', [
-            'promos' => $promos
-        ]);
-    }
-
-    public function promoStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:DISKON,PROMO',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:SEGERA HADIR,BERLANGSUNG,BERAKHIR',
-            'discount_percent' => 'nullable|numeric|min:1|max:100',
-        ]);
-
-        $umkm = Auth::user()->umkm;
-        
-        $umkm->promos()->create($request->all());
-
-        return back();
-    }
-
-    public function promoUpdate(Request $request, Promo $promo)
-    {
-        if ($promo->umkm_id !== Auth::user()->umkm->id) {
-            abort(403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:DISKON,PROMO',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:SEGERA HADIR,BERLANGSUNG,BERAKHIR',
-            'discount_percent' => 'nullable|numeric|min:1|max:100',
-        ]);
-
-        $promo->update($request->all());
-
-        return back();
-    }
-
-    public function promoDestroy(Promo $promo)
-    {
-        if ($promo->umkm_id !== Auth::user()->umkm->id) {
-            abort(403);
-        }
-
-        $promo->delete();
-        return back();
-    }
-
-    private function checkStoreCompletion(?Umkm $umkm): array
-    {
-        if (!$umkm) {
-            return [
-                'completed' => false,
-                'missing' => [
-                    'Informasi',
-                    'Alamat',
-                    'Operasional',
-                    'Foto',
-                    'Lokasi',
-                    'Fitur',
-                ],
-            ];
-        }
-
-        $missing = [];
-
-        // Informasi
-        if (
-            blank($umkm->store_name) ||
-            blank($umkm->description) ||
-            blank($umkm->phone_number) ||
-            blank($umkm->type) ||
-            blank($umkm->status)
-        ) {
-            $missing[] = 'Informasi';
-        }
-
-        // Alamat
-        if (
-            blank($umkm->province_id) ||
-            blank($umkm->city_id) ||
-            blank($umkm->district_id) ||
-            blank($umkm->village_id) ||
-            blank($umkm->address)
-        ) {
-            $missing[] = 'Alamat';
-        }
-
-        // Operasional
-        if (
-            blank($umkm->open_days) ||
-            blank($umkm->open_time) ||
-            blank($umkm->close_time)
-        ) {
-            $missing[] = 'Operasional';
-        }
-
-        // Foto
-        if (!$umkm->umkmImages()->exists()) {
-            $missing[] = 'Foto';
-        }
-
-        // Lokasi
-        if (!$umkm->umkmLocations()->exists()) {
-            $missing[] = 'Lokasi';
-        }
-
-        // Fitur
-        if (
-            !$umkm->is_order_feature &&
-            !$umkm->is_shipping_feature
-        ) {
-            $missing[] = 'Fitur';
-        }
-
-        return [
-            'completed' => empty($missing),
-            'missing' => $missing,
-        ];
     }
 }

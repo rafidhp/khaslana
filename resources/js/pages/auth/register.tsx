@@ -226,10 +226,10 @@ export default function Register() {
                                         const failedLabels = reqs.filter(r => !r.isValid).map(r => r.label);
 
                                         if (failedLabels.length > 0) {
-                                            e.preventDefault(); // Cegah form dikirim ke backend
-                                            setFePasswordErrors(failedLabels); // Tampilkan gabungan error di layar
+                                            e.preventDefault(); 
+                                            setFePasswordErrors(failedLabels); 
                                         } else {
-                                            setFePasswordErrors([]); // Lolos, form dilanjutkan
+                                            setFePasswordErrors([]);
                                         }
                                     }}
                                     className="btn-primary-khaslana hover:cursor-pointer w-full mt-4 py-4 rounded-full text-black hover:text-[#99FF33] font-bold"

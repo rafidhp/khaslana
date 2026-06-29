@@ -59,8 +59,8 @@ class ProductController extends Controller
 
     public function create() {
         $categories = Category::all();
-        $promos = \App\Models\Promo::where('umkm_id', Auth::user()->umkm->id)
-            ->get();
+        $promos = Promo::where('umkm_id', Auth::user()->umkm->id)->get();
+
         return Inertia::render('umkm/product/product-create', [
             'categories' => $categories,
             'promos' => $promos,
@@ -187,6 +187,7 @@ class ProductController extends Controller
             'category',
             'productImages',
             'productVariants.attributeValues.attribute',
+            'promo',
         ]);
 
         return Inertia::render('umkm/product/product-show', [

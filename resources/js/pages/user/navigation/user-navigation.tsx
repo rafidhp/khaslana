@@ -23,7 +23,7 @@ export default function UserNavigation({ umkm }: Props) {
         latitude: storeLocation?.latitude ? Number(storeLocation.latitude) : 0,
         longitude: storeLocation?.longitude ? Number(storeLocation.longitude) : 0,
         storeName: umkm.store_name,
-        logoUrl: umkm.user?.profile?.logo ?? null,
+        logo: umkm.user?.profile?.logo ?? null,
         isActive: true, // Toko tetap selalu dianggap aktif pin-nya di halaman navigasi internal ini
     };
 

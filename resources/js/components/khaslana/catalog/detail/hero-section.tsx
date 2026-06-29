@@ -16,11 +16,12 @@ export default function HeroSection({
     product,
 }: HeroSectionProps) {
     const variant = product.product_variants?.[0];
-    const price = variant?.price ?? 0;
+    const originalPrice = variant?.price ?? 0;
     const stock = variant?.stock ?? 0;
     const image = product.product_images?.[0]?.image;
     const rating = product.umkm?.average_rating ?? 0;
     const formatPrice = (value: number) => new Intl.NumberFormat("id-ID").format(value);
+    
     const [openVariant, setOpenVariant] = useState(false);
     const [actionType, setActionType] = useState<
         "buy-now" | "add-cart"
@@ -28,6 +29,14 @@ export default function HeroSection({
     const isShippingFeature = product.umkm?.is_shipping_feature === true;
     const isOrderFeature = product.umkm?.is_order_feature === true;
     const canOrder = isOrderFeature || isShippingFeature;
+
+    let finalPrice = originalPrice;
+    const isPromoActive = product.promo && product.promo.status === 'BERLANGSUNG';
+    
+    if (isPromoActive && product.promo?.type === 'DISKON' && product.promo?.discount_percent) {
+        finalPrice = originalPrice - (originalPrice * (Number(product.promo.discount_percent) / 100));
+    }
+
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const { user } = useAuth();
 
@@ -56,18 +65,20 @@ export default function HeroSection({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {/* left section */}
                 <div className="relative">
-                    {product.promo && (
+                    {/* --- UPDATE BADGE PROMO --- */}
+                    {isPromoActive && (
                         <div
                             className="
                                 absolute z-10
                                 top-4 left-4
                                 bg-[#99FF33]
-                                text-black text-xs font-semibold
-                                px-3 py-1
+                                text-black text-xs font-bold
+                                px-3 py-1.5
                                 rounded-full
+                                shadow-lg
                             "
                         >
-                            {product.promo.type}
+                            {product.promo?.type === 'DISKON' ? `DISKON ${product.promo.discount_percent}%` : 'PROMO'}
                         </div>
                     )}
                     <div
@@ -117,19 +128,18 @@ export default function HeroSection({
                                 {product.umkm?.store_name}
                             </span>
                         </div>
-                        <div className="flex items-center gap-4 mt-6">
-                            <h2 className="text-[#99FF33] text-4xl md:text-5x font-bold">
-                                Rp {formatPrice(price)}
+                        
+                        <div className="flex items-end gap-4 mt-6">
+                            <h2 className="text-[#99FF33] text-4xl md:text-5xl font-bold">
+                                Rp {formatPrice(finalPrice)}
                             </h2>
-                            {product.promo?.discount_percent && (
-                                <span className="text-gray-500 line-through text-lg">
-                                    Rp{" "}
-                                    {formatPrice(
-                                        Math.round(price / (1 - product.promo.discount_percent / 100))
-                                    )}
+                            {isPromoActive && originalPrice > finalPrice && (
+                                <span className="text-gray-500 line-through text-xl md:text-2xl font-medium mb-1">
+                                    Rp {formatPrice(originalPrice)}
                                 </span>
                             )}
                         </div>
+
                         <div className="grid grid-cols-2 gap-4 mt-8">
                             <div className="bg-[#22202C] rounded-2xl p-4 flex items-center gap-3">
                                 <div

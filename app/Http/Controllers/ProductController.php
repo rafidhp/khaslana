@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 use App\Models\Category;
+use App\Models\Promo;
 use App\Models\Product\Product;
 use App\Models\Product\Attribute;
 use App\Models\Product\AttributeValue;
@@ -58,14 +59,18 @@ class ProductController extends Controller
 
     public function create() {
         $categories = Category::all();
+        $promos = \App\Models\Promo::where('umkm_id', Auth::user()->umkm->id)
+            ->get();
         return Inertia::render('umkm/product/product-create', [
             'categories' => $categories,
+            'promos' => $promos,
         ]);
     }
 
     public function store(Request $request) {
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
+            'promo_id' => ['nullable', 'numeric'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
             'images' => ['required', 'array'],
@@ -85,9 +90,11 @@ class ProductController extends Controller
 
         try {
             $umkm = Auth::user()->umkm;
+            $promoId = ($validated['promo_id'] === 'none' || empty($validated['promo_id'])) ? null : $validated['promo_id'];
             $product = Product::create([
                 'umkm_id' =>Auth::user()->umkm->id,
                 'category_id' => $validated['category_id'],
+                'promo_id' => $promoId,
                 'name' => $validated['name'],
                 'description' => $validated['description'],
             ]);
@@ -193,15 +200,21 @@ class ProductController extends Controller
             'productVariants.attributeValues.attribute',
         ]);
 
+        $promos = Promo::where('umkm_id', Auth::user()->umkm->id)
+        ->whereIn('status', ['BERLANGSUNG', 'SEGERA HADIR'])
+        ->get();
+
         return Inertia::render('umkm/product/product-create', [
             'product' => $product,
             'categories' => Category::all(),
+            'promos' => $promos,
         ]);
     }
 
     public function update(Request $request, Product $product) {
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
+            'promo_id' => ['nullable', 'numeric'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
 
@@ -226,8 +239,11 @@ class ProductController extends Controller
         try {
             $umkm = Auth::user()->umkm;
 
+            $promoId = ($validated['promo_id'] === 'none' || empty($validated['promo_id'])) ? null : $validated['promo_id'];
+
             $product->update([
                 'category_id' => $validated['category_id'],
+                'promo_id' => $promoId,
                 'name' => $validated['name'],
                 'description' => $validated['description'],
             ]);

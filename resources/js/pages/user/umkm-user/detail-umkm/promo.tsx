@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Calendar, Ticket, Info, Tag } from 'lucide-react';
 import UnusedNavLayout from "@/layouts/unused-nav-layout";
-import { home } from "@/routes";
+import { catalog, home } from "@/routes";
 
 interface PromoData {
     id: number;
@@ -60,10 +60,10 @@ export default function PromoPage({ umkmData }: PageProps) {
                         </p>
                     </div>
 
-                    <div className="bg-[#191720] border border-zinc-800 px-5 py-3 rounded-2xl flex items-center gap-3">
+                    {/* <div className="bg-[#191720] border border-zinc-800 px-5 py-3 rounded-2xl flex items-center gap-3">
                         <Info className="text-[#99ff33] size-5" />
                         <span className="text-sm text-zinc-300">Promo diterapkan otomatis saat Checkout.</span>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Grid Daftar Voucher Promo */}
@@ -122,12 +122,12 @@ export default function PromoPage({ umkmData }: PageProps) {
                                         </span>
                                     </div>
 
-                                    <Link 
-                                        href={`/umkm/detail/${umkmData.id}`}
+                                    {/* <Link 
+                                        href={`/catalog`}
                                         className="flex items-center justify-center gap-2 text-sm font-bold text-[#99ff33] bg-[#99ff33]/10 hover:bg-[#99ff33]/20 px-5 py-2.5 rounded-xl transition-all"
                                     >
                                         Gunakan
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             </div>
                         </div>

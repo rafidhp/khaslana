@@ -241,21 +241,6 @@ export default function StoreIndex({
                         </TabsTrigger>
 
                         <TabsTrigger
-                            value="logo"
-                            className="
-                                shrink-0 px-4!
-                                whitespace-nowrap
-                                data-[state=active]:bg-[#99FF33]!
-                                data-[state=active]:text-black!
-                                data-[state=active]:hover:cursor-default!
-                                hover:text-[#99FF33]!
-                                hover:cursor-pointer!
-                            "
-                        >
-                            Logo
-                        </TabsTrigger>
-
-                        <TabsTrigger
                             value="alamat"
                             className="
                                 shrink-0 px-4!
@@ -317,6 +302,21 @@ export default function StoreIndex({
                         >
                             Fitur
                         </TabsTrigger>
+
+                        <TabsTrigger
+                            value="logo"
+                            className="
+                                shrink-0 px-4!
+                                whitespace-nowrap
+                                data-[state=active]:bg-[#99FF33]!
+                                data-[state=active]:text-black!
+                                data-[state=active]:hover:cursor-default!
+                                hover:text-[#99FF33]!
+                                hover:cursor-pointer!
+                            "
+                        >
+                            Logo
+                        </TabsTrigger>
                     </TabsList>
                 </div>
 
@@ -333,10 +333,6 @@ export default function StoreIndex({
                                     setData={form.setData}
                                     errors={form.errors}
                                 />
-                            </TabsContent>
-
-                            <TabsContent value="logo">
-                                <StoreLogo />
                             </TabsContent>
 
                             <TabsContent value="alamat">
@@ -395,6 +391,10 @@ export default function StoreIndex({
                                 </Button>
                             )}
                         </form>
+
+                        <TabsContent value="logo">
+                            <StoreLogo />
+                        </TabsContent>
                     </CardContent>
                 </Card>
             </Tabs>

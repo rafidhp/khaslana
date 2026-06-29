@@ -43,6 +43,8 @@ export default function OrderIndex({
     const settlement = order.payment?.transaction_status === 'settlement';
 
     const service_fee = 2000;
+    
+    // Subtotal dihitung dari subtotal items (yang sudah dipotong diskon oleh backend)
     const subtotal = items.reduce(
         (acc, item) => acc + Number(item.subtotal ?? 0),
         0
@@ -51,6 +53,7 @@ export default function OrderIndex({
         ? Number(order.shipping_cost ?? 0)
         : 0;
     const total_price = subtotal + service_fee + shippingCost;
+    
     const isShippingFeature = order.umkm?.is_shipping_feature == 1;
     const isOrderFeature = order.umkm?.is_order_feature == 1;
 
@@ -60,7 +63,7 @@ export default function OrderIndex({
             currency: "IDR",
             maximumFractionDigits: 0,
         }
-    ).format(value);
+        ).format(value);
 
     if (
         order.type === 'DIANTAR' &&
@@ -131,7 +134,7 @@ export default function OrderIndex({
                 iframe.style.transform = 'translate(-50%, -50%)';
                 iframe.style.backgroundColor = 'transparent';
             }, 100);
-            console.log('test', 
+            console.log('test',
                 document.getElementById(
                     'snap-midtrans'
                 )?.parentElement
@@ -140,7 +143,7 @@ export default function OrderIndex({
             console.error(error);
         }
     };
-    
+
     return (
         <div className='mb-12'>
             <div className="flex flex-col gap-2 mb-8">
@@ -153,39 +156,72 @@ export default function OrderIndex({
                         const product = item.product;
                         const variant = item.variant;
                         const quantity = item.quantity;
+                        
+                        // --- LOGIKA CEK HARGA ---
+                        // variant?.price adalah harga asli, item.price adalah harga yang tersimpan saat checkout (bisa jadi sudah didiskon)
+                        const originalPrice = Number(variant?.price ?? 0);
+                        const purchasedPrice = Number(item.price ?? 0);
+                        const isDiscounted = originalPrice > purchasedPrice;
+                        const isDiscount = product?.promo?.type === 'DISKON';
 
                         return (
                             <div key={item.id} className="flex gap-6 bg-[#131313] p-8 rounded-3xl justify-between">
-                                
+
                                 <div className="flex gap-5">
-                                    <img
-                                        src={
-                                            product?.product_images?.[0]?.image
-                                                ? `/storage/${product.product_images[0].image}`
-                                                : '/images/placeholder.png'
-                                        }
-                                        className="h-30 w-30 object-cover bg-white rounded-xl"
-                                    />
+                                    <div className="relative">
+                                        {/* Tampilkan Badge Jika Item di Diskon */}
+                                        {isDiscounted && (
+                                            <div className="absolute top-2 -left-2 bg-[#99ff33] text-black text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md z-10">
+                                                {isDiscount ? (
+                                                    'PROMO'
+                                                ) : (
+                                                    'DISKON'
+                                                )}
+                                            </div>
+                                        )}
+                                        <img
+                                            src={
+                                                product?.product_images?.[0]?.image
+                                                    ? `/storage/${product.product_images[0].image}`
+                                                    : '/images/placeholder.png'
+                                            }
+                                            className="h-30 w-30 object-cover bg-white rounded-xl"
+                                        />
+                                    </div>
 
                                     <div className="flex flex-col justify-between">
                                         <div>
-                                            <h5 className="font-semibold text-2xl">
+                                            <h5 className="font-semibold text-2xl line-clamp-1">
                                                 {product?.name}
                                             </h5>
 
-                                            <span className="text-[#adaaaa]">
+                                            <span className="text-[#adaaaa] line-clamp-1">
                                                 {item.variant_detail}
                                             </span>
                                         </div>
 
-                                        <span>Kuantitas: {quantity} unit</span>
+                                        <span className="text-sm font-medium">Kuantitas: {quantity} unit</span>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col items-end">
-                                    <span className="text-sm text-[#adaaaa]">
-                                        {formatRupiah(variant?.price ?? 0)} / unit
-                                    </span>
+                                <div className="flex flex-col items-end justify-center">
+                                    {/* --- TAMPILAN SINKRONISASI HARGA --- */}
+                                    <div className="flex flex-col items-end mb-2">
+                                        {isDiscounted ? (
+                                            <>
+                                                <span className="text-xs text-red-400 line-through decoration-red-400">
+                                                    {formatRupiah(originalPrice)} / unit
+                                                </span>
+                                                <span className="text-sm text-[#adaaaa] font-medium">
+                                                    {formatRupiah(purchasedPrice)} / unit
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span className="text-sm text-[#adaaaa]">
+                                                {formatRupiah(purchasedPrice)} / unit
+                                            </span>
+                                        )}
+                                    </div>
 
                                     <span className="text-[#99ff33] font-bold text-2xl">
                                         {formatRupiah(item.subtotal)}
@@ -198,7 +234,7 @@ export default function OrderIndex({
 
                     <div className='flex flex-col bg-[#131313] rounded-2xl p-8 gap-8'>
                         <span className="flex text-base gap-3 items-center font-semibold tracking-wide text-[#adaaaa]">
-                            <Truck className="text-[#99ff33]"/> DETAIL PENGIRIMAN
+                            <Truck className="text-[#99ff33]" /> DETAIL PENGIRIMAN
                         </span>
                         <div className='flex flex-col gap-4'>
                             <div className="flex flex-col gap-1">
@@ -217,6 +253,7 @@ export default function OrderIndex({
                                     value={user.name}
                                     className="mt-2 border-gray-500/30 focus-visible:border-[#99FF33] bg-[#181818] focus-visible:ring-0 transition-all duration-200"
                                     required
+                                    readOnly // Agar nama tidak diubah disini (ambil dr data user)
                                 />
                             </div>
                             <div className='flex flex-col gap-1'>
@@ -228,8 +265,8 @@ export default function OrderIndex({
                                     onValueChange={(value) =>
                                         setOrderType(
                                             value as
-                                                | 'DIAMBIL'
-                                                | 'DIANTAR'
+                                            | 'DIAMBIL'
+                                            | 'DIANTAR'
                                         )
                                     }
                                 >
@@ -260,12 +297,12 @@ export default function OrderIndex({
                                         )}
                                     </SelectContent>
 
-                                     {!isShippingFeature && (
+                                    {!isShippingFeature && (
                                         <span className="text-xs text-[#adaaaa]">
                                             UMKM ini tidak menyediakan layanan pengantaran.
                                         </span>
                                     )}
-                                     {!isOrderFeature && (
+                                    {!isOrderFeature && (
                                         <span className="text-xs text-[#adaaaa]">
                                             UMKM ini tidak menyediakan layanan ambil sendiri.
                                         </span>
@@ -330,7 +367,7 @@ export default function OrderIndex({
                     <span className="text-2xl font-bold">Ringkasan Pesanan</span>
                     <span className="flex justify-between w-full text-[#adaaaa]">
                         <span>Subtotal</span>
-                        {formatRupiah(total_price)}
+                        {formatRupiah(subtotal)}
                     </span>
                     <span className="flex justify-between w-full text-[#adaaaa]">
                         <span>Biaya Layanan</span>
@@ -352,7 +389,7 @@ export default function OrderIndex({
                     <button
                         disabled={openingPayment}
                         onClick={handlePay}
-                        className="w-full flex py-4 bg-[#99ff33] rounded-full border border-[#99ff33] items-center justify-center font-medium text-[#222] transition-all duration-200 cursor-pointer hover:bg-transparent hover:text-[#99ff33]"
+                        className="w-full flex py-4 mt-2 bg-[#99ff33] rounded-full border border-[#99ff33] items-center justify-center font-medium text-[#222] transition-all duration-200 cursor-pointer hover:bg-transparent hover:text-[#99ff33]"
                     >
                         Bayar Sekarang
                     </button>

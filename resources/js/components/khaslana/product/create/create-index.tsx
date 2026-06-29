@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { showErrorToast } from "@/lib/toast";
 import { store, update } from "@/routes/product";
 import { Product } from "@/types/product";
+import { Promo } from "@/types/promo";
 
 interface CreateIndexProps {
     categories: {
@@ -27,24 +28,29 @@ interface CreateIndexProps {
         name: string;
     }[];
     product?: Product;
+    promos?: Promo[];
 }
 
 export default function CreateIndex({
     categories,
     product,
+    promos = [],
 }: CreateIndexProps) {
+    console.log(promos)
     const [images, setImages] = useState<
         (
             | File
             | {
-                  id: number;
-                  image: string;
-              }
+                id: number;
+                image: string;
+            }
         )[]
     >(product?.product_images ?? []);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const form = useForm({
         category_id: product?.category_id ? String(product.category_id) : '',
+        // Tambahkan promo_id ke state form
+        promo_id: product?.promo_id ? String(product.promo_id) : 'none',
         name: product?.name ?? '',
         description: product?.description ?? '',
         images: [] as File[],
@@ -260,7 +266,7 @@ export default function CreateIndex({
         let combinations = validAttributes[0].values.map(
             (value) => [
                 {
-                    attribute:validAttributes[0].name,
+                    attribute: validAttributes[0].name,
                     value,
                 },
             ]
@@ -427,7 +433,7 @@ export default function CreateIndex({
             variants: formattedVariants,
         }));
 
-        const submitUrl = product? update(product.id).url : store().url;
+        const submitUrl = product ? update(product.id).url : store().url;
 
         if (product) {
             form.put(submitUrl,
@@ -445,7 +451,7 @@ export default function CreateIndex({
             );
         }
     };
-    
+
     return (
         <div className="space-y-6">
             <Card className="bg-transparent border-2 border-[#99FF33]/50">
@@ -514,6 +520,63 @@ export default function CreateIndex({
                     </div>
                     <div className="space-y-2">
                         <Label>
+                            Promo Toko (Opsional)
+                        </Label>
+                        <Select
+                            value={form.data.promo_id}
+                            onValueChange={(value) =>
+                                form.setData("promo_id", value)
+                            }
+                        >
+                            <SelectTrigger
+                                className="
+                                    mt-2
+                                    border-gray-500/30
+                                    bg-transparent
+                                    transition-all duration-200
+                                    focus:ring-0
+                                    focus:border-[#99FF33]
+                                    data-[state=open]:border-[#99FF33]
+                                    hover:border-[#99FF33]
+                                "
+                            >
+                                <SelectValue placeholder="Pilih promo (jika ada)" />
+                            </SelectTrigger>
+                            <SelectContent
+                                className="
+                                    border-gray-500/30
+                                    bg-[#191720]
+                                    text-white
+                                    my-2
+                                "
+                            >
+                                <SelectItem value="none" disabled>
+                                    {promos.length <= 0 ? (
+                                        'Tidak ada promo'
+                                    ) : (
+                                        'Pilih Promo'
+                                    )}
+                                </SelectItem>
+                                {promos.map(
+                                    (promo) => (
+                                        <SelectItem
+                                            key={promo.id}
+                                            value={String(promo.id)}
+                                        >
+                                            {promo.name} {promo.type === 'DISKON' && promo.discount_percent ? `(-${promo.discount_percent}%)` : ''}
+                                        </SelectItem>
+                                    )
+                                )}
+                            </SelectContent>
+                        </Select>
+                        {form.errors.promo_id && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.promo_id}
+                            </p>
+                        )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label>
                             Kategori <span className="text-red-400"> *</span>
                         </Label>
                         <Select
@@ -562,7 +625,7 @@ export default function CreateIndex({
                             </p>
                         )}
                     </div>
-                   <div className="space-y-3">
+                    <div className="space-y-3">
                         <Label>
                             Foto Produk <span className="text-red-400"> *</span>
                         </Label>
@@ -624,9 +687,9 @@ export default function CreateIndex({
                                     >
                                         <img
                                             src={image instanceof File
-                                                    ? URL.createObjectURL(image)
-                                                    : `/storage/${image.image}`
-                                                }
+                                                ? URL.createObjectURL(image)
+                                                : `/storage/${image.image}`
+                                            }
                                             alt={image instanceof File ? image.name : "product-image"}
                                             className="h-40 w-full object-cover" />
 
@@ -747,10 +810,9 @@ export default function CreateIndex({
                                                         onChange={(e) =>
                                                             updateAttributeValue(attributeIndex, valueIndex, e.target.value)
                                                         }
-                                                        placeholder={`Contoh: Merah ${
-                                                            valueIndex +
+                                                        placeholder={`Contoh: Merah ${valueIndex +
                                                             1
-                                                        }`}
+                                                            }`}
                                                         className="
                                                             border-gray-500/30
                                                             focus-visible:border-[#99FF33]
@@ -760,7 +822,7 @@ export default function CreateIndex({
                                                             valueIndex !==
                                                             attribute.values
                                                                 .length -
-                                                                1
+                                                            1
                                                         }
                                                     />
                                                     {duplicateAttributeValues[
@@ -775,14 +837,14 @@ export default function CreateIndex({
                                                     {form.errors[
                                                         `attributes.${attributeIndex}.values.${valueIndex}`
                                                     ] && (
-                                                        <p className="text-xs text-red-500">
-                                                            {
-                                                                form.errors[
+                                                            <p className="text-xs text-red-500">
+                                                                {
+                                                                    form.errors[
                                                                     `attributes.${attributeIndex}.values.${valueIndex}`
-                                                                ]
-                                                            }
-                                                        </p>
-                                                    )}
+                                                                    ]
+                                                                }
+                                                            </p>
+                                                        )}
                                                 </div>
                                             )
                                         )}
@@ -790,16 +852,16 @@ export default function CreateIndex({
 
                                     {attributes.length >
                                         1 && (
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() =>
-                                                removeAttribute(attributeIndex)
-                                            }
-                                        >
-                                            Hapus Atribut
-                                        </Button>
-                                    )}
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                onClick={() =>
+                                                    removeAttribute(attributeIndex)
+                                                }
+                                            >
+                                                Hapus Atribut
+                                            </Button>
+                                        )}
                                 </div>
                             )
                         )}
@@ -826,8 +888,8 @@ export default function CreateIndex({
                                             "Produk"}{" "}
                                         •{" "}
                                         {variant.attributes
-                                        .map((item) => `${item.attribute}: ${item.value}`)
-                                        .join(" | ")}
+                                            .map((item) => `${item.attribute}: ${item.value}`)
+                                            .join(" | ")}
                                     </div>
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
@@ -924,7 +986,7 @@ export default function CreateIndex({
                     >
                         {form.processing
                             ? "Menyimpan..." : product
-                            ? "Update Produk" : "Simpan Produk"
+                                ? "Update Produk" : "Simpan Produk"
                         }
                     </Button>
                 </CardContent>

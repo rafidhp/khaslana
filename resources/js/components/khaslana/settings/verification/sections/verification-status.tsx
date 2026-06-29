@@ -158,17 +158,12 @@ export default function VerificationStatus({
 
                         </h3>
 
-                        <VerifiedBadge />
-
                     </div>
 
                     <p className="mt-2 text-sm text-muted-foreground leading-6">
 
                         UMKM Anda telah berhasil diverifikasi oleh Super Admin.
-
-                        <br />
-
-                        Badge UMKM Terverifikasi kini telah aktif dan akan ditampilkan pada profil serta halaman toko Anda.
+                        Badge UMKM telah aktif dan akan ditampilkan pada profil serta halaman toko Anda.
 
                     </p>
 

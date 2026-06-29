@@ -7,6 +7,8 @@ import { store } from "@/routes/additionalVerification";
 import VerificationForm from "./sections/verification-info";
 import VerificationStatus from "./sections/verification-status";
 import { VerificationData } from "./types";
+import VerifiedBadge from "@/components/khaslana/verified-badge";
+
 
 interface Props {
     storeCompletion: {
@@ -63,11 +65,23 @@ export default function VerificationIndex({
 
         <div className="space-y-6">
 
-            <Heading
-                variant="default"
-                title="Verifikasi UMKM"
-                description="Lengkapi data verifikasi agar tokomu mendapatkan badge UMKM Terverifikasi."
-            />
+            <div className="flex items-start justify-between gap-6">
+
+                <Heading
+                    title="Verifikasi UMKM"
+    description="Kelola status verifikasi toko Anda."
+                />
+
+                {verification?.verification_status === "verified" && (
+
+                    <VerifiedBadge
+                        text="UMKM Terverifikasi"
+                        size="md"
+                    />
+
+                )}
+
+            </div>
 
             <VerificationStatus
                 completed={storeCompletion.completed}
@@ -81,11 +95,12 @@ export default function VerificationIndex({
                 }
             />
 
-            <Card className="border-[#99FF33]/40">
+            <Card className="border-[#99FF33]/40 bg-[#231F2B] shadow-none">
 
                 <CardContent className="space-y-8 py-8">
 
                     <VerificationForm
+                        verification={verification}
                         data={form.data}
                         setData={form.setData}
                         errors={form.errors}

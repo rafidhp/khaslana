@@ -43,7 +43,11 @@ class AdditionalVerificationController extends Controller
                 'nik' => $umkm?->umkmData?->nik,
                 'npwp' => $umkm?->umkmData?->npwp,
                 'nib' => $umkm?->umkmData?->nib,
-                'file_path' => $umkm?->umkmData?->file_path,
+                'file_path' => $umkm?->umkmData?->file_path
+                ? Storage::url(
+                    $umkm->umkmData->file_path
+                )
+                : null,
             ],
         ]);
     }
@@ -135,7 +139,7 @@ class AdditionalVerificationController extends Controller
             report($e);
             return back()->withErrors([
                 'verification' =>
-                    'Terjadi kesalahan saat mengirim verifikasi.',
+                    $e->getMessage(),
             ]);
 
         }

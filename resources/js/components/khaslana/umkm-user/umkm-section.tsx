@@ -193,12 +193,6 @@ export default function UmkmSection({
                                 {umkm.store_name}
                             </h3>
 
-                            {umkm.umkm_data?.is_verified === "VERIFIED" && (
-                                <div className="mt-2">
-                                    <VerifiedBadge />
-                                </div>
-                            )}
-
                             <div
                                 className="
                                     flex items-center gap-1
@@ -213,7 +207,15 @@ export default function UmkmSection({
                                 <Star className="w-3 h-3 lg:w-4 lg:h-4 fill-[#99FF33]" />
                                 {umkm.average_rating}
                             </div>
+
                         </div>
+
+                             {umkm.umkm_data?.is_verified === "VERIFIED" && (
+                                <div className="mt-2">
+                                    <VerifiedBadge />
+                                </div>
+                            )}
+
                         <div className="flex items-center gap-1 mt-2 text-[#B7B7B7] text-xs md:text-sm">
                             <MapPin className="w-5 h-5 pb-1" />
                             <span>

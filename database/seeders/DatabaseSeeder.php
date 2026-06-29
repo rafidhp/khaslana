@@ -24,9 +24,21 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]);
 
+            User::create([
+                'name' => 'Fajri Bagas',
+                'username' => 'fajribagas',
+                'email' => 'fajribagas@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'is_umkm' => true,
+            ]);
+
             $this->call([
                 IndonesiaSeeder::class,
                 CategorySeeder::class,
+                UmkmSeeder::class,
+                AttributeSeeder::class,
+                ProductSeeder::class,
             ]);
         } else {
             User::factory()->create([

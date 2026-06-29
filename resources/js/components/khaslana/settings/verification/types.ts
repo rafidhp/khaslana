@@ -1,3 +1,5 @@
+import { Umkm } from "@/types/umkm";
+
 export type VerificationStatus =
     | "not_submitted"
     | "pending"
@@ -6,6 +8,8 @@ export type VerificationStatus =
 
 export interface VerificationData {
     verification_status: VerificationStatus;
+
+    umkm: Umkm;
 
     admin_review_note?: string | null;
 

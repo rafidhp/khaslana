@@ -16,6 +16,7 @@ class AdditionalVerificationController extends Controller
     public function index()
     {
         $umkm = Umkm::with([
+            'user',
             'umkmData',
             'umkmImages',
             'umkmLocations',
@@ -37,6 +38,7 @@ class AdditionalVerificationController extends Controller
 
             'verification' => [
                 'verification_status' => $status,
+                'umkm' => $umkm,
                 'admin_review_note' => null,
 
                 'owner_name' => $umkm?->umkmData?->owner_name,

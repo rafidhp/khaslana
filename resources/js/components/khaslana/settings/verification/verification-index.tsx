@@ -24,9 +24,10 @@ export default function VerificationIndex({
     verification,
 }: Props) {
 
+console.log("verification", verification);
     const form = useForm({
 
-        owner_name: verification?.owner_name ?? "",
+        owner_name: verification?.umkm?.user?.name ?? "",
 
         nik: verification?.nik ?? "",
 
@@ -113,6 +114,14 @@ export default function VerificationIndex({
                             type="button"
                             disabled={disabled || form.processing}
                             onClick={handleSubmit}
+                            className="
+                            mt-2
+                             bg-[#99FF33]
+                             border border-[#99FF33]
+                             hover:bg-[#1E1B26]
+                             hover:text-[#99FF33]
+                             transition-colors duration-200
+                             hover:cursor-pointer"
                         >
                             {form.processing
                                 ? "Mengirim..."

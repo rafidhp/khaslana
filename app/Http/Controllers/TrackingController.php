@@ -106,9 +106,6 @@ class TrackingController extends Controller
         ]);
     }
 
-    /**
-     * Mengambil status terbaru saat halaman di-refresh (Biar UI nggak balik ke TUTUP)
-     */
     public function getCurrentStatus()
     {
         $userId = Auth::id();
@@ -133,7 +130,6 @@ class TrackingController extends Controller
             ]);
         }
 
-        // Kalau nggak ada atau is_active false, berarti TUTUP
         return response()->json(['statusToko' => 'TUTUP', 'statusLokasi' => 'TUTUP']);
     }
 

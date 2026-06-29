@@ -17,7 +17,7 @@ export default function AdditionalFeatures({
     setData,
 }: Props) {
     return (
-        <div className="space-y-4 mt-8">
+        <div className="space-y-4">
             <div>
                 <h3 className="text-lg font-semibold">
                     Aktifkan Fitur Tambahan (opsional)

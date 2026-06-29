@@ -9,6 +9,7 @@ import { product as productRoute } from '@/routes';
 import { create } from '@/routes/product';
 import type { BreadcrumbItem } from '@/types';
 import type { Product } from '@/types/product';
+import type { Promo } from '@/types/promo';
 
 interface CreateProductProps {
     products: Product[];
@@ -16,11 +17,13 @@ interface CreateProductProps {
         id: number;
         name: string;
     }[];
+    promos?: Promo[];
     product?: Product;
 }
 
 export default function CreateProduct({
     categories,
+    promos,
     product,
 }: CreateProductProps) {
     const { user } = useAuth();
@@ -63,6 +66,7 @@ export default function CreateProduct({
                     <CreateIndex
                         categories={categories}
                         product={product}
+                        promos={promos}
                     />
                 </>
             )}

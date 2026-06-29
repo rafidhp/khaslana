@@ -6,6 +6,7 @@ import {
 import DefaultStore from "@/assets/images/umkm-user/default-store.png";
 import type { Umkm } from "@/types/umkm";
 import { devPage } from "@/routes";
+import VerifiedBadge from "@/components/khaslana/verified-badge";
 
 interface Review {
     id: number;
@@ -41,6 +42,11 @@ export default function HeroSection({
                 <h1 className="mt-6 text-white text-5xl md:text-7xl tracking-wider font-bold leading-[1.05]">
                     {umkmData.store_name}
                 </h1>
+                {umkmData.umkm_data?.is_verified === "VERIFIED" && (
+                    <div className="mt-4">
+                        <VerifiedBadge size="md" />
+                    </div>
+                )}
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-4 text-[#D1D1D1]">
                     <div className="flex items-center gap-1">
                         <Star className="pb-1 w-6 md:w-7 h-6 md:h-7 fill-[#99FF33] text-[#99FF33]" />
@@ -79,7 +85,7 @@ export default function HeroSection({
                 </div>
             </div>
 
-            <div className="relative w-full max-w-[500px]">
+            <div className="relative w-full max-w-125">
                 <div className="overflow-hidden rounded-3xl border border-white/10">
                     <img
                         src={
@@ -88,12 +94,12 @@ export default function HeroSection({
                                 : DefaultStore
                         }
                         alt="Cafe"
-                        className="max-h-[400px] w-full object-cover"
+                        className="max-h-100 w-full object-cover"
                     />
                     <div
                         className="
                             absolute inset-0
-                            bg-gradient-to-t
+                            bg-linear-to-t
                             from-black/80
                             via-black/20
                             to-transparent

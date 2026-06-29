@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { Eye, Pencil, Trash2, PackageOpen } from 'lucide-react';
+import { Eye, Pencil, Trash2, PackageOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import DeleteDialog from '@/components/khaslana/product/delete-dialog';
 import { create, destroy, edit, show } from '@/routes/product';
@@ -126,11 +126,11 @@ export default function ProductIndex({
                                                 onDelete={() => handleDelete(product.id)}
                                             >
                                                 <button
-                                                    disabled={product.sold_count != 0}
+                                                    disabled={product.sold_count != null}
                                                     type="button"
                                                     className="p-2 rounded-md hover:bg-red-500/20 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed transition-colors duration-200"
                                                 >
-                                                    {product.sold_count != 0 ? (
+                                                    {product.sold_count != null ? (
                                                         <Trash2 size={16} className="text-red-500/20" />
                                                     ) : (
                                                         <Trash2 size={16} className="text-red-500" />
@@ -148,34 +148,73 @@ export default function ProductIndex({
 
             {/* paginatoin */}
             <div className="flex justify-center gap-2 p-4 border-t border-[#99FF33]/50">
-                {products.links.map(
-                    (link, index) => (
-                        <Link
-                            key={index}
-                            href={link.url || '#'}
-                            preserveScroll
-                            className={`
-                                px-3 py-2 rounded-md text-sm border
-                                ${
-                                    link.active
-                                        ? `
-                                            bg-[#99FF33]
-                                            text-[#1E1B26]
-                                            border-[#99FF33]
-                                        `
-                                        : `
-                                            border-white/10
-                                            hover:border-[#99FF33]
-                                        `
-                                }
-                            `}
-                            dangerouslySetInnerHTML={{
-                                __html:
-                                    link.label,
-                            }}
-                        />
-                    )
-                )}
+                {products.links
+                    .filter((link) => {
+                        if (products.last_page === 1) {
+                            return !link.label.includes("Previous") && !link.label.includes("Next");
+                        }
+
+                        if (
+                            products.current_page === 1 &&
+                            link.label.includes("Previous")
+                        ) {
+                            return false;
+                        }
+
+                        if (
+                            products.current_page === products.last_page &&
+                            link.label.includes("Next")
+                        ) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    .map((link, index) => {
+                        let label = link.label;
+
+                        if (label.includes("Previous")) {
+                            label = "Sebelumnya";
+                        }
+
+                        if (label.includes("Next")) {
+                            label = "Setelahnya";
+                        }
+
+                        return (
+                            <Link
+                                key={index}
+                                href={link.url || "#"}
+                                preserveScroll
+                                className={`
+                                    flex justify-center items-center gap-1
+                                    px-3 py-2 rounded-md text-sm border transition-colors
+                                    ${
+                                        link.active
+                                            ? `
+                                                bg-[#99FF33]
+                                                text-[#1E1B26]
+                                                border-[#99FF33]
+                                            `
+                                            : `
+                                                border-white/10
+                                                hover:border-[#99FF33]
+                                            `
+                                    }
+                                    ${!link.url && "pointer-events-none opacity-50"}
+                                `}
+                            >
+                                {label === 'Sebelumnya' && (
+                                    <ChevronLeft className='h-4 w-4' />
+                                )}
+                                {label}
+                                {label === 'Setelahnya' && (
+                                    <ChevronRight className='h-4 w-4' />
+                                )}
+                            </Link>
+                        );
+                    })
+                }
             </div>
         </div>
     )

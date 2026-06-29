@@ -20,7 +20,21 @@ class GoogleController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
-                $baseUsername = explode('@', $googleUser->getEmail())[0];
+                $rawBaseUsername = explode('@', $googleUser->getEmail())[0];
+                $baseUsername = preg_replace('/[^a-zA-Z0-9_]/', '_', $rawBaseUsername);
+
+                if (preg_match('/^_+$/', $baseUsername)) {
+                    $baseUsername = 'user_' . str()->random(5);
+                }
+
+                if (empty($baseUsername) || preg_match('/^_+$/', $baseUsername)) {
+                    $baseUsername = 'user_' . str()->random(5);
+                }
+
+                if (strlen($baseUsername) < 3) {
+                    $baseUsername = str_pad($baseUsername, 3, '_');
+                }
+
                 $username = $baseUsername;
                 $i = 1;
 
@@ -41,7 +55,7 @@ class GoogleController extends Controller
 
             return redirect()->route('home');
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Login Google gagal');
+            return redirect()->route('login')->with('error', 'Login Google gagal: ' . $e->getMessage());
         }
     }
 }

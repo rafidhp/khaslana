@@ -1,10 +1,10 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
-import { Eye, PackageOpen } from 'lucide-react';
+import { Eye, ClipboardList, ChevronLeft, ChevronRight } from 'lucide-react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create } from '@/routes/product';
+import NotesDialog from '@/components/khaslana/dashboard/order/notes-dialog';
 import type { PaginatedOrders } from "@/types/paginated-order";
 import type { Order } from '@/types/order';
 
@@ -76,29 +76,32 @@ export default function OrderIndex({
                 <table className="w-full">
                     <thead>
                         <tr className="border-b border-[#99FF33]/50 bg-[#99FF33]/90 text-[#1B1E26] text-sm md:text-base">
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-center">
                                 No
                             </th>
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-center">
                                 Produk
                             </th>
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-center">
                                 Nama Pembeli
                             </th>
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-center">
                                 Tipe Order
                             </th>
-                            <th className="p-4 text-left">
+                            <th className="p-4 text-center">
                                 Total Harga
                             </th>
-                            <th className="p-4 text-lef">
+                            <th className="p-4 text-center">
                                 Status saat ini
                             </th>
-                            <th className="p-4 text-lef">
+                            <th className="p-4 text-center">
                                 Ubah status menjadi
                             </th>
                             <th className="p-4 text-center">
-                                Aksi
+                                Catatan
+                            </th>
+                            <th className="p-4 text-center">
+                                Detail
                             </th>
                         </tr>
                     </thead>
@@ -106,14 +109,13 @@ export default function OrderIndex({
                         {orders.data.length === 0 ? (
                             <tr>
                                 <td
-                                    colSpan={6}
+                                    colSpan={9}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     <div className='flex flex-col items-center'>
-                                        <PackageOpen className='h-32 w-32 text-center text-[#99FF33] mb-4' />
+                                        <ClipboardList className='h-32 w-32 text-center text-[#99FF33] mb-4' />
                                         <span className='flex gap-1'>
-                                            Belum data ada produk. Ayo tambahkan produk Anda
-                                            <a href={create().url} className='text-[#99FF33] underline'>disini</a>.
+                                            Belum data order yang masuk ke toko Anda.
                                         </span>
                                     </div>
                                 </td>
@@ -124,22 +126,22 @@ export default function OrderIndex({
                                     key={order.id}
                                     className="border-b border-white/5 hover:bg-white/5 transition"
                                 >
-                                    <td className="p-4 text-sm md:text-base">
+                                    <td className="p-4 text-sm md:text-base text-center">
                                         {(orders.from ?? 1) + index}
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 font-medium text-sm md:text-base text-center">
                                         {order.order_items?.[0].product_name}
                                     </td>
-                                    <td className="p-4 font-medium text-sm md:text-base">
+                                    <td className="p-4 font-medium text-sm md:text-base text-center">
                                         {order.user?.name}
                                     </td>
-                                    <td className="p-4 font-medium text-sm md:text-base">
+                                    <td className="p-4 font-medium text-sm md:text-base text-center">
                                         {order.type}
                                     </td>
-                                    <td className="p-4 text-xs md:text-sm text-muted-foreground max-w-xs">
+                                    <td className="p-4 text-sm md:text-base text-center">
                                         {formatRupiah(order.total_price)}
                                     </td>
-                                    <td className="py-4 text-sm md:text-base">
+                                    <td className="py-4 text-sm md:text-base text-center">
                                         <div className="flex justify-center">
                                             <Badge
                                                 className={`uppercase ${
@@ -154,8 +156,8 @@ export default function OrderIndex({
                                             </Badge>
                                         </div>
                                     </td>
-                                    <td className="p-4 text-sm md:text-base">
-                                        <div className='flex justify-center' onClick={(e) => e.stopPropagation()}> 
+                                    <td className="p-4 text-sm md:text-base text-center">
+                                        <div className='flex justify-center items-center' onClick={(e) => e.stopPropagation()}> 
                                             {(() => {
                                                 const nextStatus = getNextStatus(order);
 
@@ -188,9 +190,17 @@ export default function OrderIndex({
                                             })()}
                                         </div>
                                     </td>
-
-                                    <td className="p-4">
-                                        <div className="flex justify-center gap-2">
+                                    <td className="p-4 text-sm md:text-base text-center">
+                                        <div className='flex justify-center items-center'>
+                                            {order.notes ? (
+                                                <NotesDialog notes={order.notes} />
+                                            ) : (
+                                                <span>Tidak ada</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className='p-4 text-sm md:text-base text-center'>
+                                        <div className='flex justify-center items-center'>
                                             <Link
                                                 href={`/dashboard/order/${order.id}`}
                                                 className="p-2 rounded-md group hover:bg-[#99FF33]/20 transition-colors duration-200"
@@ -208,34 +218,72 @@ export default function OrderIndex({
 
             {/* paginatoin */}
             <div className="flex justify-center gap-2 p-4 border-t border-[#99FF33]/50">
-                {orders.links.map(
-                    (link, index) => (
-                        <Link
-                            key={index}
-                            href={link.url || '#'}
-                            preserveScroll
-                            className={`
-                                px-3 py-2 rounded-md text-sm border
-                                ${
-                                    link.active
-                                        ? `
-                                            bg-[#99FF33]
-                                            text-[#1E1B26]
-                                            border-[#99FF33]
-                                        `
-                                        : `
-                                            border-white/10
-                                            hover:border-[#99FF33]
-                                        `
-                                }
-                            `}
-                            dangerouslySetInnerHTML={{
-                                __html:
-                                    link.label,
-                            }}
-                        />
-                    )
-                )}
+                {orders.links
+                    .filter((link) => {
+                        if (orders.last_page === 1) {
+                            return !link.label.includes("Previous") && !link.label.includes("Next");
+                        }
+
+                        if (
+                            orders.current_page === 1 &&
+                            link.label.includes("Previous")
+                        ) {
+                            return false;
+                        }
+
+                        if (
+                            orders.current_page === orders.last_page &&
+                            link.label.includes("Next")
+                        ) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    .map((link, index) => {
+                        let label = link.label;
+
+                        if (label.includes("Previous")) {
+                            label = "Sebelumnya";
+                        }
+
+                        if (label.includes("Next")) {
+                            label = "Setelahnya";
+                        }
+
+                        return (
+                            <Link
+                                key={index}
+                                href={link.url || "#"}
+                                preserveScroll
+                                className={`
+                                    px-3 py-2 rounded-md text-sm border transition-colors
+                                    ${
+                                        link.active
+                                            ? `
+                                                bg-[#99FF33]
+                                                text-[#1E1B26]
+                                                border-[#99FF33]
+                                            `
+                                            : `
+                                                border-white/10
+                                                hover:border-[#99FF33]
+                                            `
+                                    }
+                                    ${!link.url && "pointer-events-none opacity-50"}
+                                `}
+                            >
+                                {label === 'Sebelumnya' && (
+                                    <ChevronLeft className='h-4 w-4' />
+                                )}
+                                {label}
+                                {label === 'Setelahnya' && (
+                                    <ChevronRight className='h-4 w-4' />
+                                )}
+                            </Link>
+                        );
+                    })
+                }
             </div>
         </div>
     )

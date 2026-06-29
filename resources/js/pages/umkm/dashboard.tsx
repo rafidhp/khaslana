@@ -1,4 +1,5 @@
 import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
 import { ShoppingBag, DollarSign, Package, Star } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import SwitchOff from '@/assets/images/dashboard/switch-off.svg';
@@ -9,10 +10,11 @@ import CtaCard from '@/components/khaslana/dashboard/cta-card';
 import { useAuth } from '@/hooks/use-auth';
 import AppLayout from '@/layouts/app-layout';
 import { showSuccessToast } from '@/lib/toast';
-import { dashboard } from '@/routes';
+import { dashboard, storeManagement, home } from '@/routes';
 import { storeStatusRoute } from '@/routes/dashboard';
 import type { BreadcrumbItem } from '@/types';
 import type { Order } from '@/types/order';
+import ConfirmationDialog from '@/components/khaslana/confirmation-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -84,6 +86,10 @@ export default function Dashboard({
     latest_orders
 }: DashboardProps) {
     const { user } = useAuth();
+    const [showWelcome, setShowWelcome] = useState(() => {
+        const isFirstVisit = sessionStorage.getItem('has_seen_welcome');
+        return !user.is_umkm && !isFirstVisit;
+    });
     const handleToggleStore = () => {
         router.post(storeStatusRoute(), {
             status: status === 'TUTUP' ? true : false,
@@ -94,6 +100,20 @@ export default function Dashboard({
             }
         });
     };
+
+    const handleNextStep = () => {
+        sessionStorage.setItem('has_seen_welcome', 'true');
+        setShowWelcome(false);
+
+        router.visit(storeManagement());
+    }
+
+    const handleBack = () => {
+        sessionStorage.removeItem('has_seen_welcome');
+        setShowWelcome(false);
+
+        router.visit(home());
+    }
 
     const formatRupiah = (value: number | undefined) =>
         new Intl.NumberFormat("id-ID", {
@@ -283,8 +303,17 @@ export default function Dashboard({
                             )}
                         </div>
                     </div>
+
                 </>
             )}
+            <ConfirmationDialog
+                open={showWelcome}
+                title="Selamat Datang UMKM Khaslana 🎉"
+                description="Untuk mulai berjualan di Khaslana, silakan lengkapi informasi toko Anda terlebih dahulu."
+                confirmText="Buat Toko"
+                onCancel={handleBack}
+                onConfirm={handleNextStep}
+            />
         </AppLayout>
     );
 }

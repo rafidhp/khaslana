@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { showErrorToast } from "@/lib/toast";
 import { store, update } from "@/routes/product";
 import { Product } from "@/types/product";
+import { Promo } from "@/types/promo";
 
 interface CreateIndexProps {
     categories: {
@@ -27,26 +28,28 @@ interface CreateIndexProps {
         name: string;
     }[];
     product?: Product;
+    promos?: Promo[];
 }
 
 export default function CreateIndex({
     categories,
     product,
+    promos = [],
 }: CreateIndexProps) {
-    const [isAttributeValueDuplicate, setIsAttributeValueDuplicate] = useState(false)
-    const [isAttributeNameDuplicate, setIsAttributeNameDuplicate] = useState(false)
+    console.log(promos)
     const [images, setImages] = useState<
         (
             | File
             | {
-                  id: number;
-                  image: string;
-              }
+                id: number;
+                image: string;
+            }
         )[]
     >(product?.product_images ?? []);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const form = useForm({
         category_id: product?.category_id ? String(product.category_id) : '',
+        promo_id: product?.promo_id ? String(product.promo_id) : 'none',
         name: product?.name ?? '',
         description: product?.description ?? '',
         images: [] as File[],
@@ -111,6 +114,41 @@ export default function CreateIndex({
         }));
     })();
     const [attributes, setAttributes] = useState(initialAttributes);
+    const normalizedNames = attributes
+        .map(attr => attr.name.trim().toLowerCase())
+        .filter(Boolean);
+
+    const duplicateNames = normalizedNames.filter(
+        (name, index) => normalizedNames.indexOf(name) !== index
+    );
+
+    const duplicateAttributeValues = attributes.reduce<
+        Record<number, string[]>
+    >((acc, attribute, attributeIndex) => {
+        const normalizedValues = attribute.values
+            .map(v => v.trim().toLowerCase())
+            .filter(Boolean);
+
+        const duplicates = normalizedValues.filter(
+            (value, index) => normalizedValues.indexOf(value) !== index
+        );
+
+        if (duplicates.length > 0) {
+            acc[attributeIndex] = duplicates;
+        }
+        return acc;
+    }, {});
+
+    const hasDuplicateAttributes = duplicateNames.length > 0;
+    const hasDuplicateAttributeValues = Object.keys(duplicateAttributeValues).length > 0;
+
+    const disableVariants = hasDuplicateAttributes || hasDuplicateAttributeValues;;
+
+    console.log({
+        duplicateNames,
+        hasDuplicateAttributes,
+        attributes,
+    });
 
     const initialVariantData = (() => {
         if (!product) return {};
@@ -261,7 +299,7 @@ export default function CreateIndex({
         let combinations = validAttributes[0].values.map(
             (value) => [
                 {
-                    attribute:validAttributes[0].name,
+                    attribute: validAttributes[0].name,
                     value,
                 },
             ]
@@ -392,6 +430,14 @@ export default function CreateIndex({
     };
 
     const handleSubmit = () => {
+        if (hasDuplicateAttributes) {
+            showErrorToast(
+                'Nama atribut duplikat',
+                'Nama atribut harus berbeda satu sama lain'
+            );
+            return;
+        }
+
         const formattedAttributes = attributes
             .filter(attribute => attribute.name.trim() !== "")
             .map(
@@ -412,17 +458,13 @@ export default function CreateIndex({
             ),
         }));
 
-        console.log(form.data);
-        console.log(form.errors);
-        console.log(formattedAttributes);
-        console.log(formattedVariants);
         form.transform(data => ({
             ...data,
             attributes: formattedAttributes,
             variants: formattedVariants,
         }));
 
-        const submitUrl = product? update(product.id).url : store().url;
+        const submitUrl = product ? update(product.id).url : store().url;
 
         if (product) {
             form.put(submitUrl,
@@ -440,7 +482,7 @@ export default function CreateIndex({
             );
         }
     };
-    
+
     return (
         <div className="space-y-6">
             <Card className="bg-transparent border-2 border-[#99FF33]/50">
@@ -509,6 +551,63 @@ export default function CreateIndex({
                     </div>
                     <div className="space-y-2">
                         <Label>
+                            Promo Toko (Opsional)
+                        </Label>
+                        <Select
+                            value={form.data.promo_id}
+                            onValueChange={(value) =>
+                                form.setData("promo_id", value)
+                            }
+                        >
+                            <SelectTrigger
+                                className="
+                                    mt-2
+                                    border-gray-500/30
+                                    bg-transparent
+                                    transition-all duration-200
+                                    focus:ring-0
+                                    focus:border-[#99FF33]
+                                    data-[state=open]:border-[#99FF33]
+                                    hover:border-[#99FF33]
+                                "
+                            >
+                                <SelectValue placeholder="Pilih promo (jika ada)" />
+                            </SelectTrigger>
+                            <SelectContent
+                                className="
+                                    border-gray-500/30
+                                    bg-[#191720]
+                                    text-white
+                                    my-2
+                                "
+                            >
+                                <SelectItem value="none" disabled>
+                                    {promos.length <= 0 ? (
+                                        'Tidak ada promo'
+                                    ) : (
+                                        'Pilih Promo'
+                                    )}
+                                </SelectItem>
+                                {promos.map(
+                                    (promo) => (
+                                        <SelectItem
+                                            key={promo.id}
+                                            value={String(promo.id)}
+                                        >
+                                            {promo.name} {promo.type === 'DISKON' && promo.discount_percent ? `(-${promo.discount_percent}%)` : ''}
+                                        </SelectItem>
+                                    )
+                                )}
+                            </SelectContent>
+                        </Select>
+                        {form.errors.promo_id && (
+                            <p className="text-xs text-red-500">
+                                {form.errors.promo_id}
+                            </p>
+                        )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label>
                             Kategori <span className="text-red-400"> *</span>
                         </Label>
                         <Select
@@ -557,7 +656,7 @@ export default function CreateIndex({
                             </p>
                         )}
                     </div>
-                   <div className="space-y-3 flex flex-col mt-5">
+                    <div className="space-y-3">
                         <Label>
                             Foto Produk <span className="text-red-400"> *</span>
                         </Label>
@@ -619,9 +718,9 @@ export default function CreateIndex({
                                     >
                                         <img
                                             src={image instanceof File
-                                                    ? URL.createObjectURL(image)
-                                                    : `/storage/${image.image}`
-                                                }
+                                                ? URL.createObjectURL(image)
+                                                : `/storage/${image.image}`
+                                            }
                                             alt={image instanceof File ? image.name : "product-image"}
                                             className="h-40 w-full object-cover" />
 
@@ -713,6 +812,13 @@ export default function CreateIndex({
                                                 transition-colors duration-200
                                             "
                                         />
+                                        {hasDuplicateAttributes && duplicateNames.includes(
+                                            attribute.name.trim().toLowerCase()
+                                        ) && (
+                                            <p className="text-xs text-red-500 mt-1">
+                                                Nama atribut tidak boleh sama dengan atribut sebelumnya
+                                            </p>
+                                        )}
                                         {form.errors[`attributes.${attributeIndex}.name`] && (
                                             <p className="text-xs text-red-500">
                                                 {form.errors[`attributes.${attributeIndex}.name`]}
@@ -735,10 +841,9 @@ export default function CreateIndex({
                                                         onChange={(e) =>
                                                             updateAttributeValue(attributeIndex, valueIndex, e.target.value)
                                                         }
-                                                        placeholder={`Contoh: Merah ${
-                                                            valueIndex +
+                                                        placeholder={`Contoh: Merah ${valueIndex +
                                                             1
-                                                        }`}
+                                                            }`}
                                                         className="
                                                             border-gray-500/30
                                                             focus-visible:border-[#99FF33]
@@ -748,21 +853,29 @@ export default function CreateIndex({
                                                             valueIndex !==
                                                             attribute.values
                                                                 .length -
-                                                                1
+                                                            1
                                                         }
                                                     />
-
+                                                    {duplicateAttributeValues[
+                                                        attributeIndex
+                                                    ]?.includes(
+                                                        value.trim().toLowerCase()
+                                                    ) && value.trim() !== '' && (
+                                                        <p className="text-xs text-red-500">
+                                                            Isi atribut tidak boleh sama
+                                                        </p>
+                                                    )}
                                                     {form.errors[
                                                         `attributes.${attributeIndex}.values.${valueIndex}`
                                                     ] && (
-                                                        <p className="text-xs text-red-500">
-                                                            {
-                                                                form.errors[
+                                                            <p className="text-xs text-red-500">
+                                                                {
+                                                                    form.errors[
                                                                     `attributes.${attributeIndex}.values.${valueIndex}`
-                                                                ]
-                                                            }
-                                                        </p>
-                                                    )}
+                                                                    ]
+                                                                }
+                                                            </p>
+                                                        )}
                                                 </div>
                                             )
                                         )}
@@ -770,16 +883,16 @@ export default function CreateIndex({
 
                                     {attributes.length >
                                         1 && (
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() =>
-                                                removeAttribute(attributeIndex)
-                                            }
-                                        >
-                                            Hapus Atribut
-                                        </Button>
-                                    )}
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                onClick={() =>
+                                                    removeAttribute(attributeIndex)
+                                                }
+                                            >
+                                                Hapus Atribut
+                                            </Button>
+                                        )}
                                 </div>
                             )
                         )}
@@ -794,7 +907,7 @@ export default function CreateIndex({
                             </p>
                         </div>
 
-                        {generatedVariants.map(
+                        {!disableVariants && generatedVariants.map(
                             (variant, index) => (
                                 <div
                                     key={variant.key}
@@ -806,8 +919,8 @@ export default function CreateIndex({
                                             "Produk"}{" "}
                                         •{" "}
                                         {variant.attributes
-                                        .map((item) => `${item.attribute}: ${item.value}`)
-                                        .join(" | ")}
+                                            .map((item) => `${item.attribute}: ${item.value}`)
+                                            .join(" | ")}
                                     </div>
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
@@ -857,6 +970,7 @@ export default function CreateIndex({
                                                         e.target.value
                                                     )
                                                 }
+                                                min={0}
                                                 className="
                                                     mt-2
                                                     border-gray-500/30
@@ -877,11 +991,18 @@ export default function CreateIndex({
                                 </div>
                             )
                         )}
+                        {disableVariants && (
+                            <div className="rounded-lg border border-red-500/30 p-4">
+                                <p className="text-sm text-red-500">
+                                    Perbaiki nama atribut yang duplikat terlebih dahulu untuk menghasilkan variant produk.
+                                </p>
+                            </div>
+                        )}
                     </div>
                     <Button
                         onClick={handleSubmit}
-                        disabled={form.processing || isAttributeValueDuplicate || isAttributeNameDuplicate}
-                        className={`
+                        disabled={form.processing || hasDuplicateAttributes}
+                        className="
                             mt-4
                             bg-[#99FF33]
                             border border-[#99FF33]
@@ -889,12 +1010,14 @@ export default function CreateIndex({
                             hover:bg-[#1E1B26]
                             hover:text-[#99FF33]
                             transition-colors duration-200
-                            cursor-pointer
-                        `}
+                            cursor-pointer disabled:cursor-not-allowed!
+                            disabled:pointer-events-auto disabled:bg-[#99FF33]
+                            disabled:text-[#1E1B26]
+                        "
                     >
                         {form.processing
                             ? "Menyimpan..." : product
-                            ? "Update Produk" : "Simpan Produk"
+                                ? "Update Produk" : "Simpan Produk"
                         }
                     </Button>
                 </CardContent>

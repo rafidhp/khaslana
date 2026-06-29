@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/use-auth';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
+import { additionalVerification } from '@/routes';
 // import { edit as editAppearance } from '@/routes/appearance';
 import { storeManagement } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -32,6 +33,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         {
             title: user.is_umkm ? 'Kelola Toko' : 'Data UMKM',
             href: storeManagement(),
+            icon: null,
+        },
+        {
+            title: 'Verifikasi UMKM',
+            href: additionalVerification(),
             icon: null,
         },
         {

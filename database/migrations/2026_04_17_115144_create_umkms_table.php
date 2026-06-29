@@ -63,6 +63,12 @@ return new class extends Migration
             $table->char('nik', 16)->nullable()->unique();
             $table->string('image_hash')->nullable()->unique(); // ktp verification needs
             $table->text('file_path')->nullable();
+            $table->enum('is_verified', [
+                'VERIFIED',
+                'UNVERIFIED',
+                'PENDING',
+                'REJECT',
+            ])->default('UNVERIFIED');
             $table->timestamps();
         });
 

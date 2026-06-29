@@ -1,3 +1,7 @@
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import ArrowKananAtasHover from '@/assets/images/landing-page/tracking-section/arrow-kanan-atas-hover.png';
 import ArrowKananAtas from '@/assets/images/landing-page/tracking-section/arrow-kanan-atas.png';
 import BilungNaruto from '@/assets/images/landing-page/tracking-section/bilung-naruto.png';
@@ -5,6 +9,17 @@ import Map from '@/assets/images/landing-page/tracking-section/map.png';
 import { tracking } from '@/routes/umkm';
 
 export default function TrackkingSection() {
+    const { user } = useAuth();
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+    const handleDetailClicked = () => {
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.visit(tracking());
+        }
+    }
     return (
         <section className="px-6 lg:px-[55px] pb-20 flex justify-center items-center z-10">
             <div className="max-w-[1400px] w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -22,9 +37,9 @@ export default function TrackkingSection() {
                         Dengan fitur Live Tracking, lokasi penjual dapat dipantau secara langsung melalui 
                         aplikasi — kapan saja, di mana saja.
                     </p>
-                    <a
-                        href={tracking().url}
-                        className="btn-secondary-khaslana flex items-center gap-2 w-full md:w-fit py-4 px-24 text-sm group"
+                    <div
+                        onClick={handleDetailClicked}
+                        className="btn-secondary-khaslana flex items-center gap-2 w-full md:w-fit py-4 px-24 text-sm group cursor-pointer"
                     >
                         Selengkapnya
                         <div className="relative w-5 h-5">
@@ -39,7 +54,7 @@ export default function TrackkingSection() {
                                 className="absolute inset-0 w-5 h-5 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                             />
                         </div>
-                    </a>
+                    </div>
                 </div>
                 <div className="flex-1 order-2 lg:order-1 w-full">
                     <div className="relative rounded-[18px] overflow-hidden border border-[#99ff33] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
@@ -109,6 +124,11 @@ export default function TrackkingSection() {
                     </div>
                 </div>
             </div>
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </section>
     );
 }

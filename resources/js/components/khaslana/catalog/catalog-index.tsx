@@ -45,7 +45,7 @@ export default function CatalogIndex({
         <div className="flex flex-col w-full px-6 pt-32 lg:px-17.5 mx-auto">
             <HeroSection
                 categories={categories}
-                search={search}
+                search={search} 
                 selectedCategory={selectedCategory}
                 onSearchChange={setSearch}
                 onCategoryChange={setSelectedCategory}

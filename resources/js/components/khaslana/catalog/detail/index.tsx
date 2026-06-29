@@ -1,7 +1,7 @@
 import HeroSection from "@/components/khaslana/catalog/detail/hero-section";
 import type { Product } from "@/types/product"
 
-import ReviewSection from "./review-section";
+import ReviewSection from "@/components/khaslana/catalog/detail/review-section";
 
 interface IndexProps {
     product: Product;
@@ -13,7 +13,7 @@ export default function Index({
     return (
         <div className="flex flex-col gap-20 mb-18">
             <HeroSection product={product} />
-            <ReviewSection />
+            <ReviewSection product={product} />
         </div>
     )
 }

@@ -14,6 +14,7 @@ class UmkmData extends Model
         'nik',
         'image_hash',
         'file_path',
+        'is_verified',
     ];
 
     public function umkm() {

@@ -1,4 +1,4 @@
-import { router, Link } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import {
     ThumbsUp,
     MessageCircleMore,
@@ -10,6 +10,7 @@ import { useState } from "react";
 
 import ProfileIcon from "@/assets/icons/default-profile.png";
 import DeleteConfirmationDialog from "@/components/khaslana/delete-confirmation-dialog";
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import { useAuth } from "@/hooks/use-auth";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
 import { create } from "@/routes/community";
@@ -26,20 +27,35 @@ export default function CommunityIndex({
     const { user } = useAuth();
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+    const handleCardClicked = (postId: number) => {
+        if(!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.visit(show(postId))
+        }
+    }
 
     const handleLike = (postId: number, is_liked: boolean) => {
-        router.post(like(postId).url, {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                if(!is_liked) {
-                    showSuccessToast("Berhasil menyukai postingan");
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.post(like(postId).url, {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    if(!is_liked) {
+                        showSuccessToast("Berhasil menyukai postingan");
+                    }
+                },
+                onError: (err) => {
+                    console.error("Gagal melakukan like: ", err);
+                    showErrorToast("Gagal menyukai postingan");
                 }
-            },
-            onError: (err) => {
-                console.error("Gagal melakukan like: ", err);
-                showErrorToast("Gagal menyukai postingan");
-            }
-        })
+            })
+        }
     }
 
     const handleDeletePost = () => {
@@ -63,6 +79,15 @@ export default function CommunityIndex({
         setIsDeleteDialogOpen(true);
     };
 
+    const handleCreateClicked = () => {
+        if (!user) {
+            setShowLoginDialog(true);
+            return;
+        } else {
+            router.visit(create());
+        }
+    }
+
     return (
         <div className="relative flex flex-col items-center pt-20 md:pt-28 px-6 md:px-12 lg:px-17.5 w-full min-h-screen">
             <div className="flex flex-col md:flex-row justify-between w-full pt-8 pb-10 max-md:pb-5 gap-3">
@@ -75,8 +100,8 @@ export default function CommunityIndex({
                     </p>
                 </section>
                 <div className="flex items-start">
-                    <Link
-                        href={create()}
+                    <div
+                        onClick={handleCreateClicked}
                         className="
                             flex items-center
                             border border-[#99FF33] rounded-xl
@@ -90,7 +115,7 @@ export default function CommunityIndex({
                     >
                         <Plus className="h-5 w-5 md:h-6 md:w-6" />
                         Buat Postingan
-                    </Link>
+                    </div>
                 </div>
             </div>
             
@@ -102,10 +127,10 @@ export default function CommunityIndex({
                             const isMyPost = user && post.user_id === user.id;
 
                             return (
-                                <Link
-                                    href={show(post.id)}
+                                <div
+                                    onClick={() => handleCardClicked(post.id)}
                                     key={post.id}
-                                    className="w-full flex flex-col gap-4 bg-[#222] p-6 rounded-[15px]"
+                                    className="w-full flex flex-col gap-4 bg-[#222] p-6 rounded-[15px] cursor-pointer"
                                 >
                                     <div className="flex flex-col gap-4">
                                         <div className="flex items-start justify-between gap-4">
@@ -225,7 +250,7 @@ export default function CommunityIndex({
                                             </button>
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             )
                         })
                     ) : (
@@ -240,7 +265,7 @@ export default function CommunityIndex({
                 </div>
             </div>
 
-            {/* delete dialog */}
+            {/* dialogs */}
             <DeleteConfirmationDialog
                 open={isDeleteDialogOpen}
                 title="Hapus Postingan"
@@ -250,6 +275,11 @@ export default function CommunityIndex({
                     setSelectedPostId(null);
                 }}
                 onConfirm={handleDeletePost}
+            />
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
             />
         </div>
     );

@@ -279,6 +279,7 @@ export default function Address({
                 {isLoadingLocation
                     ? "Mendeteksi lokasi..."
                     : "Gunakan Lokasi Saat Ini"}
+                <span className="text-red-500"> *</span>
             </Button>
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">

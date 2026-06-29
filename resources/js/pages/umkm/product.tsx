@@ -1,5 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState, useMemo } from 'react';
+import { Plus } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import {
@@ -73,6 +74,8 @@ export default function Product({
     }, [props.flash]);
 
     const filteredProducts = useMemo(() => {
+        if (!products?.data) return products;
+
         return {
             ...products,
             data: products.data.filter((product) => {
@@ -98,25 +101,26 @@ export default function Product({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Products' />
+            <Head title='Produk' />
             {!user.is_umkm ? (
                 <CtaCard />   
             ) : (
                 <>
                     {/* header */}
-                    <div className="flex justify-between items-end gap-2">
+                    <div className="flex justify-between items-center gap-2">
                         <div className='flex flex-col items-start'>
                             <h1 className="text-3xl font-bold">
                                 Produk
                             </h1>
                             <p className="text-muted-foreground">
-                                Kelola produk produk Anda
+                                Kelola produk Anda
                             </p>
                         </div>
                         <Link
                             href={create()}
                             className="
-                                flex
+                                flex gap-2
+                                items-center justify-center
                                 bg-[#99FF33]
                                 border border-[#99FF33]
                                 py-2 px-4 rounded-md
@@ -127,6 +131,7 @@ export default function Product({
                                 cursor-pointer
                             "
                         >
+                            <Plus className='h-5 w-5' />
                             Tambah Produk
                         </Link>
                     </div>

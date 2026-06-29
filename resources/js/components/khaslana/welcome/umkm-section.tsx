@@ -1,7 +1,6 @@
-// import AntingPerak from '@/assets/images/landing-page/umkm-section/anting-perak.png';
-// import KopiGayo from '@/assets/images/landing-page/umkm-section/kopi-gayo.png';
-// import SendalGarut from '@/assets/images/landing-page/umkm-section/sendal-garut.png';
-// import VasKeramik from '@/assets/images/landing-page/umkm-section/vas-keramik.png';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import LoginRequiredDialog from '@/components/khaslana/login-required-dialog';
 import type { Product } from '@/types/product';
 import { umkm, devPage } from '@/routes';
 
@@ -9,34 +8,18 @@ interface UmkmSectionProps {
     products: Product[];
 }
 
-// const products = [
-//     {
-//         name: "Vas Keramik Kasongan",
-//         price: "Rp 185.000",
-//         image: VasKeramik,
-//     },
-//     {
-//         name: "Sandalias Kulit Garut",
-//         price: "Rp 320.000",
-//         image: SendalGarut,
-//     },
-//     {
-//         name: "Kopi Arabica Gayo",
-//         price: "Rp 85.000",
-//         image: KopiGayo,
-//     },
-//     {
-//         name: "Anting Perak Kotagede",
-//         price: "Rp 450.000",
-//         image: AntingPerak,
-//     },
-// ];
-
 export default function UmkmSection({
     products,
 }: UmkmSectionProps) {
-    const handleDevPage = () => {
-        window.location.pathname = devPage().url;
+    const { user } = useAuth();
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+    const handleAddToCart = () => {
+        if (!user) {
+            setShowLoginDialog(true);
+        } else {
+            window.location.pathname = devPage().url;
+        }
     }
 
     return (
@@ -73,7 +56,7 @@ export default function UmkmSection({
                                 {item.product_variants?.[0].price}
                             </h4>
                             <div className="flex items-center justify-center text-center border border-[#494847] py-2.5 w-full rounded-lg mt-2 text-white hover:border-[#99ff33] hover:cursor-pointer transition">
-                                <p onClick={handleDevPage} className="w-full text-[13px] md:text-sm">
+                                <p onClick={handleAddToCart} className="w-full text-[13px] md:text-sm">
                                     + Add to Cart
                                 </p>
                             </div>
@@ -86,6 +69,11 @@ export default function UmkmSection({
                 <a href={umkm().url} className="btn-secondary-khaslana text-sm md:text-base">Lihat Semua</a>
                 <div className="h-px w-full bg-[#99ff33] flex-1"></div>
             </div>
+
+            <LoginRequiredDialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+            />
         </section>
     )
 }

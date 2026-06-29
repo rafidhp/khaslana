@@ -91,9 +91,18 @@ export default function VariantDialog({
         selectedAttributes,
     ]);
 
-    const price = selectedVariant?.price ?? 0;
+    // --- LOGIKA PERHITUNGAN HARGA PROMO ---
+    const originalPrice = selectedVariant?.price ?? 0;
     const stock = selectedVariant?.stock ?? 0;
     const isPurchasable = selectedVariant !== undefined && stock > 0;
+    
+    let finalPrice = originalPrice;
+    const isPromoActive = product.promo && product.promo.status === 'BERLANGSUNG';
+    
+    if (isPromoActive && product.promo?.type === 'DISKON' && product.promo?.discount_percent) {
+        finalPrice = originalPrice - (originalPrice * (Number(product.promo.discount_percent) / 100));
+    }
+    // --------------------------------------
 
     const formatPrice = (value: number) => new Intl.NumberFormat("id-ID").format(value);
     const image = product.product_images?.[0]?.image;
@@ -102,10 +111,47 @@ export default function VariantDialog({
         attributeName: string,
         value: string
     ) => {
-        setSelectedAttributes((prev) => ({
-            ...prev,
+        const nextAttributes = {
+            ...selectedAttributes,
             [attributeName]: value,
-        }));
+        };
+
+        setSelectedAttributes(nextAttributes);
+
+        const nextVariant = product.product_variants?.find((variant) =>
+            Object.entries(nextAttributes).every(
+                ([attributeName, selectedValue]) =>
+                    variant.attribute_values?.some(
+                        (attributeValue) =>
+                            attributeValue.attribute?.name === attributeName &&
+                            attributeValue.value === selectedValue
+                    )
+            )
+        );
+
+        const nextStock = nextVariant?.stock ?? 0;
+
+        setQuantity((prev) => Math.min(Math.max(prev, 1), Math.max(nextStock, 1)));
+    };
+
+    const handleQuantityChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        let value = e.target.value;
+
+        value = value.replace(/\D/g, "");
+        value = value.replace(/^0+/, "");
+
+        if (value === "") {
+            setQuantity(1);
+            return;
+        }
+        let qty = Number(value);
+
+        if (qty < 1) qty = 1;
+        if (qty > stock) qty = stock;
+
+        setQuantity(qty);
     };
 
     const handleSubmit = () => {
@@ -117,6 +163,9 @@ export default function VariantDialog({
         if (!selectedVariant) {
             return;
         }
+
+        console.log(selectedVariant);
+        console.log(selectedAttributes);
 
         console.log({
             actionType,
@@ -242,15 +291,24 @@ export default function VariantDialog({
                             />
                         </div>
                         <div className="flex flex-col justify-center">
-                            <h3
-                                className="
-                                    text-[#99FF33]
-                                    text-3xl
-                                    font-bold
-                                "
-                            >
-                                Rp {formatPrice(price)}
-                            </h3>
+                            {/* --- UPDATE TAMPILAN HARGA PROMO --- */}
+                            <div className="flex items-end gap-3">
+                                <h3
+                                    className="
+                                        text-[#99FF33]
+                                        text-3xl
+                                        font-bold
+                                    "
+                                >
+                                    Rp {formatPrice(finalPrice)}
+                                </h3>
+                                {isPromoActive && originalPrice > finalPrice && (
+                                    <span className="text-gray-500 line-through text-lg font-medium mb-0.5">
+                                        Rp {formatPrice(originalPrice)}
+                                    </span>
+                                )}
+                            </div>
+                            {/* ----------------------------------- */}
                             <p className="text-white text-xl mt-2 font-medium">
                                 {product.name}
                             </p>
@@ -261,13 +319,11 @@ export default function VariantDialog({
                                         {stock} pcs
                                     </span>
                                 </p>
-                                {
-                                    !isPurchasable && (
-                                        <p className="mt-3 text-red-400 bg-amber-900/30 px-2 rounded-full text-sm">
-                                            Varian ini sedang habis
-                                        </p>
-                                    )
-                                }
+                                {!isPurchasable && (
+                                    <p className="mt-3 text-red-400 bg-amber-900/30 px-2 rounded-full text-sm">
+                                        Varian ini sedang habis
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -298,20 +354,14 @@ export default function VariantDialog({
                                                     <button
                                                         key={value}
                                                         type="button"
-                                                        onClick={() =>
-                                                            handleAttributeSelect(
-                                                                attributeName,
-                                                                value
-                                                            )
-                                                        }
+                                                        onClick={() => handleAttributeSelect(attributeName, value)}
                                                         className={`
                                                             px-4 py-2
                                                             rounded-xl
                                                             border
                                                             transition
                                                             cursor-pointer
-                                                            ${
-                                                                isSelected
+                                                            ${isSelected
                                                                     ? `
                                                                         border-[#99FF33]
                                                                         bg-[#99FF33]/10
@@ -391,28 +441,28 @@ export default function VariantDialog({
                             >
                                 <Minus size={18} />
                             </button>
-                            <input value={quantity}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value)
-
-                                        if (isNaN(value)) {
-                                            setQuantity(0)
-                                            return;
-                                        }
-
-                                        if (value >= 1 && value <= stock) {
-                                            setQuantity(value)
-                                        } else if (value > stock) {
-                                            setQuantity(stock)
-                                        }
-                                    }}
-                                    className="w-14 text-center text-white font-semibold">
-                                
-                            </input>
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                disabled={!isPurchasable}
+                                value={quantity}
+                                onChange={handleQuantityChange}
+                                onKeyDown={(e) => {
+                                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className="
+                                    w-16 h-12
+                                    bg-transparent
+                                    text-center text-white
+                                    font-semibold outline-none
+                                    disabled:text-muted-foreground
+                                    disabled:cursor-not-allowed
+                                "
+                            />
                             <button
-                                onClick={() =>
-                                    setQuantity((prev) => Math.min(stock, prev + 1))
-                                }
+                                onClick={() => setQuantity((prev) => Math.min(stock, prev + 1))}
                                 disabled={stock <= 0 || quantity >= stock}
                                 className="
                                     w-12 h-12
@@ -434,10 +484,9 @@ export default function VariantDialog({
                             className={`
                                 w-full
                                 btn-primary-khaslana
-                                ${
-                                    !isPurchasable
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : "cursor-pointer"
+                                ${!isPurchasable
+                                    ? "opacity-50 cursor-not-allowed hover:bg-[#99FF33] hover:text-[#1E1B26]"
+                                    : "cursor-pointer"
                                 }
                             `}
                         >

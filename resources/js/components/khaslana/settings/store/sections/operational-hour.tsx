@@ -194,7 +194,7 @@ export default function OperationalHour({
     );
 
     return (
-        <div className="space-y-4 mt-8">
+        <div className="space-y-4">
             <div>
                 <h3 className="text-lg font-semibold">
                     Jam Operasional

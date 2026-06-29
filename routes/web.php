@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalVerificationController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
@@ -71,11 +72,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store-management/store', 'store')->name('storeManagement.store');
         Route::put('/store-management/update', 'update')->name('storeManagement.update');
         Route::post('/store-management/store-logo', 'storeLogo')->name('storeManagement.storeLogo');
+    });
 
-        Route::get('/store-management/promo', 'promoIndex')->name('storeManagement.promo.index');
-        Route::post('/store-management/promo', 'promoStore')->name('storeManagement.promo.store');
-        Route::put('/store-management/promo/{promo}', 'promoUpdate')->name('storeManagement.promo.update');
-        Route::delete('/store-management/promo/{promo}', 'promoDestroy')->name('storeManagement.promo.destroy');
+    // promo management routes
+    Route::controller(PromoController::class)->group(function() {
+        Route::get('/store-management/promo', 'index')->name('storeManagement.promo.index');
+        Route::post('/store-management/promo', 'store')->name('storeManagement.promo.store');
+        Route::put('/store-management/promo/{promo}', 'update')->name('storeManagement.promo.update');
+        Route::delete('/store-management/promo/{promo}', 'destroy')->name('storeManagement.promo.destroy');
     });
 
     // community routes
@@ -106,7 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/order/show/{order}', 'show')->name('order.show');
     });
 
-    //Cart Route
+    // cart routes
     Route::controller(CartController::class)->prefix('cart')->group(function () {
         Route::get('/', 'index')->name('cart');
         Route::post('/add', 'store')->name('cart.add');
@@ -119,6 +123,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(CatalogController::class)->group(function() {
         Route::post('/catalog/{id}/review', 'storeReview')->name('catalog.storeReview');
         Route::delete('/catalog/{product}/review/{review}', 'deleteReview')->name('catalog.deleteReview');
+    });
+
+    // verification routes
+    Route::controller(AdditionalVerificationController::class)->group(function() {
+        Route::get('/additional/verification', 'index')->name('additionalVerification');
+        Route::post('/additional/verification/store','store')->name('additionalVerification.store');
     });
 });
 

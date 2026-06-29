@@ -62,6 +62,7 @@ class UmkmController extends Controller
             'reviews' => $reviews,
             'products' => $products,
             'locationData' => $latestLocation,
+            'pageType' => 'umkmDetail',
         ]);
 
     }
@@ -119,21 +120,27 @@ class UmkmController extends Controller
     /**
      * Live Tracking untuk UMKM KELILING
      */
+    /**
+     * Live Tracking untuk UMKM KELILING
+     */
     public function tracking(Request $request, $umkm_id = null)
     {
         $userLat = $request->lat;
         $userLng = $request->lng;
-        $radius = 3;
+        $force = $request->boolean('force'); // 1. Tangkap parameter force dari frontend
+        $radius = 10;
+
         $activeMerchants = Umkm::where('type', 'KELILING')
             ->whereHas('umkmLocations', function ($q) {
                 $q->where('is_active', true);
-                $q->where('status', 'MANGKAL');
+                $q->whereIn('status', ['MANGKAL', 'KELILING']);
             })
             ->with(['user.profile', 'umkmLocations' => function ($q) {
                 $q->where('is_active', true)->latest('id');
             }])
             ->get()
-            ->map(function ($umkm) use ($userLat, $userLng, $radius) {
+            // 2. Lempar $umkm_id dan $force ke dalam closure
+            ->map(function ($umkm) use ($userLat, $userLng, $radius, $umkm_id, $force) {
                 $latestLocation = $umkm->umkmLocations->first();
                 if (!$latestLocation || !$userLat || !$userLng) return null;
 
@@ -144,7 +151,13 @@ class UmkmController extends Controller
                     $latestLocation->longitude
                 ) / 1000;
 
-                if ($distance > $radius) return null;
+                // 3. LOGIKA BYPASS RADIUS
+                // Jika user memaksa dari detail UMKM, dan ID-nya cocok, loloskan!
+                $isTargetMerchant = ($umkm_id && $umkm->id == $umkm_id && $force);
+
+                if ($distance > $radius && !$isTargetMerchant) {
+                    return null; // Filter sisanya yang di luar radius
+                }
 
                 $cleanAddress = $umkm->address ?? 'Lokasi Tidak Diketahui';
                 $shortLocation = trim(explode(',', $cleanAddress)[0]);
@@ -152,8 +165,8 @@ class UmkmController extends Controller
                 return [
                     'id' => $umkm->id,
                     'storeName' => $umkm->store_name,
-                    'description' => $umkm->description, 
-                    'locationText' => str($shortLocation)->limit(22, '...'), 
+                    'description' => $umkm->description,
+                    'locationText' => str($shortLocation)->limit(22, '...'),
                     'rating' => (float) $umkm->average_rating,
                     'status' => $latestLocation ? $latestLocation->status : 'MANGKAL',
                     'logoUrl' => $umkm->user?->profile?->logo ?? null,
@@ -166,13 +179,12 @@ class UmkmController extends Controller
             ->filter()
             ->sortBy('distance')
             ->values();
-            
+
         return Inertia::render('user/navigation/user-stay-point', [
             'activeMerchants' => $activeMerchants,
             'initialSelectedId' => $umkm_id ? (int) $umkm_id : null,
             'hasFiltered' => true,
         ]);
-        
     }
 
     /**
@@ -221,5 +233,25 @@ class UmkmController extends Controller
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $earthRadius * $c;
+    }
+
+    public function showPromo($umkm_id) {
+        $umkm = Umkm::where('id', $umkm_id)->with(
+            'province',
+            'city',
+            'district',
+            'village',
+            'user',
+            'user.profile',
+            'umkmData',
+            'umkmImages',
+            'umkmLocations',
+            'promos'
+        )->firstOrFail();
+
+        // direct ke page promo umkm tsb.
+        return Inertia::render('user/umkm-user/detail-umkm/promo', [
+            'umkmData' => $umkm,
+        ]);
     }
 }

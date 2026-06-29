@@ -1,4 +1,6 @@
-import { AlertCircle } from "lucide-react";
+import { motion } from 'framer-motion';
+import { AlertCircle, Hand } from "lucide-react";
+import { usePage } from '@inertiajs/react';
 
 interface ConfirmationDialogProps {
     open: boolean;
@@ -17,18 +19,20 @@ export default function ConfirmationDialog({
     onCancel,
     confirmText
 }: ConfirmationDialogProps) {
+    const { pageType } = usePage().props;
+    const isUmkmDetailPage = pageType === 'umkmDetail';
     if (!open) return null;
 
     return (
         <div
-            className="
+            className={`
                 fixed inset-0
                 bg-black/80
                 backdrop-blur-sm
-                z-50
                 flex items-center justify-center
                 px-4
-            "
+                ${isUmkmDetailPage ? 'z-[999]' : 'z-50'}
+            `}
         >
             <div
                 className="
@@ -42,14 +46,55 @@ export default function ConfirmationDialog({
             >
                 <div className="flex flex-col items-center text-center gap-4">
                     <div
-                        className="
+                        className={`
                             w-16 h-16
                             rounded-full
-                            bg-red-500/10
                             flex items-center justify-center
-                        "
+                            ${confirmText === 'Buat Toko' ? '' : 'bg-red-500/10'}
+                        `}
                     >
-                        <AlertCircle className="w-8 h-8 text-red-500" />
+                        {confirmText === 'Buat Toko' ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{
+                                    duration: 0.5,
+                                    ease: [0.22, 1, 0.36, 1],
+                                }}
+                                className="flex items-center justify-center z-50"
+                            >
+                                <motion.div
+                                    animate={{
+                                        rotate: [0, 20, -12, 20, -6, 0],
+                                        y: [0, -2, 0],
+                                    }}
+                                    transition={{
+                                        rotate: {
+                                            duration: 1.6,
+                                            repeat: Infinity,
+                                            repeatDelay: 1.5,
+                                            ease: 'easeInOut',
+                                        },
+                                        y: {
+                                            duration: 2.5,
+                                            repeat: Infinity,
+                                            ease: 'easeInOut',
+                                        },
+                                    }}
+                                    style={{
+                                        transformOrigin: '75% 85%',
+                                    }}
+                                >
+                                    <Hand
+                                        size={56}
+                                        strokeWidth={2.2}
+                                        className='text-[#99FF33]'
+                                    />
+                                </motion.div>
+                            </motion.div>
+                        ) : (
+                            <AlertCircle className="w-8 h-8 text-red-500" />
+                        )}
                     </div>
                     <h3 className="text-xl font-semibold text-white">
                         {title}

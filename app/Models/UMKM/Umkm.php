@@ -44,6 +44,13 @@ class Umkm extends Model
         'shipping_cost',
     ];
 
+    protected function casts() {
+        return [
+            'is_order_feature' => 'boolean',
+            'is_shipping_feature' => 'boolean',
+        ];
+    }
+
     // laravolt relations
     public function province() {
         return $this->belongsTo(

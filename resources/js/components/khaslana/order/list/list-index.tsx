@@ -110,7 +110,7 @@ export default function ListIndex({
                                             : '/images/placeholder.png'
                                     }
                                     alt={order.order_items?.[0].product_name}
-                                    className="h-35 w-50 aspect-square max-md:h-15 max-md:w-15 object-cover bg-white rounded-xl"
+                                    className="h-35 w-100 aspect-square max-md:h-15 max-md:w-15 object-cover bg-white rounded-xl"
                                 />
                             </div>
                             <div className="flex flex-col gap-2 justify-between">

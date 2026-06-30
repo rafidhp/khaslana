@@ -22,7 +22,7 @@ if [ -n "$DB_HOST" ]; then
 fi
 
 # Generate app key if missing
-php artisan key:generate --force || true
+# php artisan key:generate --force || true
 
 # Run migrations (safe for production)
 echo "🚨 RUNNING MIGRATION NOW..."

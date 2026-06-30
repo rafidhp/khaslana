@@ -171,6 +171,8 @@ class ProductController extends Controller
             return redirect()->route('product')->with('success', 'Produk berhasil ditambahkan.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error($th);
+            throw $th;
 
             foreach ($imagePaths as $path) {
                 if (

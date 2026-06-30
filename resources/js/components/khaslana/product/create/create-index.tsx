@@ -36,7 +36,6 @@ export default function CreateIndex({
     product,
     promos = [],
 }: CreateIndexProps) {
-    console.log(promos)
     const [images, setImages] = useState<
         (
             | File

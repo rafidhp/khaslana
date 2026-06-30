@@ -67,7 +67,7 @@ return new class extends Migration
         Schema::dropIfExists('product_images');
         Schema::dropIfExists('product_variants');
         Schema::dropIfExists('attributes');
-        Schema::dropIfExists('attributes_values');
+        Schema::dropIfExists('attribute_values');
         Schema::dropIfExists('variant_attributes');
     }
 };

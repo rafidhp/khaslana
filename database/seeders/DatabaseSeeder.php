@@ -37,8 +37,8 @@ class DatabaseSeeder extends Seeder
                 IndonesiaSeeder::class,
                 CategorySeeder::class,
                 UmkmSeeder::class,
-                AttributeSeeder::class,
-                ProductSeeder::class,
+                // AttributeSeeder::class,
+                // ProductSeeder::class,
             ]);
         } else {
             User::factory()->create([

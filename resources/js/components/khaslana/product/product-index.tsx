@@ -59,7 +59,7 @@ export default function ProductIndex({
                         {products.data.length === 0 ? (
                             <tr>
                                 <td
-                                    colSpan={6}
+                                    colSpan={7}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     <div className='flex flex-col items-center'>

@@ -142,7 +142,7 @@ export default function CreateIndex({
     const hasDuplicateAttributes = duplicateNames.length > 0;
     const hasDuplicateAttributeValues = Object.keys(duplicateAttributeValues).length > 0;
 
-    const disableVariants = hasDuplicateAttributes || hasDuplicateAttributeValues;;
+    const disableVariants = hasDuplicateAttributes || hasDuplicateAttributeValues;
 
     console.log({
         duplicateNames,
@@ -201,23 +201,6 @@ export default function CreateIndex({
         valueIndex: number,
         value: string,
     ) => {
-        const targetAttribute = attributes[valueIndex]
-
-        const isDuplicate = targetAttribute.values.some((attribute, index) => {
-            return (
-                value.trim().toLowerCase() !== "" && 
-                attribute.toLowerCase().trim() === value.toLowerCase().trim() &&
-                valueIndex !== index
-            )
-        })
-
-        if (isDuplicate) {
-            showErrorToast(`Nilai ${value} sudah digunakan, coba nama lain`)
-            setIsAttributeNameDuplicate(true);
-        } else {
-            setIsAttributeNameDuplicate(false);
-        }
-
         setAttributes((prev) =>
             prev.map((attr, i) =>
                 i === valueIndex
@@ -235,23 +218,6 @@ export default function CreateIndex({
         valueIndex: number,
         value: string
     ) => {
-        const targetAttribute = attributes[attributeIndex]
-        
-        const isDuplicate = targetAttribute.values.some((attribute, index) => {
-            return (
-                value.trim().toLowerCase() !== "" && 
-                attribute.toLowerCase().trim() === value.toLowerCase().trim() &&
-                index !== valueIndex
-            )
-        })
-
-        if (isDuplicate) {
-            showErrorToast(`Nilai ${value} sudah digunakan, coba nama lain`)
-            setIsAttributeValueDuplicate(true);
-        } else {
-            setIsAttributeValueDuplicate(false);
-        }
-        
         setAttributes((prev) =>
             prev.map((attr, i) => {
                 if (i !== attributeIndex) return attr;

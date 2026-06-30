@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 use App\Models\Category;
@@ -70,7 +71,7 @@ class ProductController extends Controller
     public function store(Request $request) {
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
-            'promo_id' => ['nullable', 'numeric'],
+            'promo_id' => ['nullable'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
             'images' => ['required', 'array'],
@@ -134,7 +135,6 @@ class ProductController extends Controller
 
             foreach ($validated['attributes'] as $attributeData) {
                 $attribute = Attribute::create([
-                    'product_id' => $product->id,
                     'name' => trim($attributeData['name']),
                 ]);
 
@@ -216,7 +216,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product) {
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
-            'promo_id' => ['nullable', 'numeric'],
+            'promo_id' => ['nullable'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
 
@@ -240,9 +240,7 @@ class ProductController extends Controller
 
         try {
             $umkm = Auth::user()->umkm;
-
             $promoId = ($validated['promo_id'] === 'none' || empty($validated['promo_id'])) ? null : $validated['promo_id'];
-
             $product->update([
                 'category_id' => $validated['category_id'],
                 'promo_id' => $promoId,
@@ -307,7 +305,6 @@ class ProductController extends Controller
                 as $attributeData
             ) {
                 $attribute = Attribute::create([
-                    'product_id' => $product->id,
                     'name' => trim($attributeData['name']),
                 ]);
 
@@ -355,6 +352,8 @@ class ProductController extends Controller
             return redirect()->route('product')->with('success', 'Produk berhasil diperbarui.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            // Log::error($th);
+            // throw $th;
 
             foreach (
                 $newImagePaths as $path

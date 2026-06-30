@@ -26,8 +26,8 @@ php artisan key:generate --force || true
 
 # Run migrations (safe for production)
 echo "🚨 RUNNING MIGRATION NOW..."
-APP_ENV=local php artisan migrate:fresh
-APP_ENV=production php artisan db:seed --force
+# APP_ENV=local php artisan migrate:fresh
+# APP_ENV=production php artisan db:seed --force
 
 # ===============================
 # Laravel Setup

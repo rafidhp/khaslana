@@ -6,7 +6,7 @@ export interface Product {
     id: number;
     umkm_id: number;
     category_id: number;
-    promo_id: number;
+    promo_id: number | null;
     name: string;
     description: string;
     is_archived: boolean;
